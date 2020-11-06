@@ -48,6 +48,190 @@
       </tags>
   </entry>
   <entry>
+    <title>字符与字符串</title>
+    <url>/2019/12/26/%E5%AD%97%E7%AC%A6%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2/</url>
+    <content><![CDATA[<p>C语言中字符和字符串的相关知识点。</p>
+<a id="more"></a>
+
+<h3 id="1-1字符型与整数型的输入输出"><a href="#1-1字符型与整数型的输入输出" class="headerlink" title="1.1字符型与整数型的输入输出"></a>1.1字符型与整数型的输入输出</h3><p>首先1与’1’在计算机中是不同的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> c1;</span><br><span class="line">    <span class="keyword">char</span> c2;</span><br><span class="line">    c1 = <span class="number">1</span>;</span><br><span class="line">    c2 =<span class="string">&#x27;1&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span>(c1==c2)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;相同&quot;</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;不同&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由此可发现他们是不同的，分别以%d的形式输出c1，c2,<br>会得到c1=1,c2=49.<br>（char也是一种整型，所以可以按%d输出，但不能直接以%d形式输入。）</p>
+<h3 id="1-2字符型输入的两种方式"><a href="#1-2字符型输入的两种方式" class="headerlink" title="1.2字符型输入的两种方式"></a>1.2字符型输入的两种方式</h3><p>1.直接以%c配合字符形式输入。</p>
+<blockquote>
+<p>scanf(“%c”,&amp;c1);</p>
+</blockquote>
+<p>此时输入’1’,即可将’1’赋给c1。</p>
+<blockquote>
+<p>printf(“‘%c’”,c1);</p>
+</blockquote>
+<p>得到1。</p>
+<p>2.先用%d给另一个整型变量i输入，再将该i值赋给字符s1。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int i;</span><br><span class="line">scanf(&quot;%d&quot;,&amp;i);</span><br><span class="line">s1&#x3D;i;</span><br><span class="line">printf(&quot;&#39;%c&#39;&quot;,s1);</span><br></pre></td></tr></table></figure>
+<p>此时如果给i输入49，则i将49传给s1，若按%c输出s1就是’1’，若按%d输出则为49.</p>
+<h3 id="1-3混合输入输出"><a href="#1-3混合输入输出" class="headerlink" title="1.3混合输入输出"></a>1.3混合输入输出</h3><blockquote>
+<p>scanf(“%d %c”,&amp;i,&amp;s1);</p>
+</blockquote>
+<blockquote>
+<p>scanf(“%d%c”,&amp;i,&amp;s1);</p>
+</blockquote>
+<p>由于第一个函数%d与%c之间有空格，那么输完一个整型数字后的所有空格,tab,return都会被读掉，然后再去读s1.</p>
+<p>而第二个函数%d%c之间没空格，所以整数就只读到整数结束为止，下面的东西读给s1,无论是空格，tab还是return都会给到c.</p>
+<h3 id="1-4字符运算"><a href="#1-4字符运算" class="headerlink" title="1.4字符运算"></a>1.4字符运算</h3><p>注意两个式子：</p>
+<blockquote>
+<p>char a =’A;</p>
+</blockquote>
+<blockquote>
+<p>a++;</p>
+</blockquote>
+<p>则a=’B’</p>
+<p>如果要求两个字母间的距离，要用int</p>
+<blockquote>
+<p>int i= ‘a’-‘A;</p>
+</blockquote>
+<blockquote>
+<p>printf(“%d”,i)=25</p>
+</blockquote>
+<p>用a+’a’-‘A’从大写变小写<br>用a+’A’-‘a’从小写变大写<br>注意第一个a是整数，不是字符，这里想表达一种变化性，当然也可以写成某一个特定字符。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line">    c=<span class="string">&#x27;d&#x27;</span>+<span class="string">&#x27;A&#x27;</span>-<span class="string">&#x27;a&#x27;</span>;<span class="comment">//注意是字符d，</span></span><br><span class="line">    d=c+<span class="string">&#x27;a&#x27;</span>-<span class="string">&#x27;A&#x27;</span>;<span class="comment">//注意是变量c</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;c=%c d=%c&quot;</span>,c,d);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<blockquote>
+<p>c=D d=d</p>
+</blockquote>
+<h2 id="二、字符串"><a href="#二、字符串" class="headerlink" title="二、字符串"></a>二、字符串</h2><h3 id="2-1字符数组与字符串——数组方式初始化字符串"><a href="#2-1字符数组与字符串——数组方式初始化字符串" class="headerlink" title="2.1字符数组与字符串——数组方式初始化字符串"></a>2.1字符数组与字符串——数组方式初始化字符串</h3><p>字符串也是字符数组，不过它的结尾是数字0（多表示成’\0’）。</p>
+<p>正常的字符数组初始化：</p>
+<blockquote>
+<p>char s[]={‘H’,’E’,’L’,’L’,’O’,’!’};</p>
+</blockquote>
+<p>字符串数组的初始化：</p>
+<blockquote>
+<p>char s[]={‘H’,’E’,’L’,’L’,’O’,’!’,’\0’};</p>
+</blockquote>
+<p>就是因为结尾的0，才让这个字符数组变成了C语言的字符串。</p>
+<h3 id="2-2字符串的存在形式"><a href="#2-2字符串的存在形式" class="headerlink" title="2.2字符串的存在形式"></a>2.2字符串的存在形式</h3><p>字符串以数组的形式存在，可以通过数组或指针的方式进行访问。</p>
+<p>！！指针方式：</p>
+<blockquote>
+<p>char *str=”Hello”;</p>
+</blockquote>
+<p>注意这表示str是一个指针，指向的内容是字符类型的，只不过现在这个情况下它指的是个字符数组，所以它是字符串，他也完全可以指向一个单个字符，那就不是字符串了！</p>
+<p>数组方式：除了上述的依次枚举表达方式，还有如下：</p>
+<blockquote>
+<p>char word[]=”Hello”;</p>
+</blockquote>
+<blockquote>
+<p>char line[10]=”Hello”;</p>
+</blockquote>
+<p>注意双引号。</p>
+<p>此外，紧密相邻的字符串会被连接起来：</p>
+<blockquote>
+<p>printf(“A”</p>
+</blockquote>
+<blockquote>
+<p>“B”);</p>
+</blockquote>
+<p>最终会输出AB.</p>
+<h3 id="2-3字符串在内存中的存储方式"><a href="#2-3字符串在内存中的存储方式" class="headerlink" title="2.3字符串在内存中的存储方式"></a>2.3字符串在内存中的存储方式</h3><p>以数组方式表达的字符串，其地址存在于计算机的代码段，是只读的，所以无法对数组表达的字符串进行修改。</p>
+<p>同时，存储相同字符串的不同变量，他们的地址相同，相当于一人分饰两角。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> *s=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="keyword">char</span> *s1=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;s=%p s1=%p&quot;</span>,s,s1); <span class="comment">//会发现s==s1;</span></span><br><span class="line">s[<span class="number">0</span>]=<span class="string">&#x27;B&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%c&quot;</span>,s[<span class="number">0</span>]);</span><br></pre></td></tr></table></figure>
+<p>这样的程序是会报错的。换句话说：</p>
+<p>char *s == const char *s 即指针所指向的char类型内容（即字符串）是const型的。</p>
+<h3 id="2-4字符串的输入输出"><a href="#2-4字符串的输入输出" class="headerlink" title="2.4字符串的输入输出"></a>2.4字符串的输入输出</h3><p>常见的方式都是通过数组表达字符串，然后对其进行输入输出</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> <span class="built_in">string</span>[<span class="number">8</span>];</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,<span class="built_in">string</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>,<span class="built_in">string</span>);</span><br></pre></td></tr></table></figure>
+<p>此处注意%s只读入单词，当你输入tab，空格，return都会默认该单词读完了。</p>
+<p>为了更安全的输入，会写成%ns，n代表能输入的最大位数，由于本数组大小为8，且最后一位有0，所以最多还能输7位。</p>
+<h2 id="三、指针方式的输入输出"><a href="#三、指针方式的输入输出" class="headerlink" title="三、指针方式的输入输出"></a>三、指针方式的输入输出</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> *s=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="keyword">char</span> *s1=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%s %s&quot;</span>,s,s1);</span><br></pre></td></tr></table></figure>
+<p>我发现都可以输出Hello,World!.<br>这让我很疑惑，因为s和s1不是存放的地址吗，而想输出*s,*s1却也可以通过编译，但是无法输出内容。</p>
+<p>我尝试了：</p>
+<blockquote>
+<p>printf(“%c %d”,*s,*s);</p>
+</blockquote>
+<p>输出得到了’H’ 72 (‘H’的ASCII码)</p>
+<p>所以关于<strong>指针和数组</strong>之间的关系，我必须再看看C primer plus.</p>
+]]></content>
+      <categories>
+        <category>C语言</category>
+      </categories>
+      <tags>
+        <tag>C语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据预处理</title>
+    <url>/2020/09/08/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<p>本文基于kaggle上的房价预测项目，对数据预处理的流程进行总结。由于这是上手的第一个项目，数据预处理的过程相对比较简单，主要涵盖了数据感知可视化，outliers的清理，空值填充，及初步选取特征四个方面，后续会不断加入categorical encoding，添加特征等方法。</p>
+<a id="more"></a>
+
+<h2 id="1-关于题目"><a href="#1-关于题目" class="headerlink" title="1.关于题目"></a>1.关于题目</h2><p>题目链接：<a href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques%E3%80%82">https://www.kaggle.com/c/house-prices-advanced-regression-techniques。</a></p>
+<p>题目解读：围绕79个特征对Ames市的房价进行预测，其中44个特征是离散型的分类，35个特征是连续型的数值。</p>
+<p>本文策略：在填充空值时，优先将筛选出的特征中的空值进行填充，而不是将所有特征中的空值填充，这样做的好处是比较简单，但同时注定无法构造一个底子很好的baseline。</p>
+<h2 id="2-数据预处理"><a href="#2-数据预处理" class="headerlink" title="2.数据预处理"></a>2.数据预处理</h2><h3 id="1-导入必要包及数据"><a href="#1-导入必要包及数据" class="headerlink" title="1.导入必要包及数据"></a>1.导入必要包及数据</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="comment">#matplotlit infine</span></span><br><span class="line"></span><br><span class="line">train_data = pd.read_csv(<span class="string">&#x27;train.csv&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-对数据进行初步探索"><a href="#2-对数据进行初步探索" class="headerlink" title="2.对数据进行初步探索"></a>2.对数据进行初步探索</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 探索数据维度,是否有空值等信息</span></span><br><span class="line">train_data.info()</span><br></pre></td></tr></table></figure>
+
+<p>从这步可以看出来，Alley、FireplaceQu、PoolQC、Fence等特征存在较多的空值；同时有很多特征具有很强的相关性，比如GarageCars与GarageArea，1stFlrSF，2ndFlrSF 与GrLivArea等。这些可以留作后面优化baseline的策略；此外，观察了数据，发现有些空值存在的原因是因为一些房子本身就没有该配套设施所导致的，比如Garagetype为空的原因是该房子根本没有garage。</p>
+<h3 id="3-观察特征X与SalePrice之间的相关性"><a href="#3-观察特征X与SalePrice之间的相关性" class="headerlink" title="3.观察特征X与SalePrice之间的相关性"></a>3.观察特征X与SalePrice之间的相关性</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 利用pandas自带的关联矩阵，可以观察到变量与结果之间的相关性，并以热力图的方式呈现。</span></span><br><span class="line">corr = train_data.corr() <span class="comment">#生成相关性矩阵，默认的method是&#x27;pearson&#x27;，即皮尔森相关系数。</span></span><br><span class="line">fig = plt.figure(figsize =(<span class="number">10</span>,<span class="number">10</span>)) <span class="comment"># 构造画布</span></span><br><span class="line">sns.heatmap(data = corr, vmin= <span class="number">0.2</span>，cmap=<span class="string">&#x27;YlGnBu&#x27;</span>,square = <span class="literal">True</span>) <span class="comment">#过滤相关性在0.2以下的值,颜色采用蓝色系，以方形图表示。</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljdrakaaj31180vctfc.jpg" alt="1.png"></p>
+<p>由此可以看到SalePrice一项与特征中的’OverallQual’，’GrLivArea’，’TotalBsmtSF’，’GarageCars’四项的相关性比较大（热力图中颜色较深），故想单独把这4个特征提取出来，看看他们与SalePrice是否真的呈现某种线性关系。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 围绕四个相关性大的特征进行观察其与SalePrice的线性关系</span></span><br><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>,<span class="string">&#x27;GarageCars&#x27;</span>]</span><br><span class="line">fig = plt.figure()</span><br><span class="line">sns.pairplot(x_vars=cols, y_vars=<span class="string">&#x27;SalePrice&#x27;</span>, data=train_data)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gilje597yij315w0e0tbu.jpg" alt="2.png"></p>
+<h3 id="3-针对outliers分析"><a href="#3-针对outliers分析" class="headerlink" title="3.针对outliers分析"></a>3.针对outliers分析</h3><p>通过图形可以发现，上述四个特征确实与SalePrice有较为明显的线性关系，但其中也有一些outliers，为了不影响模型的拟合，将这些outliers分析一下，如果确实比较离谱则将其丢弃。</p>
+<h4 id="针对OverallCond："><a href="#针对OverallCond：" class="headerlink" title="针对OverallCond："></a>针对OverallCond：</h4><p>这个是我后面发现的，有一个OverallCond=2的样本点的售价远高于其他样本点，故将其drop掉。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.drop(index = train_data[(train_data[<span class="string">&#x27;OverallCond&#x27;</span>]==<span class="number">2</span>) &amp; (train_data[<span class="string">&#x27;SalePrice&#x27;</span>]&gt;<span class="number">200000</span>)].index,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="针对GrLivArea："><a href="#针对GrLivArea：" class="headerlink" title="针对GrLivArea："></a>针对GrLivArea：</h4><p>有两个点的非常靠右，但是售价非常低，大致估计其原因应该是地处偏僻，故直接删除。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.drop(index = train_data[(train_data[<span class="string">&#x27;GrLivArea&#x27;</span>]&gt;<span class="number">4000</span>) &amp; (train_data[<span class="string">&#x27;SalePrice&#x27;</span>]&lt;<span class="number">200000</span>)].index,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="针对TotalBsmtSF"><a href="#针对TotalBsmtSF" class="headerlink" title="针对TotalBsmtSF:"></a>针对TotalBsmtSF:</h4><p>同样有一个点的地下室面积非常大，但是售价很低，故将其drop。另外大于2500房价却小与200000数据点需要找出来单独分析一下原因，观察是不是outliers。(这里没找，没找到，略过了)</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先drop离谱点，事实证明这就是刚刚drop掉那两个样本点中的一个</span></span><br><span class="line">train_data.drop(index = train_data[train_data[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">6000</span>].index,inplace=<span class="literal">True</span>) </span><br></pre></td></tr></table></figure>
+
+<h4 id="针对GarageCars"><a href="#针对GarageCars" class="headerlink" title="针对GarageCars:"></a>针对GarageCars:</h4><p>针对GarageCars我重新做了箱线图，发现可以容纳4个车位的Garage平均售价远低于可以容纳3个车位的房子，我不知道是不是应该将他们drop点。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 围绕GarageCars做的箱线图</span></span><br><span class="line">sns.boxplot(x=<span class="string">&#x27;GarageCars&#x27;</span>,y=<span class="string">&#x27;SalePrice&#x27;</span>,data=train_data)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljh0g8fkj30qq0fkmy4.jpg" alt="3.png"></p>
+<p>将所有GarageCars=4的数据提取出来进行观察。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.loc[index_of_4cars,:][[<span class="string">&#x27;SalePrice&#x27;</span>,<span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljm41z7gj30h409wt91.jpg" alt="4.png"></p>
+<p>另外求一下不同GarageCars的房子的平均GarageArea。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data[<span class="string">&#x27;GarageArea&#x27;</span>].groupby(train_data[<span class="string">&#x27;GarageCars&#x27;</span>]).mean()</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljqay95kj30eo06oq36.jpg" alt="5.png"></p>
+<p>可以发现1340号房屋的GarageCars虽然是4，但是其GarageArea非常小，同时它的车库还是未完工的状态（Unf），所以1340号房屋的售价较低是可以解释的。不过1190号房屋的车库面积非常大，同时是完工状态，不过其售价非常低，有悖于刚刚的结论，所以考虑将其删除。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 删除1190号房屋</span></span><br><span class="line">train_data.drop(index=<span class="number">1190</span>,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>目前已经针对几个主要属性，将部分outliers进行过滤，下面将训练集的index进行重置。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.reset_index(inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-围绕Garage属性进行特征筛选"><a href="#4-围绕Garage属性进行特征筛选" class="headerlink" title="4.围绕Garage属性进行特征筛选"></a>4.围绕Garage属性进行特征筛选</h3><p>由于数据集中经常出现GarageCars很大但GarageArea小的情况，比如一个可以容纳4个车的车库只有480平，反之，样本中也可能出现只容纳1个车但车库面积非常大的现象。所以我打算用GarageArea除以GarageCars，观察每个车位的平均Area，看该特征下SalePrice的线性是否明显。    </p>
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillwztz7wj30cc0bagmh.jpg" alt="6.png"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 构建一个新的字段</span></span><br><span class="line">train_data[<span class="string">&#x27;Avg_Garage&#x27;</span>] = train_data[<span class="string">&#x27;GarageArea&#x27;</span>]/(train_data[<span class="string">&#x27;GarageCars&#x27;</span>]+<span class="number">0.001</span>)</span><br><span class="line"><span class="comment"># 观察以Avg_Garage为自变量的SalePrice变化。</span></span><br><span class="line">sns.pairplot[x_vars=<span class="string">&#x27;Avg_Garage&#x27;</span>,y_vars=<span class="string">&#x27;SalePrice&#x27;</span>,data=train_data]</span><br></pre></td></tr></table></figure>
+
+<p>依然没看出来有线性关系，当Avg_Garage变大时，部分房子的售价非常的低，所以不打算就这个Avg_Garage再深入了。另外我观察了GarageArea的散点图，发现它的线性关系更加明显，所以最终二选一的话我会选Area而不是Cars。<img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillwlgw03j30c40ast9s.jpg" alt="8.png"></p>
+<p>接下来我围绕GarageCars和GarageFinish进行groupby，观察到在每个档次的GarageCars里，Fin&gt;Rfn&gt;Ufn。所以我想把GarageFinish也当作一个影响总价的重要特征，纳入考虑。</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillx805c9j30iu0cwt9l.jpg" alt="7.png"></p>
+<p>综上，围绕Garage我将选择GarageArea及GarageFinish作为两个主要特征。</p>
+<h3 id="5-利用pearson相关系数找到与SalePrice最相关的几个属性。"><a href="#5-利用pearson相关系数找到与SalePrice最相关的几个属性。" class="headerlink" title="5.利用pearson相关系数找到与SalePrice最相关的几个属性。"></a>5.利用pearson相关系数找到与SalePrice最相关的几个属性。</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">corr = train_data.corr() <span class="comment"># 相关性矩阵（dataframe）</span></span><br><span class="line">k = <span class="number">10</span></span><br><span class="line">cols = corr.nlargest(k,<span class="string">&#x27;SalePrice&#x27;</span>).index <span class="comment">#按&#x27;SalePrice&#x27;排列的前k行，并返回它们的index</span></span><br><span class="line">cm = np.corrcoef(train_data[cols].values.T) <span class="comment"># 计算pearson相关系数，接受的参数是一个矩阵，返回的也是一个矩阵，</span></span><br><span class="line">sns.<span class="built_in">set</span>(font_scale=<span class="number">0.8</span>)</span><br><span class="line">heatmap = sns.heatmap(cm,annot=<span class="literal">True</span>,yticklabels=cols.values,xticklabels=cols.values,cmap=<span class="string">&#x27;YlGnBu&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillxfyxodj30ne0gwjwa.jpg" alt="9.png"></p>
+<p>综上，我将选择OverallQual,GrLivArea,TotalBsmtSF,GarageArea,GarageFinish,</p>
+<p>1stFirSF,FullBath,TotRmsAbvGrd,YearBuilt作为最终特征。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;1stFirSF&#x27;</span>,<span class="string">&#x27;TotRmsAbvGrd&#x27;</span>,<span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line"><span class="comment"># 将GarageFinish进行Categorical编码</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;1stFirSF&#x27;</span>,<span class="string">&#x27;TotRmsAbvGrd&#x27;</span>,<span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line">x = train_data[cols].values</span><br><span class="line">y = train_data[<span class="string">&#x27;SalePrice&#x27;</span>].values</span><br><span class="line">x_scaled = preprocessing.StandardScaler().fit_transform(x)</span><br><span class="line">y_scaled = preprocessing.StandardScaler().fit_transform(y.reshape(<span class="number">-1</span>,<span class="number">1</span>))</span><br><span class="line">X_train,X_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=<span class="number">0.33</span>, random_state=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>SKlearn</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python</title>
     <url>/2020/10/27/%E6%B6%88%E9%99%A4%E8%AD%A6%E5%91%8A%E4%BF%A1%E6%81%AF/</url>
     <content><![CDATA[<p>本文记录了使用SKlearn进行机器学习过程中遇到的一些问题，包括数据可视化及数据预处理。</p>
