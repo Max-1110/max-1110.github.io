@@ -273,6 +273,50 @@
       </tags>
   </entry>
   <entry>
+    <title>罗格斯特征数</title>
+    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
+    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
+<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+<th align="center">8</th>
+<th align="center">9</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p>思路： 判断哪个数字应该出现的次数最多</p>
+]]></content>
+      <categories>
+        <category>概率论</category>
+      </categories>
+      <tags>
+        <tag>概率趣味题</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python</title>
     <url>/2020/10/27/%E6%B6%88%E9%99%A4%E8%AD%A6%E5%91%8A%E4%BF%A1%E6%81%AF/</url>
     <content><![CDATA[<p>本文记录了使用SKlearn进行机器学习过程中遇到的一些问题，包括数据可视化及数据预处理。</p>
@@ -343,50 +387,6 @@
       </categories>
       <tags>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>罗格斯特征数</title>
-    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
-    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
-<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
-<a id="more"></a>
-
-<table>
-<thead>
-<tr>
-<th align="center">0</th>
-<th align="center">1</th>
-<th align="center">2</th>
-<th align="center">3</th>
-<th align="center">4</th>
-<th align="center">5</th>
-<th align="center">6</th>
-<th align="center">7</th>
-<th align="center">8</th>
-<th align="center">9</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>思路： 判断哪个数字应该出现的次数最多</p>
-]]></content>
-      <categories>
-        <category>概率论</category>
-      </categories>
-      <tags>
-        <tag>概率趣味题</tag>
       </tags>
   </entry>
   <entry>
