@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>SQL_互相关注的对数</title>
+    <url>/2020/10/27/Sql-%E4%BA%92%E7%9B%B8%E5%85%B3%E6%B3%A8%E7%9A%84%E7%94%A8%E6%88%B7%E5%AF%B9%E6%95%B0/</url>
+    <content><![CDATA[<p>表名：user_table</p>
+<p>字段：user_id, follower_id</p>
+<p>描述：该表统计了每个用户的id，以及其所关注的用户的id，求互相关注的用户的对数。</p>
+<a id="more"></a>
+
+<h2 id="（1）sql写法"><a href="#（1）sql写法" class="headerlink" title="（1）sql写法"></a>（1）sql写法</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(a.user_id)/<span class="number">2</span> following_pairs</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> t1.user_id,t1.follower_id</span><br><span class="line"><span class="keyword">FROM</span> user_table t1 <span class="keyword">JOIN</span> user_table t2</span><br><span class="line"><span class="keyword">ON</span> t1.user_id = t2.follower_id <span class="keyword">AND</span> t1.follower_id = t2.user_id) a</span><br></pre></td></tr></table></figure>
+
+<h2 id="（2）思路及注意事项"><a href="#（2）思路及注意事项" class="headerlink" title="（2）思路及注意事项"></a>（2）思路及注意事项</h2><ol>
+<li>最普适的方法是表联结，无论是给id还是用户名都可以这么做：让表1中的follower充当表2的user，表1中的user充当表2中的follower。这样可以把所有互相关注的user找出来。不过结果是成双对出现的，比如1 2 2 1和2 1 1 2都会被收录，但是他们表达的都是user1和user2互相关注，所以最后的count要除以2。</li>
+<li>由于两个表字段完全一样，所以内部的SELECT不要写*，否则会出现字段冲突。要么选择其中2个，要么重新命名。</li>
+<li>COUNT(a.*)报错，是否count ( * )是唯一正确用法？</li>
+</ol>
+<h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
+      <categories>
+        <category>SQL</category>
+      </categories>
+      <tags>
+        <tag>SQL-用户向</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SQL-留存率计算</title>
     <url>/2020/10/27/Sql-%E7%94%A8%E6%88%B7%E7%95%99%E5%AD%98%E7%8E%87%E8%AE%A1%E7%AE%97/</url>
     <content><![CDATA[<p>表名：user_log</p>
@@ -15,29 +38,6 @@
 <li>首先要求出每个用户第一次登录的时间，并以此表作为基础，左联其他表格。</li>
 <li>求留存时按照first_login_date分组，可以求得不同天的登录用户数。</li>
 <li>常用函数DATEDIFF, ROUND, CONCAT的用法</li>
-</ol>
-<h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
-      <categories>
-        <category>SQL</category>
-      </categories>
-      <tags>
-        <tag>SQL-用户向</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL_互相关注的对数</title>
-    <url>/2020/10/27/Sql-%E4%BA%92%E7%9B%B8%E5%85%B3%E6%B3%A8%E7%9A%84%E7%94%A8%E6%88%B7%E5%AF%B9%E6%95%B0/</url>
-    <content><![CDATA[<p>表名：user_table</p>
-<p>字段：user_id, follower_id</p>
-<p>描述：该表统计了每个用户的id，以及其所关注的用户的id，求互相关注的用户的对数。</p>
-<a id="more"></a>
-
-<h2 id="（1）sql写法"><a href="#（1）sql写法" class="headerlink" title="（1）sql写法"></a>（1）sql写法</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(a.user_id)/<span class="number">2</span> following_pairs</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> t1.user_id,t1.follower_id</span><br><span class="line"><span class="keyword">FROM</span> user_table t1 <span class="keyword">JOIN</span> user_table t2</span><br><span class="line"><span class="keyword">ON</span> t1.user_id = t2.follower_id <span class="keyword">AND</span> t1.follower_id = t2.user_id) a</span><br></pre></td></tr></table></figure>
-
-<h2 id="（2）思路及注意事项"><a href="#（2）思路及注意事项" class="headerlink" title="（2）思路及注意事项"></a>（2）思路及注意事项</h2><ol>
-<li>最普适的方法是表联结，无论是给id还是用户名都可以这么做：让表1中的follower充当表2的user，表1中的user充当表2中的follower。这样可以把所有互相关注的user找出来。不过结果是成双对出现的，比如1 2 2 1和2 1 1 2都会被收录，但是他们表达的都是user1和user2互相关注，所以最后的count要除以2。</li>
-<li>由于两个表字段完全一样，所以内部的SELECT不要写*，否则会出现字段冲突。要么选择其中2个，要么重新命名。</li>
-<li>COUNT(a.*)报错，是否count ( * )是唯一正确用法？</li>
 </ol>
 <h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
       <categories>
