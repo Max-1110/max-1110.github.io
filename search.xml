@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>R-square</title>
+    <title>R²和Adjusted R²</title>
     <url>/2020/11/17/R-square/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<p>未完待续</p>
+<p>在构建好机器学习模型后，评判该模型是否优秀是非常重要的。本文简单的介绍了一种机器学习种较为常用的模型评估方法，即R²。</p>
+<a id="more"></a>
+
+<h1 id="1-Why-R²"><a href="#1-Why-R²" class="headerlink" title="1.Why R²"></a>1.Why R²</h1><p>在常用的评判指标中，我们比较熟悉的一个是均方误差：MSE (<em>mean-square error</em>)。但是使用均方误差时要注意量纲及标准化的问题，比如针对同一个数据集，模型第一次拟合出来的MSE为e1，若把数据集中所有的数据都同步缩小100倍，MSE却会极大程度的缩小。但是这能说明第二次拟合的效果要远远好于第一次吗？</p>
+<p>答案显然是不能的。所以为了避免这种情况发生，我们希望找到一个相对稳定的评判标准，无论我对原始数据如何缩放，它的量级却不会发生变化，而这个评判标准就是R²。</p>
+]]></content>
+      <categories>
+        <category>统计学</category>
+      </categories>
+      <tags>
+        <tag>统计学</tag>
+      </tags>
   </entry>
   <entry>
     <title>SQL_互相关注的对数</title>
