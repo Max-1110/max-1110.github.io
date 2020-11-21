@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>R²和Adjusted R²</title>
-    <url>/2020/11/17/R-square/</url>
-    <content><![CDATA[<p>未完待续</p>
-<p>在构建好机器学习模型后，评判该模型是否优秀是非常重要的。本文简单的介绍了一种机器学习种较为常用的模型评估方法，即R²。</p>
-<a id="more"></a>
-
-<h1 id="1-Why-R²"><a href="#1-Why-R²" class="headerlink" title="1.Why R²"></a>1.Why R²</h1><p>在常用的评判指标中，我们比较熟悉的一个是均方误差：MSE (<em>mean-square error</em>)。但是使用均方误差时要注意量纲及标准化的问题，比如针对同一个数据集，模型第一次拟合出来的MSE为e1，若把数据集中所有的数据都同步缩小100倍，MSE却会极大程度的缩小。但是这能说明第二次拟合的效果要远远好于第一次吗？</p>
-<p>答案显然是不能的。所以为了避免这种情况发生，我们希望找到一个相对稳定的评判标准，无论我对原始数据如何缩放，它的量级却不会发生变化，而这个评判标准就是R²。</p>
-]]></content>
-      <categories>
-        <category>统计学</category>
-      </categories>
-      <tags>
-        <tag>统计学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQL_互相关注的对数</title>
     <url>/2020/10/27/Sql-%E4%BA%92%E7%9B%B8%E5%85%B3%E6%B3%A8%E7%9A%84%E7%94%A8%E6%88%B7%E5%AF%B9%E6%95%B0/</url>
     <content><![CDATA[<p>表名：user_table</p>
@@ -38,6 +21,23 @@
       </categories>
       <tags>
         <tag>SQL-用户向</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>R²和Adjusted R²</title>
+    <url>/2020/11/17/R-square/</url>
+    <content><![CDATA[<p>未完待续</p>
+<p>在构建好机器学习模型后，评判该模型是否优秀是非常重要的。本文简单的介绍了一种机器学习种较为常用的模型评估方法，即R²。</p>
+<a id="more"></a>
+
+<h1 id="1-Why-R²"><a href="#1-Why-R²" class="headerlink" title="1.Why R²"></a>1.Why R²</h1><p>在常用的评判指标中，我们比较熟悉的一个是均方误差：MSE (<em>mean-square error</em>)。但是使用均方误差时要注意量纲及标准化的问题，比如针对同一个数据集，模型第一次拟合出来的MSE为e1，若把数据集中所有的数据都同步缩小100倍，MSE却会极大程度的缩小。但是这能说明第二次拟合的效果要远远好于第一次吗？</p>
+<p>答案显然是不能的。所以为了避免这种情况发生，我们希望找到一个相对稳定的评判标准，无论我对原始数据如何缩放，它的量级却不会发生变化，而这个评判标准就是R²。</p>
+]]></content>
+      <categories>
+        <category>统计学</category>
+      </categories>
+      <tags>
+        <tag>统计学</tag>
       </tags>
   </entry>
   <entry>
@@ -95,6 +95,44 @@
 <h5 id="思路2，找出上过张三的课的人，按s-id分组，谁上的课的数量-张三教的课的数量，谁就入选。"><a href="#思路2，找出上过张三的课的人，按s-id分组，谁上的课的数量-张三教的课的数量，谁就入选。" class="headerlink" title="思路2，找出上过张三的课的人，按s_id分组，谁上的课的数量=张三教的课的数量，谁就入选。"></a>思路2，找出上过张三的课的人，按s_id分组，谁上的课的数量=张三教的课的数量，谁就入选。</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> s1.s_id, s1.s_name</span><br><span class="line"><span class="keyword">FROM</span> student s1 <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score s2 <span class="keyword">ON</span> s1.s_id = s2.s_id</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">ON</span> s2.c_id = c.c_id</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">join</span> teacher t <span class="keyword">ON</span> c.t_id = t.t_id</span><br><span class="line"><span class="keyword">WHERE</span> t.t_name = <span class="string">&#x27;张三&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> s1.s_id</span><br><span class="line"><span class="keyword">HAVING</span> <span class="keyword">count</span>(<span class="keyword">distinct</span> s2.c_id) = (<span class="keyword">SELECT</span> <span class="keyword">count</span>(*)</span><br><span class="line">                                  <span class="keyword">FROM</span> teacher t <span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">ON</span> c.t_id = t.t_id <span class="keyword">AND</span> t.t_name = <span class="string">&#x27;张三&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
 ]]></content>
+      <categories>
+        <category>SQL</category>
+        <category>SQL经典50题</category>
+      </categories>
+      <tags>
+        <tag>SQL-练习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Sql-经典50题(15-19)</title>
+    <url>/2020/11/21/Sql-%E7%BB%8F%E5%85%B850%E9%A2%98(15-19)/</url>
+    <content><![CDATA[<p>链接：<a href="https://www.bilibili.com/video/BV1q4411G7Lw?p=9">https://www.bilibili.com/video/BV1q4411G7Lw?p=9</a> </p>
+<p><strong>17, 18题为重点题目!</strong></p>
+<ol start="15">
+<li>查询两科及其以上不及格课程的同学的学号，姓名及其平均成绩（重点）</li>
+<li>检索”01”课程分数小于60，按分数降序排列的学生信息（和34题重复，不重点）</li>
+<li><strong>按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩</strong></li>
+<li><strong>查询各科成绩最高分、最低分和平均分。以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率</strong></li>
+<li>按各科成绩进行排序，并显示排名(重点row_number)</li>
+</ol>
+<a id="more"></a>
+
+<h4 id="15-查询两科及其以上不及格课程的同学的学号，姓名及其平均成绩（重点）"><a href="#15-查询两科及其以上不及格课程的同学的学号，姓名及其平均成绩（重点）" class="headerlink" title="15. 查询两科及其以上不及格课程的同学的学号，姓名及其平均成绩（重点）"></a>15. 查询两科及其以上不及格课程的同学的学号，姓名及其平均成绩（重点）</h4><h5 id="找到所有不及格的条目"><a href="#找到所有不及格的条目" class="headerlink" title="找到所有不及格的条目"></a>找到所有不及格的条目</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> st.s_id, st.s_name, <span class="keyword">avg</span>(b.s_score) average </span><br><span class="line"><span class="keyword">FROM</span> student st <span class="keyword">INNER</span> <span class="keyword">JOIN</span> </span><br><span class="line">(<span class="keyword">SELECT</span> s_id, <span class="keyword">IFNULL</span>(s_score,<span class="number">0</span>) s_score</span><br><span class="line"><span class="keyword">FROM</span> score</span><br><span class="line"><span class="keyword">WHERE</span> s_id <span class="keyword">IN</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">SELECT</span> s_id</span><br><span class="line"><span class="keyword">FROM</span> score</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">IFNULL</span>(s_score,<span class="number">0</span>)&lt;<span class="number">60</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> s_id</span><br><span class="line"><span class="keyword">HAVING</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> c_id)&gt;=<span class="number">2</span></span><br><span class="line">)) b</span><br><span class="line"><span class="keyword">ON</span> st.s_id = b.s_id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> st.s_id, st.s_name;                    </span><br><span class="line"><span class="comment">-- 注意不要让groupby以外的非聚合字段出现在select里</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="优化，省去第二层重新在score种搜s-id和s-score的步骤"><a href="#优化，省去第二层重新在score种搜s-id和s-score的步骤" class="headerlink" title="优化，省去第二层重新在score种搜s_id和s_score的步骤"></a>优化，省去第二层重新在score种搜s_id和s_score的步骤</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> st.s_id, st.s_name, <span class="keyword">avg</span>(<span class="keyword">IFNULL</span>(sc.s_score,<span class="number">0</span>)) average</span><br><span class="line"><span class="keyword">FROM</span> student st <span class="keyword">INNER</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> st.s_id = sc.s_id</span><br><span class="line"><span class="keyword">WHERE</span> st.s_id <span class="keyword">in</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">SELECT</span> s_id</span><br><span class="line"><span class="keyword">FROM</span> score</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">IFNULL</span>(s_score,<span class="number">0</span>)&lt;<span class="number">60</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> s_id</span><br><span class="line"><span class="keyword">HAVING</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> c_id)&gt;=<span class="number">2</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> st.s_id, st.s_name;</span><br></pre></td></tr></table></figure>
+
+<h4 id="16-检索”01”课程分数小于60，按分数降序排列的学生信息（和34题重复，不重点）"><a href="#16-检索”01”课程分数小于60，按分数降序排列的学生信息（和34题重复，不重点）" class="headerlink" title="16. 检索”01”课程分数小于60，按分数降序排列的学生信息（和34题重复，不重点）"></a>16. 检索”01”课程分数小于60，按分数降序排列的学生信息（和34题重复，不重点）</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> st.*, sc.c_id, sc.s_score</span><br><span class="line"><span class="keyword">FROM</span> student st <span class="keyword">INNER</span> <span class="keyword">join</span> score sc <span class="keyword">ON</span> st.s_id = sc.s_id</span><br><span class="line"><span class="keyword">where</span> sc.c_id = <span class="string">&#x27;01&#x27;</span> <span class="keyword">AND</span> <span class="keyword">IFNULL</span>(sc.s_score,<span class="number">0</span>)&lt;<span class="number">60</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> sc.s_score <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="17-按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩（重点）"><a href="#17-按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩（重点）" class="headerlink" title="17.按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩（重点）"></a>17.按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩（重点）</h4><h5 id="先求出平均成绩-注意avg不会统计空值-让其作为左表"><a href="#先求出平均成绩-注意avg不会统计空值-让其作为左表" class="headerlink" title="先求出平均成绩, 注意avg不会统计空值,让其作为左表"></a>先求出平均成绩, 注意avg不会统计空值,让其作为左表</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.s_id, <span class="keyword">IFNULL</span>(sc.s_score,<span class="number">0</span>) score, a.average</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> s_id, <span class="keyword">avg</span>(<span class="keyword">IFNULL</span>(s_score,<span class="number">0</span>)) average</span><br><span class="line"><span class="keyword">FROM</span> score</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> s_id</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> average <span class="keyword">DESC</span>) a <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> a.s_id = sc.s_id;</span><br></pre></td></tr></table></figure>
+
+<h5 id="拓展，按学科显示各列-一个问题，选了没考的和没选的人都弄成null了"><a href="#拓展，按学科显示各列-一个问题，选了没考的和没选的人都弄成null了" class="headerlink" title="拓展，按学科显示各列, 一个问题，选了没考的和没选的人都弄成null了"></a>拓展，按学科显示各列, 一个问题，选了没考的和没选的人都弄成null了</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.s_id,</span><br><span class="line">       <span class="keyword">MAX</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> sc.c_id= <span class="string">&#x27;02&#x27;</span> <span class="keyword">THEN</span> sc.s_score <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&#x27;数学&#x27;</span>,</span><br><span class="line">	   <span class="keyword">MAX</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> sc.c_id= <span class="string">&#x27;01&#x27;</span> <span class="keyword">THEN</span> sc.s_score <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&#x27;语文&#x27;</span>,</span><br><span class="line">	   <span class="keyword">MAX</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> sc.c_id= <span class="string">&#x27;03&#x27;</span> <span class="keyword">THEN</span> sc.s_score <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&#x27;英语&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(sc.s_score,<span class="number">0</span>) score,</span><br><span class="line">       a.average</span><br><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">(<span class="keyword">SELECT</span> s_id, <span class="keyword">avg</span>(<span class="keyword">IFNULL</span>(s_score,<span class="number">0</span>)) average</span><br><span class="line"><span class="keyword">FROM</span> score</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> s_id</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> average <span class="keyword">desc</span>) a <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> a.s_id = sc.s_id</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> a.s_id;</span><br></pre></td></tr></table></figure>
+
+<h5 id="情况2，记缺考为0分"><a href="#情况2，记缺考为0分" class="headerlink" title="情况2，记缺考为0分"></a>情况2，记缺考为0分</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.s_id,</span><br><span class="line">       <span class="keyword">MAX</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> sc.c_id= <span class="string">&#x27;02&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">ifnull</span>(sc.s_score,<span class="number">0</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&#x27;数学&#x27;</span>,</span><br><span class="line">	   <span class="keyword">MAX</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> sc.c_id= <span class="string">&#x27;01&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">ifnull</span>(sc.s_score,<span class="number">0</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&#x27;语文&#x27;</span>,</span><br><span class="line">	   <span class="keyword">MAX</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> sc.c_id= <span class="string">&#x27;03&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">ifnull</span>(sc.s_score,<span class="number">0</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&#x27;英语&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(sc.s_score,<span class="number">0</span>) score,</span><br><span class="line">       a.average</span><br><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">(<span class="keyword">SELECT</span> s_id, <span class="keyword">avg</span>(<span class="keyword">IFNULL</span>(s_score,<span class="number">0</span>)) average</span><br><span class="line"><span class="keyword">FROM</span> score</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> s_id</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> average <span class="keyword">desc</span>) a <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> a.s_id = sc.s_id</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> a.s_id;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="18-查询各科成绩最高分、最低分和平均分。以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率"><a href="#18-查询各科成绩最高分、最低分和平均分。以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率" class="headerlink" title="18.查询各科成绩最高分、最低分和平均分。以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率"></a>18.查询各科成绩最高分、最低分和平均分。以如下形式显示：课程ID，课程name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率</h4><h5 id="与17题类似"><a href="#与17题类似" class="headerlink" title="与17题类似"></a>与17题类似</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c.c_id, </span><br><span class="line">       <span class="keyword">MAX</span>(sc.s_score) top, </span><br><span class="line">       <span class="keyword">MIN</span>(sc.s_score) <span class="keyword">low</span>,</span><br><span class="line">       <span class="keyword">round</span>(<span class="keyword">AVG</span>(sc.s_score),<span class="number">2</span>) <span class="keyword">avg</span>,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(<span class="number">100</span>*<span class="keyword">count</span>(<span class="keyword">IF</span>(sc.s_score&gt;<span class="number">60</span>,<span class="number">1</span>,<span class="literal">NULL</span>))/<span class="keyword">count</span>(sc.s_id),<span class="number">2</span>),<span class="string">&quot;%&quot;</span>) <span class="string">&quot;及格率&quot;</span>,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(<span class="number">100</span>*<span class="keyword">count</span>(<span class="keyword">IF</span>(sc.s_score&gt;<span class="number">70</span> <span class="keyword">AND</span> sc.s_score&lt;=<span class="number">80</span>,<span class="number">1</span>,<span class="literal">NULL</span>))/<span class="keyword">count</span>(sc.s_id),<span class="number">2</span>),<span class="string">&quot;%&quot;</span>) <span class="string">&quot;中等率&quot;</span>,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(<span class="number">100</span>*<span class="keyword">count</span>(<span class="keyword">IF</span>(sc.s_score&gt;<span class="number">80</span> <span class="keyword">AND</span> sc.s_score&lt;<span class="number">90</span>,<span class="number">1</span>,<span class="literal">NULL</span>))/<span class="keyword">count</span>(sc.s_id),<span class="number">2</span>),<span class="string">&quot;%&quot;</span>) <span class="string">&quot;优良率&quot;</span>,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(<span class="number">100</span>*<span class="keyword">count</span>(<span class="keyword">IF</span>(sc.s_score&gt;<span class="number">90</span>,<span class="number">1</span>,<span class="literal">NULL</span>))/<span class="keyword">count</span>(sc.s_id),<span class="number">2</span>),<span class="string">&quot;%&quot;</span>) <span class="string">&quot;优秀率&quot;</span></span><br><span class="line"><span class="keyword">FROM</span> course c <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> c.c_id = sc.c_id </span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> c.c_id;</span><br></pre></td></tr></table></figure>
+
+<h1 id="19、按各科成绩进行排序，并显示排名-重点row-number"><a href="#19、按各科成绩进行排序，并显示排名-重点row-number" class="headerlink" title="19、按各科成绩进行排序，并显示排名(重点row_number)"></a>19、按各科成绩进行排序，并显示排名(重点row_number)</h1><h5 id="正常窗口函数，注意partition中有的字段就不要groupby再出现了。"><a href="#正常窗口函数，注意partition中有的字段就不要groupby再出现了。" class="headerlink" title="正常窗口函数，注意partition中有的字段就不要groupby再出现了。"></a>正常窗口函数，注意partition中有的字段就不要groupby再出现了。</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c.c_name,</span><br><span class="line">	   sc.s_id,</span><br><span class="line">	   st.s_name,</span><br><span class="line">	   sc.s_score,</span><br><span class="line">       <span class="keyword">rank</span>() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> sc.c_id <span class="keyword">order</span> <span class="keyword">by</span> s_score <span class="keyword">desc</span>) rnk</span><br><span class="line"><span class="keyword">FROM</span> score sc <span class="keyword">INNER</span> <span class="keyword">JOIN</span> student st <span class="keyword">ON</span> sc.s_id = st.s_id</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">ON</span> sc.c_id = c.c_id;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>SQL</category>
         <category>SQL经典50题</category>
@@ -307,6 +345,79 @@
       </tags>
   </entry>
   <entry>
+    <title>Python</title>
+    <url>/2020/10/27/%E6%B6%88%E9%99%A4%E8%AD%A6%E5%91%8A%E4%BF%A1%E6%81%AF/</url>
+    <content><![CDATA[<p>本文记录了使用SKlearn进行机器学习过程中遇到的一些问题，包括数据可视化及数据预处理。</p>
+<a id="more"></a>
+
+<h2 id="1-消除警告信息"><a href="#1-消除警告信息" class="headerlink" title="1.消除警告信息"></a>1.消除警告信息</h2><p>python开发中经常遇到报错的情况，但是warning通常并不影响程序的运行，而且有时特别讨厌，该语句主要用来忽略warning错误。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-更改图标显示风格，非必要"><a href="#2-更改图标显示风格，非必要" class="headerlink" title="2.更改图标显示风格，非必要"></a>2.更改图标显示风格，非必要</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">plt.style.use(<span class="string">&#x27;ggplot&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-sklearn的转换器和分类器"><a href="#3-sklearn的转换器和分类器" class="headerlink" title="3.sklearn的转换器和分类器"></a>3.<strong>sklearn的转换器和分类器</strong></h2><h3 id="1-BaseEstimator"><a href="#1-BaseEstimator" class="headerlink" title="(1)BaseEstimator:"></a>(1)BaseEstimator:</h3><p>基础分类器的类（Base class for all estimators in scikit-learn）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InductiveClusterer</span>(<span class="params">BaseEstimator</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, clusterer, classifier</span>):</span></span><br><span class="line">        self.clusterer = clusterer</span><br><span class="line">        self.classifier = classifier</span><br><span class="line"><span class="comment">#这里表示新建一个派生类InductiveClusterer,它继承了基类BaseEstimator</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>名称 BaseClassName 必须定义于包含派生类定义的作用域中</strong>。也允许用其他任意表达式代替基类名称所在的位置。 这有时也可能会用得上，例如，当基类定义在另一个模块中的时候:</p>
+<p><strong>class DerivedClassName(modname.BaseClassName):</strong></p>
+<h3 id="2-其他分类器和转换器"><a href="#2-其他分类器和转换器" class="headerlink" title="(2)其他分类器和转换器"></a>(2)其他分类器和转换器</h3><p>ClassifierMixin是基础转换器, RegressorMixin基础回归器,TransformerMixin是基础转换器。</p>
+<p>RegressorMixin和ClassifierMixin里只有Score方法，没有fit方法，需要自己写到mixin里去实现。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.base <span class="keyword">import</span> BaseEstimator, TransformerMixin, RegressorMixin, clone</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-RobustScaler与StandardScaler的区别"><a href="#4-RobustScaler与StandardScaler的区别" class="headerlink" title="4.RobustScaler与StandardScaler的区别"></a>4.RobustScaler与StandardScaler的区别</h2><p>StandardScaler可以将数据中心化，具体的操作是将数据减去均值后除以标准差。</p>
+<p>而对于有离群点，尤其是outliers比较多的情况，使用均值和标准差方式标准化效果不好，这种时候考虑用RobustScaler。具体的方法是移除中位数并根据IQR范围对数据缩放（IQR:在1分位数和3分位数之间）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> RobustScaler, StandardScaler</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-引入均方误差"><a href="#5-引入均方误差" class="headerlink" title="5.引入均方误差"></a>5.引入均方误差</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">y_true = [<span class="number">3.0</span>, <span class="number">-0.5</span>, <span class="number">2</span>, <span class="number">7</span>]</span><br><span class="line">y_pred = [<span class="number">2.5</span>,  <span class="number">0.0</span>, <span class="number">2</span>, <span class="number">8</span>]</span><br><span class="line">mean_squred_error(y_true,y_min) <span class="comment">#0.375</span></span><br><span class="line">mean_squred_error(y_true,y_min,squared=<span class="literal">False</span>) <span class="comment">#0.612</span></span><br><span class="line"><span class="comment">#squred: If True returns MSE value, if False returns RMSE value.</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="6-pipeline和make-pipeline"><a href="#6-pipeline和make-pipeline" class="headerlink" title="6.pipeline和make_pipeline"></a>6.pipeline和make_pipeline</h2><p>pipeline是你给steps命名，而make_pipeline是根据方法自动命名steps。</p>
+<p>The only difference is that <code>make_pipeline</code> generates names for steps automatically.</p>
+<p>Step names are needed e.g. if you want to use a pipeline with model selection utilities (e.g. GridSearchCV). With grid search you need to specify parameters for various steps of a pipeline:</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">pipe = Pipeline([(<span class="string">&#x27;vec&#x27;</span>, CountVectorizer()), (<span class="string">&#x27;clf&#x27;</span>, LogisticRegression()])</span><br><span class="line">param_grid = [&#123;<span class="string">&#x27;clf__C&#x27;</span>: [<span class="number">1</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">1000</span>]&#125;</span><br><span class="line">gs = GridSearchCV(pipe, param_grid)</span><br><span class="line">gs.fit(X, y)</span><br></pre></td></tr></table></figure>
+
+<p>compare it with make_pipeline:</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">pipe = make_pipeline(CountVectorizer(), LogisticRegression())     </span><br><span class="line">param_grid = [&#123;<span class="string">&#x27;logisticregression__C&#x27;</span>: [<span class="number">1</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">1000</span>]&#125;</span><br><span class="line">gs = GridSearchCV(pipe, param_grid)</span><br><span class="line">gs.fit(X, y)</span><br></pre></td></tr></table></figure>
+
+<p>So, with <code>Pipeline</code>:</p>
+<ul>
+<li>names are explicit, you don’t have to figure them out if you need them;</li>
+<li><strong>name doesn’t change if you change estimator/transformer used in a step, e.g. if you replace LogisticRegression() with LinearSVC() you can still use <code>clf__C</code>.</strong></li>
+</ul>
+<p><code>make_pipeline</code>:</p>
+<ul>
+<li>shorter and arguably more readable notation;</li>
+<li>names are auto-generated using a straightforward rule (lowercase name of an estimator).</li>
+</ul>
+<p>When to use them is up to you :) I prefer make_pipeline for quick experiments and Pipeline for more stable code; a rule of thumb: IPython Notebook -&gt; make_pipeline; Python module in a larger project -&gt; Pipeline. But it is certainly not a big deal to use make_pipeline in a module or Pipeline in a short script or a notebook.</p>
+<h3 id="7-克隆estimator"><a href="#7-克隆estimator" class="headerlink" title="7.克隆estimator"></a>7.克隆estimator</h3><p>Constructs a new estimator with the same parameters.</p>
+<p>Clone does a deep copy of the model in an estimator without actually copying attached data. It yields a new estimator with the same parameters that has not been fit on any data.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sklearn.base.clone(estimator, *, safe=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-sklearn-impute-SimpleImputer"><a href="#8-sklearn-impute-SimpleImputer" class="headerlink" title="8.sklearn.impute.SimpleImputer"></a>8.sklearn.impute.SimpleImputer</h3><p>用来填补缺失值（missing_valules），采取strategy策略，注意strategy一般都应用在各列（column）。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">sklearn</span>.<span class="title">impute</span>.<span class="title">SimpleImputer</span>(<span class="params">*, missing_values=nan, strategy=<span class="string">&#x27;mean&#x27;</span>, fill_value=<span class="literal">None</span>, verbose=<span class="number">0</span>, copy=<span class="literal">True</span>, add_indicator=<span class="literal">False</span></span>)</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>imp_mean = SimpleImputer(missing_values=np.nan, strategy=<span class="string">&#x27;mean&#x27;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>imp_mean.fit([[<span class="number">7</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">2</span>, np.nan, <span class="number">3</span>], [<span class="number">10</span>, <span class="number">3</span>, np.nan]])</span><br><span class="line">SimpleImputer()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>X = [[np.nan, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">2</span>, np.nan, <span class="number">5</span>], [<span class="number">1</span>,<span class="number">4</span>,np.nan]]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(imp_mean.transform(X))</span><br><span class="line">array([[<span class="number">6.33333333</span>, <span class="number">2.</span>        , <span class="number">3.</span>        ],</span><br><span class="line">       [<span class="number">2.</span>        , <span class="number">2.5</span>       , <span class="number">5.</span>        ],</span><br><span class="line">       [<span class="number">1.</span>        , <span class="number">4.</span>        , <span class="number">3.</span>        ]])</span><br><span class="line"><span class="comment">#注意是拿第一个数组fit后的参数去填充第二个数组的missing_values.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="9-scipy-stats库"><a href="#9-scipy-stats库" class="headerlink" title="9.scipy_stats库"></a>9.scipy_stats库</h3><p>主要包含了一些统计学上的特征值</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> skew</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-pandas中的transform和apply函数"><a href="#10-pandas中的transform和apply函数" class="headerlink" title="10.pandas中的transform和apply函数"></a>10.pandas中的transform和apply函数</h3><p><a href="https://zhuanlan.zhihu.com/p/86350553">https://zhuanlan.zhihu.com/p/86350553</a></p>
+<h3 id="11-map函数"><a href="#11-map函数" class="headerlink" title="11.map函数"></a>11.map函数</h3><p>注意DataFrame和Series的map函数和python内置的有些不同。</p>
+<h3 id="12-select-dtypes函数"><a href="#12-select-dtypes函数" class="headerlink" title="12.select_dtypes函数"></a>12.select_dtypes函数</h3><p>一个dataframe中可能有多种类型的数据，select_dtypes用于选择某种特定类型的数据。</p>
+<p>include:包含该类型的都要，exclude:除了该类型的都要。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">DataFrame.select_dtypes(include = <span class="literal">None</span>, exclude = <span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>数据预处理</title>
     <url>/2020/09/08/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<p>本文基于kaggle上的房价预测项目，对数据预处理的流程进行总结。由于这是上手的第一个项目，数据预处理的过程相对比较简单，主要涵盖了数据感知可视化，outliers的清理，空值填充，及初步选取特征四个方面，后续会不断加入categorical encoding，添加特征等方法。</p>
@@ -381,123 +492,6 @@
       </categories>
       <tags>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python</title>
-    <url>/2020/10/27/%E6%B6%88%E9%99%A4%E8%AD%A6%E5%91%8A%E4%BF%A1%E6%81%AF/</url>
-    <content><![CDATA[<p>本文记录了使用SKlearn进行机器学习过程中遇到的一些问题，包括数据可视化及数据预处理。</p>
-<a id="more"></a>
-
-<h2 id="1-消除警告信息"><a href="#1-消除警告信息" class="headerlink" title="1.消除警告信息"></a>1.消除警告信息</h2><p>python开发中经常遇到报错的情况，但是warning通常并不影响程序的运行，而且有时特别讨厌，该语句主要用来忽略warning错误。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-更改图标显示风格，非必要"><a href="#2-更改图标显示风格，非必要" class="headerlink" title="2.更改图标显示风格，非必要"></a>2.更改图标显示风格，非必要</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">plt.style.use(<span class="string">&#x27;ggplot&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-sklearn的转换器和分类器"><a href="#3-sklearn的转换器和分类器" class="headerlink" title="3.sklearn的转换器和分类器"></a>3.<strong>sklearn的转换器和分类器</strong></h2><h3 id="1-BaseEstimator"><a href="#1-BaseEstimator" class="headerlink" title="(1)BaseEstimator:"></a>(1)BaseEstimator:</h3><p>基础分类器的类（Base class for all estimators in scikit-learn）</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InductiveClusterer</span>(<span class="params">BaseEstimator</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, clusterer, classifier</span>):</span></span><br><span class="line">        self.clusterer = clusterer</span><br><span class="line">        self.classifier = classifier</span><br><span class="line"><span class="comment">#这里表示新建一个派生类InductiveClusterer,它继承了基类BaseEstimator</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>名称 BaseClassName 必须定义于包含派生类定义的作用域中</strong>。也允许用其他任意表达式代替基类名称所在的位置。 这有时也可能会用得上，例如，当基类定义在另一个模块中的时候:</p>
-<p><strong>class DerivedClassName(modname.BaseClassName):</strong></p>
-<h3 id="2-其他分类器和转换器"><a href="#2-其他分类器和转换器" class="headerlink" title="(2)其他分类器和转换器"></a>(2)其他分类器和转换器</h3><p>ClassifierMixin是基础转换器, RegressorMixin基础回归器,TransformerMixin是基础转换器。</p>
-<p>RegressorMixin和ClassifierMixin里只有Score方法，没有fit方法，需要自己写到mixin里去实现。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.base <span class="keyword">import</span> BaseEstimator, TransformerMixin, RegressorMixin, clone</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-RobustScaler与StandardScaler的区别"><a href="#4-RobustScaler与StandardScaler的区别" class="headerlink" title="4.RobustScaler与StandardScaler的区别"></a>4.RobustScaler与StandardScaler的区别</h2><p>StandardScaler可以将数据中心化，具体的操作是将数据减去均值后除以标准差。</p>
-<p>而对于有离群点，尤其是outliers比较多的情况，使用均值和标准差方式标准化效果不好，这种时候考虑用RobustScaler。具体的方法是移除中位数并根据IQR范围对数据缩放（IQR:在1分位数和3分位数之间）</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> RobustScaler, StandardScaler</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-引入均方误差"><a href="#5-引入均方误差" class="headerlink" title="5.引入均方误差"></a>5.引入均方误差</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">y_true = [<span class="number">3.0</span>, <span class="number">-0.5</span>, <span class="number">2</span>, <span class="number">7</span>]</span><br><span class="line">y_pred = [<span class="number">2.5</span>,  <span class="number">0.0</span>, <span class="number">2</span>, <span class="number">8</span>]</span><br><span class="line">mean_squred_error(y_true,y_min) <span class="comment">#0.375</span></span><br><span class="line">mean_squred_error(y_true,y_min,squared=<span class="literal">False</span>) <span class="comment">#0.612</span></span><br><span class="line"><span class="comment">#squred: If True returns MSE value, if False returns RMSE value.</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="6-pipeline和make-pipeline"><a href="#6-pipeline和make-pipeline" class="headerlink" title="6.pipeline和make_pipeline"></a>6.pipeline和make_pipeline</h2><p>pipeline是你给steps命名，而make_pipeline是根据方法自动命名steps。</p>
-<p>The only difference is that <code>make_pipeline</code> generates names for steps automatically.</p>
-<p>Step names are needed e.g. if you want to use a pipeline with model selection utilities (e.g. GridSearchCV). With grid search you need to specify parameters for various steps of a pipeline:</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">pipe = Pipeline([(<span class="string">&#x27;vec&#x27;</span>, CountVectorizer()), (<span class="string">&#x27;clf&#x27;</span>, LogisticRegression()])</span><br><span class="line">param_grid = [&#123;<span class="string">&#x27;clf__C&#x27;</span>: [<span class="number">1</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">1000</span>]&#125;</span><br><span class="line">gs = GridSearchCV(pipe, param_grid)</span><br><span class="line">gs.fit(X, y)</span><br></pre></td></tr></table></figure>
-
-<p>compare it with make_pipeline:</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">pipe = make_pipeline(CountVectorizer(), LogisticRegression())     </span><br><span class="line">param_grid = [&#123;<span class="string">&#x27;logisticregression__C&#x27;</span>: [<span class="number">1</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">1000</span>]&#125;</span><br><span class="line">gs = GridSearchCV(pipe, param_grid)</span><br><span class="line">gs.fit(X, y)</span><br></pre></td></tr></table></figure>
-
-<p>So, with <code>Pipeline</code>:</p>
-<ul>
-<li>names are explicit, you don’t have to figure them out if you need them;</li>
-<li><strong>name doesn’t change if you change estimator/transformer used in a step, e.g. if you replace LogisticRegression() with LinearSVC() you can still use <code>clf__C</code>.</strong></li>
-</ul>
-<p><code>make_pipeline</code>:</p>
-<ul>
-<li>shorter and arguably more readable notation;</li>
-<li>names are auto-generated using a straightforward rule (lowercase name of an estimator).</li>
-</ul>
-<p>When to use them is up to you :) I prefer make_pipeline for quick experiments and Pipeline for more stable code; a rule of thumb: IPython Notebook -&gt; make_pipeline; Python module in a larger project -&gt; Pipeline. But it is certainly not a big deal to use make_pipeline in a module or Pipeline in a short script or a notebook.</p>
-<h3 id="7-克隆estimator"><a href="#7-克隆estimator" class="headerlink" title="7.克隆estimator"></a>7.克隆estimator</h3><p>Constructs a new estimator with the same parameters.</p>
-<p>Clone does a deep copy of the model in an estimator without actually copying attached data. It yields a new estimator with the same parameters that has not been fit on any data.</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sklearn.base.clone(estimator, *, safe=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="8-sklearn-impute-SimpleImputer"><a href="#8-sklearn-impute-SimpleImputer" class="headerlink" title="8.sklearn.impute.SimpleImputer"></a>8.sklearn.impute.SimpleImputer</h3><p>用来填补缺失值（missing_valules），采取strategy策略，注意strategy一般都应用在各列（column）。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">sklearn</span>.<span class="title">impute</span>.<span class="title">SimpleImputer</span>(<span class="params">*, missing_values=nan, strategy=<span class="string">&#x27;mean&#x27;</span>, fill_value=<span class="literal">None</span>, verbose=<span class="number">0</span>, copy=<span class="literal">True</span>, add_indicator=<span class="literal">False</span></span>)</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>imp_mean = SimpleImputer(missing_values=np.nan, strategy=<span class="string">&#x27;mean&#x27;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>imp_mean.fit([[<span class="number">7</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">2</span>, np.nan, <span class="number">3</span>], [<span class="number">10</span>, <span class="number">3</span>, np.nan]])</span><br><span class="line">SimpleImputer()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>X = [[np.nan, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">2</span>, np.nan, <span class="number">5</span>], [<span class="number">1</span>,<span class="number">4</span>,np.nan]]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(imp_mean.transform(X))</span><br><span class="line">array([[<span class="number">6.33333333</span>, <span class="number">2.</span>        , <span class="number">3.</span>        ],</span><br><span class="line">       [<span class="number">2.</span>        , <span class="number">2.5</span>       , <span class="number">5.</span>        ],</span><br><span class="line">       [<span class="number">1.</span>        , <span class="number">4.</span>        , <span class="number">3.</span>        ]])</span><br><span class="line"><span class="comment">#注意是拿第一个数组fit后的参数去填充第二个数组的missing_values.</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="9-scipy-stats库"><a href="#9-scipy-stats库" class="headerlink" title="9.scipy_stats库"></a>9.scipy_stats库</h3><p>主要包含了一些统计学上的特征值</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> skew</span><br></pre></td></tr></table></figure>
-
-<h3 id="10-pandas中的transform和apply函数"><a href="#10-pandas中的transform和apply函数" class="headerlink" title="10.pandas中的transform和apply函数"></a>10.pandas中的transform和apply函数</h3><p><a href="https://zhuanlan.zhihu.com/p/86350553">https://zhuanlan.zhihu.com/p/86350553</a></p>
-<h3 id="11-map函数"><a href="#11-map函数" class="headerlink" title="11.map函数"></a>11.map函数</h3><p>注意DataFrame和Series的map函数和python内置的有些不同。</p>
-<h3 id="12-select-dtypes函数"><a href="#12-select-dtypes函数" class="headerlink" title="12.select_dtypes函数"></a>12.select_dtypes函数</h3><p>一个dataframe中可能有多种类型的数据，select_dtypes用于选择某种特定类型的数据。</p>
-<p>include:包含该类型的都要，exclude:除了该类型的都要。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">DataFrame.select_dtypes(include = <span class="literal">None</span>, exclude = <span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>罗格斯特征数</title>
-    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
-    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
-<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
-<a id="more"></a>
-
-<table>
-<thead>
-<tr>
-<th align="center">0</th>
-<th align="center">1</th>
-<th align="center">2</th>
-<th align="center">3</th>
-<th align="center">4</th>
-<th align="center">5</th>
-<th align="center">6</th>
-<th align="center">7</th>
-<th align="center">8</th>
-<th align="center">9</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>思路： 判断哪个数字应该出现的次数最多</p>
-]]></content>
-      <categories>
-        <category>概率论</category>
-      </categories>
-      <tags>
-        <tag>概率趣味题</tag>
       </tags>
   </entry>
   <entry>
@@ -593,6 +587,50 @@
 </ol>
 <p>前三种情况下都只需要1轮，就能下决断，只有第四种情况需要为判断B1和A4而多加1轮。</p>
 <p>综上所述，10轮或11轮都有可能。</p>
+]]></content>
+      <categories>
+        <category>概率论</category>
+      </categories>
+      <tags>
+        <tag>概率趣味题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>罗格斯特征数</title>
+    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
+    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
+<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+<th align="center">8</th>
+<th align="center">9</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p>思路： 判断哪个数字应该出现的次数最多</p>
 ]]></content>
       <categories>
         <category>概率论</category>
