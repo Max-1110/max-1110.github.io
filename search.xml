@@ -95,18 +95,16 @@
 <p>或者这么写：</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> tmp.num ConsecutiveNums</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> l.num,</span><br><span class="line">        @cnt:= <span class="keyword">IF</span>(@pre = l.num, @cnt+<span class="number">1</span>, <span class="number">1</span>) times,</span><br><span class="line">        @pre:= l.num</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">logs</span> l, (<span class="keyword">SELECT</span> @pre:= <span class="literal">null</span>, @cnt:=<span class="number">0</span>) t) tmp</span><br><span class="line"><span class="keyword">WHERE</span> tmp.times &gt;=<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
 
-<h3 id="601题："><a href="#601题：" class="headerlink" title="601题："></a>601题：</h3><p>表：Stadium<br>+—————+———+<br>| Column Name   | Type    |<br>+—————+———+<br>| id            | int     |<br>| visit_date    | date    |<br>| people        | int     |<br>+—————+———+<br>visit_date 是表的主键<br>每日人流量信息被记录在这三列信息中：序号 (id)、日期 (visit_date)、 人流量 (people)<br>每天只有一行记录，日期随着 id 的增加而增加</p>
-<p>编写一个 SQL 查询以找出每行的人数大于或等于 100 且 id 连续的三行或更多行记录。</p>
-<p>返回按 visit_date 升序排列的结果表。</p>
+<h3 id="601题："><a href="#601题：" class="headerlink" title="601题："></a>601题：</h3><p>表：Stadium<br>每日人流量信息被记录在这三列信息中：序号 (id)、日期 (visit_date)、 人流量 (people)，visit_date 是表的主键，每天只有一行记录，日期随着 id 的增加而增加。</p>
+<p>编写一个 SQL 查询以找出每行的人数大于或等于 100 且 id 连续的三行或更多行记录。返回按 visit_date 升序排列的结果表。</p>
 <p>查询结果格式如下所示。</p>
-<p>Stadium table:<br>+——+————+———–+<br>| id   | visit_date | people    |<br>+——+————+———–+<br>| 1    | 2017-01-01 | 10        |<br>| 2    | 2017-01-02 | 109       |<br>| 3    | 2017-01-03 | 150       |<br>| 4    | 2017-01-04 | 99        |<br>| 5    | 2017-01-05 | 145       |<br>| 6    | 2017-01-06 | 1455      |<br>| 7    | 2017-01-07 | 199       |<br>| 8    | 2017-01-09 | 188       |<br>+——+————+———–+</p>
-<p>Result table:<br>+——+————+———–+<br>| id   | visit_date | people    |<br>+——+————+———–+<br>| 5    | 2017-01-05 | 145       |<br>| 6    | 2017-01-06 | 1455      |<br>| 7    | 2017-01-07 | 199       |<br>| 8    | 2017-01-09 | 188       |<br>+——+————+———–+</p>
+<p>Stadium table:<br>+——+————+———–+<br>| id   | visit_date | people    |<br>+——+————+———–+<br>| 1    | 2017-01-01 | 10         |<br>| 2    | 2017-01-02 | 109       |<br>| 3    | 2017-01-03 | 150       |<br>| 4    | 2017-01-04 | 99         |<br>| 5    | 2017-01-05 | 145       |<br>| 6    | 2017-01-06 | 1455     |<br>| 7    | 2017-01-07 | 199       |<br>| 8    | 2017-01-09 | 188       |<br>+——+————+———–+</p>
+<p>Result table:<br>+——+————+———–+<br>| id   | visit_date | people    |<br>+——+————+———–+<br>| 5    | 2017-01-05 | 145       |<br>| 6    | 2017-01-06 | 1455     |<br>| 7    | 2017-01-07 | 199       |<br>| 8    | 2017-01-09 | 188       |<br>+——+————+———–+</p>
 <p><strong>解法：</strong></p>
 <p>row_number() + count() over() 窗口函数</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> o.id, o.visit_date, o.people</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> t.*, <span class="keyword">count</span>(*) <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> t.flag) day_num</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *, (<span class="keyword">id</span>-row_number() <span class="keyword">over</span>(<span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">id</span>)) flag </span><br><span class="line"><span class="keyword">FROM</span> stadium </span><br><span class="line"><span class="keyword">WHERE</span> people&gt;=<span class="number">100</span>) t) o</span><br><span class="line"><span class="keyword">WHERE</span> o.day_num&gt;=<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
 
-<p>总结：</p>
-<p>这两道题的不同点：虽然两道题都是找连续，但是180题是把形成连续的数字摘出来，结果只需要1个；而601题要把开始连续到结束连续的所有结果都取出来。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>这两道题的不同点：虽然两道题都是找连续，但是180题是把形成连续的数字摘出来，结果只需要1个；而601题要把开始连续到结束连续的所有结果都取出来。</p>
 <p>601题也可以变化成类似连续数字的题目。</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 如果我新增一列</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">id</span>-row_number() <span class="keyword">over</span>(<span class="keyword">order</span> <span class="keyword">by</span> visit_date)) flag</span><br><span class="line"><span class="keyword">FROM</span> stadium</span><br><span class="line"><span class="keyword">WHERE</span> people &gt; <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
 
@@ -162,8 +160,7 @@
 </tbody></table>
 <p>可以看到如果对flag列来一个：连续出现三个的数字，那题目就和180题一模一样了，只需要选出一行即可。但601题需要把这些连续行都选出来，所以要接着用count() over()进行实现；另外一个不同点是flag列保证了所有数字不会反复出现，一个数字一旦更改后就再也不会出现，而180题中恰恰相反。</p>
 <p>所以180题更注重的是previous和当前的num之间的差别，而601题更注重如何找到不反复出现的连续数字，并不加整合的计算出现次数。</p>
-<p><strong>注意：</strong></p>
-<p>窗口函数好像不能嵌套使用，我刚刚想：</p>
+<h3 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h3><p>窗口函数好像不能嵌套使用，我刚刚想：</p>
 <p><code>count(*) over(partition by (id-row_number() over(order by visit_date))) cnt</code></p>
 <p>直接一步到位，但是程序出错了。报错：</p>
 <p>You cannot nest a window function in the specification of window ‘<unnamed window>‘.</p>
@@ -207,9 +204,9 @@
     <content><![CDATA[<p>编写一个 SQL 查询，来删除 <code>Person</code> 表中所有重复的电子邮箱，重复的邮箱里只保留 <strong>Id</strong> <em>最小</em> 的那个。</p>
 <a id="more"></a>
 
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#111;&#x68;&#x6e;&#64;&#x65;&#x78;&#x61;&#109;&#x70;&#108;&#x65;&#x2e;&#x63;&#111;&#x6d;">&#106;&#111;&#x68;&#x6e;&#64;&#x65;&#x78;&#x61;&#109;&#x70;&#108;&#x65;&#x2e;&#x63;&#111;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#x62;&#x40;&#x65;&#120;&#x61;&#109;&#112;&#x6c;&#x65;&#x2e;&#x63;&#111;&#109;">&#x62;&#111;&#x62;&#x40;&#x65;&#120;&#x61;&#109;&#112;&#x6c;&#x65;&#x2e;&#x63;&#111;&#109;</a>  |<br>| 3  | <a href="mailto:&#106;&#111;&#104;&#x6e;&#64;&#101;&#x78;&#97;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#x6d;">&#106;&#111;&#104;&#x6e;&#64;&#101;&#x78;&#97;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#x6d;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#111;&#x68;&#110;&#x40;&#101;&#120;&#97;&#x6d;&#x70;&#x6c;&#x65;&#46;&#99;&#111;&#x6d;">&#x6a;&#111;&#x68;&#110;&#x40;&#101;&#120;&#97;&#x6d;&#x70;&#x6c;&#x65;&#46;&#99;&#111;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#x62;&#x40;&#x65;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#x2e;&#x63;&#x6f;&#x6d;">&#x62;&#111;&#x62;&#x40;&#x65;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#x2e;&#x63;&#x6f;&#x6d;</a>  |<br>| 3  | <a href="mailto:&#x6a;&#111;&#x68;&#110;&#x40;&#x65;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#x63;&#111;&#109;">&#x6a;&#111;&#x68;&#110;&#x40;&#x65;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#x63;&#111;&#109;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
 <p>例如，在运行你的查询语句之后，上面的 <code>Person</code> 表应返回以下几行:</p>
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#111;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#109;&#x70;&#108;&#x65;&#x2e;&#99;&#x6f;&#x6d;">&#x6a;&#111;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#109;&#x70;&#108;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#98;&#x6f;&#98;&#x40;&#101;&#x78;&#x61;&#x6d;&#x70;&#x6c;&#101;&#x2e;&#99;&#111;&#109;">&#98;&#x6f;&#98;&#x40;&#101;&#x78;&#x61;&#x6d;&#x70;&#x6c;&#101;&#x2e;&#99;&#111;&#109;</a>  |<br>+—-+——————+</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#111;&#104;&#110;&#x40;&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#x6d;">&#x6a;&#111;&#104;&#110;&#x40;&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#x6d;</a> |<br>| 2  | <a href="mailto:&#98;&#111;&#98;&#x40;&#x65;&#120;&#x61;&#x6d;&#112;&#108;&#101;&#x2e;&#99;&#111;&#109;">&#98;&#111;&#98;&#x40;&#x65;&#120;&#x61;&#x6d;&#112;&#108;&#101;&#x2e;&#99;&#111;&#109;</a>  |<br>+—-+——————+</p>
 <p><strong>解法：</strong></p>
 <p>题目本身不难，但是有一个点需要注意：</p>
 <p>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：</p>
@@ -221,31 +218,6 @@
       <categories>
         <category>SQL</category>
         <category>leetcode</category>
-      </categories>
-      <tags>
-        <tag>SQL-练习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL-留存率计算</title>
-    <url>/2020/10/27/Sql-%E7%94%A8%E6%88%B7%E7%95%99%E5%AD%98%E7%8E%87%E8%AE%A1%E7%AE%97/</url>
-    <content><![CDATA[<p>表名：user_log</p>
-<p>字段：device_id, log_time</p>
-<p>描述：device_id为用户的设备id（unique），log_time为用户的登陆时间记录</p>
-<p><strong>要求：计算某段日期内用户的次日，3日，7日，15日留存率</strong></p>
-<a id="more"></a>
-
-<h2 id="（1）sql写法"><a href="#（1）sql写法" class="headerlink" title="（1）sql写法"></a>（1）sql写法</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t1.first_login_date,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.2</span>_day_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_2,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.3</span>_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_3,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.7</span>_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_7,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.15</span>_day_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_15,</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> a.first_login_date, </span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> a.device_id) first_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> b.device_id) <span class="number">2</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> c.device_id) <span class="number">3</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> d.device_id) <span class="number">7</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> e.device_id) <span class="number">15</span>_day_users</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> device_id, <span class="keyword">min</span>(log_time) first_login_date</span><br><span class="line"><span class="keyword">FROM</span> user_log</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> device_id) a </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log b <span class="keyword">ON</span> a.device_id = b.device_id <span class="keyword">AND</span> DATADIFF(b.log_time, a.first_login_date)=<span class="number">1</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log c <span class="keyword">ON</span> a.device_id = c.device_id <span class="keyword">AND</span> DATADIFF(c.log_time, a.first_login_date)=<span class="number">2</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log d <span class="keyword">ON</span> a.device_id = d.device_id <span class="keyword">AND</span> DATADIFF(d.log_time, a.first_login_date)=<span class="number">6</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log e <span class="keyword">ON</span> a.device_id = e.device_id <span class="keyword">AND</span> DATADIFF(e.log_time, a.first_login_date)=<span class="number">14</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> a.first_login_date) t1</span><br></pre></td></tr></table></figure>
-
-<h2 id="（2）思路及注意事项"><a href="#（2）思路及注意事项" class="headerlink" title="（2）思路及注意事项"></a>（2）思路及注意事项</h2><ol>
-<li>首先要求出每个用户第一次登录的时间，并以此表作为基础，左联其他表格。</li>
-<li>求留存时按照first_login_date分组，可以求得不同天的登录用户数。</li>
-<li>常用函数DATEDIFF, ROUND, CONCAT的用法</li>
-</ol>
-<h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
-      <categories>
-        <category>SQL</category>
-        <category>SQL随笔</category>
       </categories>
       <tags>
         <tag>SQL-练习</tag>
@@ -305,6 +277,31 @@
 <h3 id="（3）删库"><a href="#（3）删库" class="headerlink" title="（3）删库"></a>（3）删库</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DROP DATABASE 数据库名;</span><br></pre></td></tr></table></figure>
 
 ]]></content>
+      <categories>
+        <category>SQL</category>
+        <category>SQL随笔</category>
+      </categories>
+      <tags>
+        <tag>SQL-练习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL-留存率计算</title>
+    <url>/2020/10/27/Sql-%E7%94%A8%E6%88%B7%E7%95%99%E5%AD%98%E7%8E%87%E8%AE%A1%E7%AE%97/</url>
+    <content><![CDATA[<p>表名：user_log</p>
+<p>字段：device_id, log_time</p>
+<p>描述：device_id为用户的设备id（unique），log_time为用户的登陆时间记录</p>
+<p><strong>要求：计算某段日期内用户的次日，3日，7日，15日留存率</strong></p>
+<a id="more"></a>
+
+<h2 id="（1）sql写法"><a href="#（1）sql写法" class="headerlink" title="（1）sql写法"></a>（1）sql写法</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t1.first_login_date,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.2</span>_day_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_2,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.3</span>_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_3,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.7</span>_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_7,</span><br><span class="line">       <span class="keyword">CONCAT</span>(<span class="number">100</span>*<span class="keyword">round</span>(t1<span class="number">.15</span>_day_user/t1.first_day_users,<span class="number">4</span>),<span class="string">&quot;%&quot;</span>) rate_15,</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> a.first_login_date, </span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> a.device_id) first_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> b.device_id) <span class="number">2</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> c.device_id) <span class="number">3</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> d.device_id) <span class="number">7</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> e.device_id) <span class="number">15</span>_day_users</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> device_id, <span class="keyword">min</span>(log_time) first_login_date</span><br><span class="line"><span class="keyword">FROM</span> user_log</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> device_id) a </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log b <span class="keyword">ON</span> a.device_id = b.device_id <span class="keyword">AND</span> DATADIFF(b.log_time, a.first_login_date)=<span class="number">1</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log c <span class="keyword">ON</span> a.device_id = c.device_id <span class="keyword">AND</span> DATADIFF(c.log_time, a.first_login_date)=<span class="number">2</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log d <span class="keyword">ON</span> a.device_id = d.device_id <span class="keyword">AND</span> DATADIFF(d.log_time, a.first_login_date)=<span class="number">6</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log e <span class="keyword">ON</span> a.device_id = e.device_id <span class="keyword">AND</span> DATADIFF(e.log_time, a.first_login_date)=<span class="number">14</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> a.first_login_date) t1</span><br></pre></td></tr></table></figure>
+
+<h2 id="（2）思路及注意事项"><a href="#（2）思路及注意事项" class="headerlink" title="（2）思路及注意事项"></a>（2）思路及注意事项</h2><ol>
+<li>首先要求出每个用户第一次登录的时间，并以此表作为基础，左联其他表格。</li>
+<li>求留存时按照first_login_date分组，可以求得不同天的登录用户数。</li>
+<li>常用函数DATEDIFF, ROUND, CONCAT的用法</li>
+</ol>
+<h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
       <categories>
         <category>SQL</category>
         <category>SQL随笔</category>
