@@ -204,9 +204,9 @@
     <content><![CDATA[<p>编写一个 SQL 查询，来删除 <code>Person</code> 表中所有重复的电子邮箱，重复的邮箱里只保留 <strong>Id</strong> <em>最小</em> 的那个。</p>
 <a id="more"></a>
 
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#111;&#104;&#110;&#x40;&#x65;&#120;&#97;&#109;&#112;&#108;&#101;&#x2e;&#99;&#111;&#109;">&#106;&#111;&#104;&#110;&#x40;&#x65;&#120;&#97;&#109;&#112;&#108;&#101;&#x2e;&#99;&#111;&#109;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#x62;&#64;&#x65;&#x78;&#x61;&#109;&#x70;&#108;&#x65;&#46;&#99;&#x6f;&#x6d;">&#x62;&#111;&#x62;&#64;&#x65;&#x78;&#x61;&#109;&#x70;&#108;&#x65;&#46;&#99;&#x6f;&#x6d;</a>  |<br>| 3  | <a href="mailto:&#x6a;&#111;&#x68;&#x6e;&#64;&#101;&#120;&#97;&#109;&#112;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#x6d;">&#x6a;&#111;&#x68;&#x6e;&#64;&#101;&#120;&#97;&#109;&#112;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#x6d;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#x6f;&#104;&#110;&#x40;&#x65;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#46;&#x63;&#x6f;&#x6d;">&#106;&#x6f;&#104;&#110;&#x40;&#x65;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#46;&#x63;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#x6f;&#x62;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#x2e;&#x63;&#x6f;&#x6d;">&#x62;&#x6f;&#x62;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#x2e;&#x63;&#x6f;&#x6d;</a>  |<br>| 3  | <a href="mailto:&#106;&#x6f;&#x68;&#x6e;&#x40;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#x6d;">&#106;&#x6f;&#x68;&#x6e;&#x40;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#x6d;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
 <p>例如，在运行你的查询语句之后，上面的 <code>Person</code> 表应返回以下几行:</p>
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#x6f;&#x68;&#110;&#x40;&#101;&#x78;&#97;&#x6d;&#x70;&#108;&#101;&#46;&#99;&#x6f;&#x6d;">&#x6a;&#x6f;&#x68;&#110;&#x40;&#101;&#x78;&#97;&#x6d;&#x70;&#108;&#101;&#46;&#99;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#x62;&#64;&#x65;&#x78;&#97;&#x6d;&#112;&#x6c;&#x65;&#x2e;&#x63;&#111;&#109;">&#x62;&#111;&#x62;&#64;&#x65;&#x78;&#97;&#x6d;&#112;&#x6c;&#x65;&#x2e;&#x63;&#111;&#109;</a>  |<br>+—-+——————+</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#111;&#x68;&#110;&#64;&#x65;&#x78;&#97;&#109;&#112;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;">&#106;&#111;&#x68;&#110;&#64;&#x65;&#x78;&#97;&#109;&#112;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#98;&#111;&#98;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x63;&#111;&#109;">&#98;&#111;&#98;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x63;&#111;&#109;</a>  |<br>+—-+——————+</p>
 <p><strong>解法：</strong></p>
 <p>题目本身不难，但是有一个点需要注意：</p>
 <p>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：</p>
@@ -514,7 +514,7 @@
     <content><![CDATA[<p>本文记录了牛客和leetcode上面几道求中位数的题目，其中比较核心的思路是中位数的排序&gt;=总数/2并且&lt;=总数/2+1。</p>
 <a id="more"></a>
 
-<h4 id="1-牛客网-考试分数"><a href="#1-牛客网-考试分数" class="headerlink" title="1.牛客网-考试分数"></a>1.牛客网-考试分数</h4><p>链接：</p>
+<h3 id="1-牛客网-考试分数"><a href="#1-牛客网-考试分数" class="headerlink" title="1.牛客网-考试分数"></a>1.牛客网-考试分数</h3><p>链接：</p>
 <p><a href="https://www.nowcoder.com/practice/b626ff9e2ad04789954c2132c74c0512?tpId=82&amp;&amp;tqId=35496&amp;rp=1&amp;ru=/ta/sql&amp;qru=/ta/sql/question-ranking">https://www.nowcoder.com/practice/b626ff9e2ad04789954c2132c74c0512?tpId=82&amp;&amp;tqId=35496&amp;rp=1&amp;ru=/ta/sql&amp;qru=/ta/sql/question-ranking</a></p>
 <h5 id="解法1：利用表联结"><a href="#解法1：利用表联结" class="headerlink" title="解法1：利用表联结"></a>解法1：利用表联结</h5><p>思路：中位数的排序&gt;=总数/2并且&lt;=总数/2+1</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.id, a.job, a.score, a.rnk</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *, row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) rnk</span><br><span class="line"><span class="keyword">FROM</span> grade) a</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">(<span class="keyword">SELECT</span> job, <span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">as</span> <span class="keyword">num</span></span><br><span class="line"><span class="keyword">FROM</span> grade</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> job) b</span><br><span class="line"><span class="keyword">ON</span> a.job = b.job</span><br><span class="line"><span class="keyword">WHERE</span> a.rnk&gt;=b.num/<span class="number">2</span> <span class="keyword">AND</span> a.rnk&lt;=b.num/<span class="number">2</span>+<span class="number">1</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> a.id;</span><br></pre></td></tr></table></figure>
@@ -524,11 +524,15 @@
 <ul>
 <li>BIGINT UNSIGNED value is out of range</li>
 </ul>
-<p><strong>原因：</strong>mysql 当两个字段想减时，如果其中一个或两个字段的类型的unsigned无签名类型，如果想减的值小于0则会报错。</p>
+<p><strong>原因：</strong>unsigned是无符号数，相减会造成补数溢出的错误。在mysql中signed就相当于是int类型，所以需要加上<code>cast xx as signed</code></p>
 <p><strong>解决方案：</strong></p>
 <p>一、修改字段类型</p>
 <p>二、使用cast函数转字段为signed类型：select cast(1 as signed)-2</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.id, t.job, t.score, t.inv_rnk </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">asc</span>) rnk,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) inv_rnk</span><br><span class="line"><span class="keyword">FROM</span> grade) t</span><br><span class="line"><span class="keyword">WHERE</span> t.rnk = t.inv_rnk <span class="keyword">OR</span> <span class="keyword">abs</span>(<span class="keyword">cast</span>(t.rnk <span class="keyword">as</span> signed) - <span class="keyword">cast</span>(t.inv_rnk <span class="keyword">as</span> signed))=<span class="number">1</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> t.id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-补充"><a href="#2-补充" class="headerlink" title="2. 补充"></a>2. 补充</h3><p>如果有两个中位数，需要得到其平均数，该怎么做？</p>
+<p>其实很简单，如果我们得到了中位数构成的表，通过group by+avg即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">with t as (</span><br><span class="line">-- 上面的代码直接复制过来</span><br><span class="line">SELECT t.id, t.job, t.score, t.inv_rnk </span><br><span class="line">FROM</span><br><span class="line">(SELECT *,</span><br><span class="line">       row_number() over(partition by job order by score asc) rnk,</span><br><span class="line">       row_number() over(partition by job order by score desc) inv_rnk</span><br><span class="line">FROM grade) t</span><br><span class="line">WHERE t.rnk &#x3D; t.inv_rnk OR abs(cast(t.rnk as signed) - cast(t.inv_rnk as signed))&#x3D;1</span><br><span class="line">order by t.id;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"> SELECT t.job, avg(score)</span><br><span class="line"> from t</span><br><span class="line"> group by t.job</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
@@ -857,6 +861,50 @@
       </tags>
   </entry>
   <entry>
+    <title>罗格斯特征数</title>
+    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
+    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
+<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+<th align="center">8</th>
+<th align="center">9</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p>思路： 判断哪个数字应该出现的次数最多</p>
+]]></content>
+      <categories>
+        <category>概率论</category>
+      </categories>
+      <tags>
+        <tag>概率趣味题</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python</title>
     <url>/2020/10/27/%E6%B6%88%E9%99%A4%E8%AD%A6%E5%91%8A%E4%BF%A1%E6%81%AF/</url>
     <content><![CDATA[<p>本文记录了使用SKlearn进行机器学习过程中遇到的一些问题，包括数据可视化及数据预处理。</p>
@@ -927,50 +975,6 @@
       </categories>
       <tags>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>罗格斯特征数</title>
-    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
-    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
-<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
-<a id="more"></a>
-
-<table>
-<thead>
-<tr>
-<th align="center">0</th>
-<th align="center">1</th>
-<th align="center">2</th>
-<th align="center">3</th>
-<th align="center">4</th>
-<th align="center">5</th>
-<th align="center">6</th>
-<th align="center">7</th>
-<th align="center">8</th>
-<th align="center">9</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>思路： 判断哪个数字应该出现的次数最多</p>
-]]></content>
-      <categories>
-        <category>概率论</category>
-      </categories>
-      <tags>
-        <tag>概率趣味题</tag>
       </tags>
   </entry>
   <entry>
