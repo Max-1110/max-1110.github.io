@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Airbnb房价预测-数据预处理</title>
+    <url>/2020/09/08/Airbnb%E6%88%BF%E4%BB%B7%E9%A2%84%E6%B5%8B-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<p>本文基于kaggle上的房价预测项目，对数据预处理的流程进行总结。由于这是上手的第一个项目，数据预处理的过程相对比较简单，主要涵盖了数据感知可视化，outliers的清理，空值填充，及初步选取特征四个方面，后续会不断加入categorical encoding，添加特征等方法。</p>
+<a id="more"></a>
+
+<h2 id="1-关于题目"><a href="#1-关于题目" class="headerlink" title="1.关于题目"></a>1.关于题目</h2><p>题目链接：<a href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques%E3%80%82">https://www.kaggle.com/c/house-prices-advanced-regression-techniques。</a></p>
+<p>题目解读：围绕79个特征对Ames市的房价进行预测，其中44个特征是离散型的分类，35个特征是连续型的数值。</p>
+<p>本文策略：在填充空值时，优先将筛选出的特征中的空值进行填充，而不是将所有特征中的空值填充，这样做的好处是比较简单，但同时注定无法构造一个底子很好的baseline。</p>
+<h2 id="2-数据预处理"><a href="#2-数据预处理" class="headerlink" title="2.数据预处理"></a>2.数据预处理</h2><h3 id="1-导入必要包及数据"><a href="#1-导入必要包及数据" class="headerlink" title="1.导入必要包及数据"></a>1.导入必要包及数据</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="comment">#matplotlit infine</span></span><br><span class="line"></span><br><span class="line">train_data = pd.read_csv(<span class="string">&#x27;train.csv&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-对数据进行初步探索"><a href="#2-对数据进行初步探索" class="headerlink" title="2.对数据进行初步探索"></a>2.对数据进行初步探索</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 探索数据维度,是否有空值等信息</span></span><br><span class="line">train_data.info()</span><br></pre></td></tr></table></figure>
+
+<p>从这步可以看出来，Alley、FireplaceQu、PoolQC、Fence等特征存在较多的空值；同时有很多特征具有很强的相关性，比如GarageCars与GarageArea，1stFlrSF，2ndFlrSF 与GrLivArea等。这些可以留作后面优化baseline的策略；此外，观察了数据，发现有些空值存在的原因是因为一些房子本身就没有该配套设施所导致的，比如Garagetype为空的原因是该房子根本没有garage。</p>
+<h3 id="3-观察特征X与SalePrice之间的相关性"><a href="#3-观察特征X与SalePrice之间的相关性" class="headerlink" title="3.观察特征X与SalePrice之间的相关性"></a>3.观察特征X与SalePrice之间的相关性</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 利用pandas自带的关联矩阵，可以观察到变量与结果之间的相关性，并以热力图的方式呈现。</span></span><br><span class="line">corr = train_data.corr() <span class="comment">#生成相关性矩阵，默认的method是&#x27;pearson&#x27;，即皮尔森相关系数。</span></span><br><span class="line">fig = plt.figure(figsize =(<span class="number">10</span>,<span class="number">10</span>)) <span class="comment"># 构造画布</span></span><br><span class="line">sns.heatmap(data = corr, vmin= <span class="number">0.2</span>，cmap=<span class="string">&#x27;YlGnBu&#x27;</span>,square = <span class="literal">True</span>) <span class="comment">#过滤相关性在0.2以下的值,颜色采用蓝色系，以方形图表示。</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljdrakaaj31180vctfc.jpg" alt="1.png"></p>
+<p>由此可以看到SalePrice一项与特征中的’OverallQual’，’GrLivArea’，’TotalBsmtSF’，’GarageCars’四项的相关性比较大（热力图中颜色较深），故想单独把这4个特征提取出来，看看他们与SalePrice是否真的呈现某种线性关系。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 围绕四个相关性大的特征进行观察其与SalePrice的线性关系</span></span><br><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>,<span class="string">&#x27;GarageCars&#x27;</span>]</span><br><span class="line">fig = plt.figure()</span><br><span class="line">sns.pairplot(x_vars=cols, y_vars=<span class="string">&#x27;SalePrice&#x27;</span>, data=train_data)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gilje597yij315w0e0tbu.jpg" alt="2.png"></p>
+<h3 id="3-针对outliers分析"><a href="#3-针对outliers分析" class="headerlink" title="3.针对outliers分析"></a>3.针对outliers分析</h3><p>通过图形可以发现，上述四个特征确实与SalePrice有较为明显的线性关系，但其中也有一些outliers，为了不影响模型的拟合，将这些outliers分析一下，如果确实比较离谱则将其丢弃。</p>
+<h4 id="针对OverallCond："><a href="#针对OverallCond：" class="headerlink" title="针对OverallCond："></a>针对OverallCond：</h4><p>这个是我后面发现的，有一个OverallCond=2的样本点的售价远高于其他样本点，故将其drop掉。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.drop(index = train_data[(train_data[<span class="string">&#x27;OverallCond&#x27;</span>]==<span class="number">2</span>) &amp; (train_data[<span class="string">&#x27;SalePrice&#x27;</span>]&gt;<span class="number">200000</span>)].index,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="针对GrLivArea："><a href="#针对GrLivArea：" class="headerlink" title="针对GrLivArea："></a>针对GrLivArea：</h4><p>有两个点的非常靠右，但是售价非常低，大致估计其原因应该是地处偏僻，故直接删除。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.drop(index = train_data[(train_data[<span class="string">&#x27;GrLivArea&#x27;</span>]&gt;<span class="number">4000</span>) &amp; (train_data[<span class="string">&#x27;SalePrice&#x27;</span>]&lt;<span class="number">200000</span>)].index,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="针对TotalBsmtSF"><a href="#针对TotalBsmtSF" class="headerlink" title="针对TotalBsmtSF:"></a>针对TotalBsmtSF:</h4><p>同样有一个点的地下室面积非常大，但是售价很低，故将其drop。另外大于2500房价却小与200000数据点需要找出来单独分析一下原因，观察是不是outliers。(这里没找，没找到，略过了)</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先drop离谱点，事实证明这就是刚刚drop掉那两个样本点中的一个</span></span><br><span class="line">train_data.drop(index = train_data[train_data[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">6000</span>].index,inplace=<span class="literal">True</span>) </span><br></pre></td></tr></table></figure>
+
+<h4 id="针对GarageCars"><a href="#针对GarageCars" class="headerlink" title="针对GarageCars:"></a>针对GarageCars:</h4><p>针对GarageCars我重新做了箱线图，发现可以容纳4个车位的Garage平均售价远低于可以容纳3个车位的房子，我不知道是不是应该将他们drop点。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 围绕GarageCars做的箱线图</span></span><br><span class="line">sns.boxplot(x=<span class="string">&#x27;GarageCars&#x27;</span>,y=<span class="string">&#x27;SalePrice&#x27;</span>,data=train_data)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljh0g8fkj30qq0fkmy4.jpg" alt="3.png"></p>
+<p>将所有GarageCars=4的数据提取出来进行观察。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.loc[index_of_4cars,:][[<span class="string">&#x27;SalePrice&#x27;</span>,<span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljm41z7gj30h409wt91.jpg" alt="4.png"></p>
+<p>另外求一下不同GarageCars的房子的平均GarageArea。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data[<span class="string">&#x27;GarageArea&#x27;</span>].groupby(train_data[<span class="string">&#x27;GarageCars&#x27;</span>]).mean()</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljqay95kj30eo06oq36.jpg" alt="5.png"></p>
+<p>可以发现1340号房屋的GarageCars虽然是4，但是其GarageArea非常小，同时它的车库还是未完工的状态（Unf），所以1340号房屋的售价较低是可以解释的。不过1190号房屋的车库面积非常大，同时是完工状态，不过其售价非常低，有悖于刚刚的结论，所以考虑将其删除。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 删除1190号房屋</span></span><br><span class="line">train_data.drop(index=<span class="number">1190</span>,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>目前已经针对几个主要属性，将部分outliers进行过滤，下面将训练集的index进行重置。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.reset_index(inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-围绕Garage属性进行特征筛选"><a href="#4-围绕Garage属性进行特征筛选" class="headerlink" title="4.围绕Garage属性进行特征筛选"></a>4.围绕Garage属性进行特征筛选</h3><p>由于数据集中经常出现GarageCars很大但GarageArea小的情况，比如一个可以容纳4个车的车库只有480平，反之，样本中也可能出现只容纳1个车但车库面积非常大的现象。所以我打算用GarageArea除以GarageCars，观察每个车位的平均Area，看该特征下SalePrice的线性是否明显。    </p>
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillwztz7wj30cc0bagmh.jpg" alt="6.png"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 构建一个新的字段</span></span><br><span class="line">train_data[<span class="string">&#x27;Avg_Garage&#x27;</span>] = train_data[<span class="string">&#x27;GarageArea&#x27;</span>]/(train_data[<span class="string">&#x27;GarageCars&#x27;</span>]+<span class="number">0.001</span>)</span><br><span class="line"><span class="comment"># 观察以Avg_Garage为自变量的SalePrice变化。</span></span><br><span class="line">sns.pairplot[x_vars=<span class="string">&#x27;Avg_Garage&#x27;</span>,y_vars=<span class="string">&#x27;SalePrice&#x27;</span>,data=train_data]</span><br></pre></td></tr></table></figure>
+
+<p>依然没看出来有线性关系，当Avg_Garage变大时，部分房子的售价非常的低，所以不打算就这个Avg_Garage再深入了。另外我观察了GarageArea的散点图，发现它的线性关系更加明显，所以最终二选一的话我会选Area而不是Cars。<img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillwlgw03j30c40ast9s.jpg" alt="8.png"></p>
+<p>接下来我围绕GarageCars和GarageFinish进行groupby，观察到在每个档次的GarageCars里，Fin&gt;Rfn&gt;Ufn。所以我想把GarageFinish也当作一个影响总价的重要特征，纳入考虑。</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillx805c9j30iu0cwt9l.jpg" alt="7.png"></p>
+<p>综上，围绕Garage我将选择GarageArea及GarageFinish作为两个主要特征。</p>
+<h3 id="5-利用pearson相关系数找到与SalePrice最相关的几个属性。"><a href="#5-利用pearson相关系数找到与SalePrice最相关的几个属性。" class="headerlink" title="5.利用pearson相关系数找到与SalePrice最相关的几个属性。"></a>5.利用pearson相关系数找到与SalePrice最相关的几个属性。</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">corr = train_data.corr() <span class="comment"># 相关性矩阵（dataframe）</span></span><br><span class="line">k = <span class="number">10</span></span><br><span class="line">cols = corr.nlargest(k,<span class="string">&#x27;SalePrice&#x27;</span>).index <span class="comment">#按&#x27;SalePrice&#x27;排列的前k行，并返回它们的index</span></span><br><span class="line">cm = np.corrcoef(train_data[cols].values.T) <span class="comment"># 计算pearson相关系数，接受的参数是一个矩阵，返回的也是一个矩阵，</span></span><br><span class="line">sns.<span class="built_in">set</span>(font_scale=<span class="number">0.8</span>)</span><br><span class="line">heatmap = sns.heatmap(cm,annot=<span class="literal">True</span>,yticklabels=cols.values,xticklabels=cols.values,cmap=<span class="string">&#x27;YlGnBu&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillxfyxodj30ne0gwjwa.jpg" alt="9.png"></p>
+<p>综上，我将选择OverallQual,GrLivArea,TotalBsmtSF,GarageArea,GarageFinish,</p>
+<p>1stFirSF,FullBath,TotRmsAbvGrd,YearBuilt作为最终特征。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;1stFirSF&#x27;</span>,<span class="string">&#x27;TotRmsAbvGrd&#x27;</span>,<span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line"><span class="comment"># 将GarageFinish进行Categorical编码</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;1stFirSF&#x27;</span>,<span class="string">&#x27;TotRmsAbvGrd&#x27;</span>,<span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line">x = train_data[cols].values</span><br><span class="line">y = train_data[<span class="string">&#x27;SalePrice&#x27;</span>].values</span><br><span class="line">x_scaled = preprocessing.StandardScaler().fit_transform(x)</span><br><span class="line">y_scaled = preprocessing.StandardScaler().fit_transform(y.reshape(<span class="number">-1</span>,<span class="number">1</span>))</span><br><span class="line">X_train,X_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=<span class="number">0.33</span>, random_state=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HiveSQL部分题目(1-11)</title>
     <url>/2020/11/24/HiveSQL%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE(1)/</url>
     <content><![CDATA[<p>HiveSQL的语法上和SQL还是非常像的，本文主要是记录了一些HQL的相关题目。比较简单的题一笔带过了，思路复杂一些的则会花大点的篇幅重点分析。</p>
@@ -75,30 +152,6 @@
       </categories>
       <tags>
         <tag>统计学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL_互相关注的对数</title>
-    <url>/2020/10/27/Sql-%E4%BA%92%E7%9B%B8%E5%85%B3%E6%B3%A8%E7%9A%84%E7%94%A8%E6%88%B7%E5%AF%B9%E6%95%B0/</url>
-    <content><![CDATA[<p>表名：user_table</p>
-<p>字段：user_id, follower_id</p>
-<p>描述：该表统计了每个用户的id，以及其所关注的用户的id，求互相关注的用户的对数。</p>
-<a id="more"></a>
-
-<h2 id="（1）sql写法"><a href="#（1）sql写法" class="headerlink" title="（1）sql写法"></a>（1）sql写法</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(a.user_id)/<span class="number">2</span> following_pairs</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> t1.user_id,t1.follower_id</span><br><span class="line"><span class="keyword">FROM</span> user_table t1 <span class="keyword">JOIN</span> user_table t2</span><br><span class="line"><span class="keyword">ON</span> t1.user_id = t2.follower_id <span class="keyword">AND</span> t1.follower_id = t2.user_id) a</span><br></pre></td></tr></table></figure>
-
-<h2 id="（2）思路及注意事项"><a href="#（2）思路及注意事项" class="headerlink" title="（2）思路及注意事项"></a>（2）思路及注意事项</h2><ol>
-<li>最普适的方法是表联结，无论是给id还是用户名都可以这么做：让表1中的follower充当表2的user，表1中的user充当表2中的follower。这样可以把所有互相关注的user找出来。不过结果是成双对出现的，比如1 2 2 1和2 1 1 2都会被收录，但是他们表达的都是user1和user2互相关注，所以最后的count要除以2。</li>
-<li>由于两个表字段完全一样，所以内部的SELECT不要写*，否则会出现字段冲突。要么选择其中2个，要么重新命名。</li>
-<li>COUNT(a.*)报错，是否count ( * )是唯一正确用法？</li>
-</ol>
-<h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
-      <categories>
-        <category>SQL</category>
-        <category>SQL随笔</category>
-      </categories>
-      <tags>
-        <tag>SQL-练习</tag>
       </tags>
   </entry>
   <entry>
@@ -199,6 +252,55 @@
       </tags>
   </entry>
   <entry>
+    <title>SQL_互相关注的对数</title>
+    <url>/2020/10/27/Sql-%E4%BA%92%E7%9B%B8%E5%85%B3%E6%B3%A8%E7%9A%84%E7%94%A8%E6%88%B7%E5%AF%B9%E6%95%B0/</url>
+    <content><![CDATA[<p>表名：user_table</p>
+<p>字段：user_id, follower_id</p>
+<p>描述：该表统计了每个用户的id，以及其所关注的用户的id，求互相关注的用户的对数。</p>
+<a id="more"></a>
+
+<h2 id="（1）sql写法"><a href="#（1）sql写法" class="headerlink" title="（1）sql写法"></a>（1）sql写法</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(a.user_id)/<span class="number">2</span> following_pairs</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> t1.user_id,t1.follower_id</span><br><span class="line"><span class="keyword">FROM</span> user_table t1 <span class="keyword">JOIN</span> user_table t2</span><br><span class="line"><span class="keyword">ON</span> t1.user_id = t2.follower_id <span class="keyword">AND</span> t1.follower_id = t2.user_id) a</span><br></pre></td></tr></table></figure>
+
+<h2 id="（2）思路及注意事项"><a href="#（2）思路及注意事项" class="headerlink" title="（2）思路及注意事项"></a>（2）思路及注意事项</h2><ol>
+<li>最普适的方法是表联结，无论是给id还是用户名都可以这么做：让表1中的follower充当表2的user，表1中的user充当表2中的follower。这样可以把所有互相关注的user找出来。不过结果是成双对出现的，比如1 2 2 1和2 1 1 2都会被收录，但是他们表达的都是user1和user2互相关注，所以最后的count要除以2。</li>
+<li>由于两个表字段完全一样，所以内部的SELECT不要写*，否则会出现字段冲突。要么选择其中2个，要么重新命名。</li>
+<li>COUNT(a.*)报错，是否count ( * )是唯一正确用法？</li>
+</ol>
+<h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2>]]></content>
+      <categories>
+        <category>SQL</category>
+        <category>SQL随笔</category>
+      </categories>
+      <tags>
+        <tag>SQL-练习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Sql-删除重复邮箱</title>
+    <url>/2020/12/25/Sql-%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E9%82%AE%E7%AE%B1/</url>
+    <content><![CDATA[<p>编写一个 SQL 查询，来删除 <code>Person</code> 表中所有重复的电子邮箱，重复的邮箱里只保留 <strong>Id</strong> <em>最小</em> 的那个。</p>
+<a id="more"></a>
+
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#x6f;&#104;&#x6e;&#64;&#x65;&#x78;&#97;&#x6d;&#112;&#x6c;&#101;&#46;&#99;&#111;&#x6d;">&#x6a;&#x6f;&#104;&#x6e;&#64;&#x65;&#x78;&#97;&#x6d;&#112;&#x6c;&#101;&#46;&#99;&#111;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#x62;&#x40;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#99;&#x6f;&#109;">&#x62;&#111;&#x62;&#x40;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#99;&#x6f;&#109;</a>  |<br>| 3  | <a href="mailto:&#106;&#111;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#111;&#x6d;">&#106;&#111;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#111;&#x6d;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
+<p>例如，在运行你的查询语句之后，上面的 <code>Person</code> 表应返回以下几行:</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#x6f;&#104;&#110;&#x40;&#x65;&#x78;&#97;&#109;&#112;&#108;&#x65;&#46;&#x63;&#x6f;&#109;">&#106;&#x6f;&#104;&#110;&#x40;&#x65;&#x78;&#97;&#109;&#112;&#108;&#x65;&#46;&#x63;&#x6f;&#109;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#x62;&#64;&#x65;&#120;&#x61;&#109;&#x70;&#108;&#101;&#46;&#99;&#x6f;&#109;">&#x62;&#111;&#x62;&#64;&#x65;&#120;&#x61;&#109;&#x70;&#108;&#101;&#46;&#99;&#x6f;&#109;</a>  |<br>+—-+——————+</p>
+<p><strong>解法：</strong></p>
+<p>题目本身不难，但是有一个点需要注意：</p>
+<p>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：</p>
+<p><code>You can&#39;t specify target table &#39;PERSON&#39; for update in FROM clause</code></p>
+<p>所以要把查找出来的东西先放在另一个表里（这里是t）过渡一下。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> PERSON</span><br><span class="line"><span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">not</span> <span class="keyword">in</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">SELECT</span> t.m_id</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> <span class="keyword">MIN</span>(<span class="keyword">id</span>) m_id</span><br><span class="line"><span class="keyword">FROM</span> person <span class="keyword">GROUP</span> <span class="keyword">BY</span> email) t</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>SQL</category>
+        <category>leetcode</category>
+      </categories>
+      <tags>
+        <tag>SQL-练习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Sql-建表相关操作</title>
     <url>/2020/11/24/Sql-%E5%BB%BA%E8%A1%A8%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<p>在日常工作中，SQL更多的是用来提取业务相关的数据，大部分人都没办法直接处理原数据。所以平时练的最多的也是SELECT语句，而有关建表、处理表的操作很少涉及。所以在这里把表处理的相关操作记录一下吧，毕竟熟能生巧啊（省的每次都要上网重新搜）。</p>
@@ -261,31 +363,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Sql-删除重复邮箱</title>
-    <url>/2020/12/25/Sql-%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E9%82%AE%E7%AE%B1/</url>
-    <content><![CDATA[<p>编写一个 SQL 查询，来删除 <code>Person</code> 表中所有重复的电子邮箱，重复的邮箱里只保留 <strong>Id</strong> <em>最小</em> 的那个。</p>
-<a id="more"></a>
-
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#x6f;&#x68;&#110;&#64;&#101;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;">&#x6a;&#x6f;&#x68;&#110;&#64;&#101;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#x6f;&#98;&#x40;&#x65;&#120;&#97;&#109;&#112;&#108;&#x65;&#46;&#99;&#x6f;&#109;">&#x62;&#x6f;&#98;&#x40;&#x65;&#120;&#97;&#109;&#112;&#108;&#x65;&#46;&#99;&#x6f;&#109;</a>  |<br>| 3  | <a href="mailto:&#106;&#111;&#x68;&#x6e;&#x40;&#101;&#x78;&#97;&#109;&#112;&#108;&#101;&#46;&#x63;&#x6f;&#109;">&#106;&#111;&#x68;&#x6e;&#x40;&#101;&#x78;&#97;&#109;&#112;&#108;&#101;&#46;&#x63;&#x6f;&#109;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
-<p>例如，在运行你的查询语句之后，上面的 <code>Person</code> 表应返回以下几行:</p>
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#x6f;&#104;&#110;&#x40;&#101;&#120;&#97;&#x6d;&#112;&#108;&#x65;&#46;&#99;&#x6f;&#109;">&#106;&#x6f;&#104;&#110;&#x40;&#101;&#120;&#97;&#x6d;&#112;&#108;&#x65;&#46;&#99;&#x6f;&#109;</a> |<br>| 2  | <a href="mailto:&#98;&#111;&#x62;&#x40;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#46;&#x63;&#111;&#109;">&#98;&#111;&#x62;&#x40;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#46;&#x63;&#111;&#109;</a>  |<br>+—-+——————+</p>
-<p><strong>解法：</strong></p>
-<p>题目本身不难，但是有一个点需要注意：</p>
-<p>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：</p>
-<p><code>You can&#39;t specify target table &#39;PERSON&#39; for update in FROM clause</code></p>
-<p>所以要把查找出来的东西先放在另一个表里（这里是t）过渡一下。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> PERSON</span><br><span class="line"><span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">not</span> <span class="keyword">in</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">SELECT</span> t.m_id</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> <span class="keyword">MIN</span>(<span class="keyword">id</span>) m_id</span><br><span class="line"><span class="keyword">FROM</span> person <span class="keyword">GROUP</span> <span class="keyword">BY</span> email) t</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>SQL</category>
-        <category>leetcode</category>
-      </categories>
-      <tags>
-        <tag>SQL-练习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQL-留存率计算</title>
     <url>/2020/10/27/Sql-%E7%94%A8%E6%88%B7%E7%95%99%E5%AD%98%E7%8E%87%E8%AE%A1%E7%AE%97/</url>
     <content><![CDATA[<p>表名：user_log</p>
@@ -304,7 +381,7 @@
 <h2 id="（3）举一反三"><a href="#（3）举一反三" class="headerlink" title="（3）举一反三"></a>（3）举一反三</h2><p>上述sql写法在第一层group by之后会得到每个用户的初次登陆时间。也即<code>min(date) first_login</code>，这样可能会导致一些日期由于不包含首登用户而被过滤。<strong>若想保留所有日期，无数据日期的留存率填0.00，该怎么做呢~</strong></p>
 <p>解法：</p>
 <p>上面sql写完后，再利用所有日期left join一下就可以了。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">with tmp as (</span><br><span class="line">SELECT a.first_login_date, </span><br><span class="line">       COUNT(distinct a.device_id) first_day_users,</span><br><span class="line">       COUNT(distinct b.device_id) 2_day_users,</span><br><span class="line">       COUNT(distinct c.device_id) 3_day_users,</span><br><span class="line">       COUNT(distinct d.device_id) 7_day_users,</span><br><span class="line">       COUNT(distinct e.device_id) 15_day_users</span><br><span class="line">FROM</span><br><span class="line">(SELECT device_id, min(log_time) first_login_date</span><br><span class="line">FROM user_log</span><br><span class="line">group by device_id) a </span><br><span class="line">LEFT JOIN</span><br><span class="line">user_log b ON a.device_id &#x3D; b.device_id AND DATADIFF(b.log_time, a.first_login_date)&#x3D;1</span><br><span class="line">LEFT JOIN</span><br><span class="line">user_log c ON a.device_id &#x3D; c.device_id AND DATADIFF(c.log_time, a.first_login_date)&#x3D;2</span><br><span class="line">LEFT JOIN</span><br><span class="line">user_log d ON a.device_id &#x3D; d.device_id AND DATADIFF(d.log_time, a.first_login_date)&#x3D;6</span><br><span class="line">LEFT JOIN</span><br><span class="line">user_log e ON a.device_id &#x3D; e.device_id AND DATADIFF(e.log_time, a.first_login_date)&#x3D;14</span><br><span class="line">group by a.first_login_date</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">select t1.log_time, -- 可以取到所有日期了</span><br><span class="line">       ifnull(round(tmp.2_day_users&#x2F;tmp.first_day_users,3),0.00) rate </span><br><span class="line">       -- 如果空日期则数据是null，填充0.00</span><br><span class="line">from</span><br><span class="line">(select log_time</span><br><span class="line">from user_log</span><br><span class="line">group by log_time) t1 left join tmp on t1.log_time &#x3D; tmp.first_login_time</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> tmp <span class="keyword">as</span> (</span><br><span class="line"><span class="keyword">SELECT</span> a.first_login_date, </span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> a.device_id) first_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> b.device_id) <span class="number">2</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> c.device_id) <span class="number">3</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> d.device_id) <span class="number">7</span>_day_users,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">distinct</span> e.device_id) <span class="number">15</span>_day_users</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> device_id, <span class="keyword">min</span>(log_time) first_login_date</span><br><span class="line"><span class="keyword">FROM</span> user_log</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> device_id) a </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log b <span class="keyword">ON</span> a.device_id = b.device_id <span class="keyword">AND</span> DATADIFF(b.log_time, a.first_login_date)=<span class="number">1</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log c <span class="keyword">ON</span> a.device_id = c.device_id <span class="keyword">AND</span> DATADIFF(c.log_time, a.first_login_date)=<span class="number">2</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log d <span class="keyword">ON</span> a.device_id = d.device_id <span class="keyword">AND</span> DATADIFF(d.log_time, a.first_login_date)=<span class="number">6</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">user_log e <span class="keyword">ON</span> a.device_id = e.device_id <span class="keyword">AND</span> DATADIFF(e.log_time, a.first_login_date)=<span class="number">14</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> a.first_login_date</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> t1.log_time, <span class="comment">-- 可以取到所有日期了</span></span><br><span class="line">       <span class="keyword">ifnull</span>(<span class="keyword">round</span>(tmp<span class="number">.2</span>_day_users/tmp.first_day_users,<span class="number">3</span>),<span class="number">0.00</span>) rate </span><br><span class="line">       <span class="comment">-- 如果空日期则数据是null，填充0.00</span></span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">(<span class="keyword">select</span> log_time</span><br><span class="line"><span class="keyword">from</span> user_log</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> log_time) t1 <span class="keyword">left</span> <span class="keyword">join</span> tmp <span class="keyword">on</span> t1.log_time = tmp.first_login_time</span><br></pre></td></tr></table></figure>
 
 
 
@@ -450,6 +527,59 @@
       </tags>
   </entry>
   <entry>
+    <title>Sql-经典50题(重点题)</title>
+    <url>/2020/11/23/Sql-%E7%BB%8F%E5%85%B850%E9%A2%98(%E9%87%8D%E7%82%B9%E9%A2%98)/</url>
+    <content><![CDATA[<p>本文主要涵盖了SQL经典50题中个人认为比较有技巧的几题。</p>
+<a id="more"></a>
+
+<h4 id="23、使用分段-100-85-85-70-70-60-lt-60-来统计各科成绩，分别统计各分数段人数：课程ID和课程名称-重点和18题类似"><a href="#23、使用分段-100-85-85-70-70-60-lt-60-来统计各科成绩，分别统计各分数段人数：课程ID和课程名称-重点和18题类似" class="headerlink" title="23、使用分段[100-85],[85-70],[70-60],[&lt;60]来统计各科成绩，分别统计各分数段人数：课程ID和课程名称(重点和18题类似)"></a>23、使用分段[100-85],[85-70],[70-60],[&lt;60]来统计各科成绩，分别统计各分数段人数：课程ID和课程名称(重点和18题类似)</h4><h5 id="思路1，一步到位"><a href="#思路1，一步到位" class="headerlink" title="思路1，一步到位"></a>思路1，一步到位</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> sc.c_id, c.c_name, </span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score <span class="keyword">between</span> <span class="number">85</span> <span class="keyword">and</span> <span class="number">100</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[100-85]&quot;</span>,</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score <span class="keyword">between</span> <span class="number">70</span> <span class="keyword">and</span> <span class="number">85</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[85-70]&quot;</span>,</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score <span class="keyword">between</span> <span class="number">60</span> <span class="keyword">and</span> <span class="number">70</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[70-60]&quot;</span>,</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score &lt;<span class="number">60</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[&lt;60]&quot;</span></span><br><span class="line"><span class="keyword">FROM</span> score sc <span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">ON</span> sc.c_id = c.c_id </span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> sc.c_id;</span><br></pre></td></tr></table></figure>
+
+<h5 id="思路2，case-when做中间值，表结构会发生改变"><a href="#思路2，case-when做中间值，表结构会发生改变" class="headerlink" title="思路2，case when做中间值，表结构会发生改变"></a>思路2，case when做中间值，表结构会发生改变</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.c_id, c.c_name, t.category, <span class="keyword">count</span>(t.s_id)</span><br><span class="line"><span class="keyword">FROM</span> course c <span class="keyword">INNER</span> <span class="keyword">JOIN</span></span><br><span class="line">(<span class="keyword">SELECT</span> c_id, s_score, s_id,</span><br><span class="line">       <span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score&gt;=<span class="number">85</span> <span class="keyword">AND</span> s_score&lt;=<span class="number">100</span> <span class="keyword">THEN</span> <span class="string">&quot;[100-85]&quot;</span></span><br><span class="line">       <span class="keyword">WHEN</span> s_score&gt;=<span class="number">70</span> <span class="keyword">AND</span> s_score&lt;=<span class="number">85</span> <span class="keyword">THEN</span> <span class="string">&quot;[85-70]&quot;</span></span><br><span class="line">       <span class="keyword">WHEN</span> s_score&gt;=<span class="number">60</span> <span class="keyword">AND</span> s_score&lt;=<span class="number">70</span> <span class="keyword">THEN</span> <span class="string">&quot;[60-70]&quot;</span></span><br><span class="line">       <span class="keyword">ELSE</span> <span class="string">&quot;[&lt;60]&quot;</span> <span class="keyword">END</span> <span class="keyword">as</span> <span class="keyword">category</span></span><br><span class="line"><span class="keyword">FROM</span> score) t <span class="keyword">ON</span> c.c_id = t.c_id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> t.c_id, c.c_name, t.category</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> c.c_id;</span><br></pre></td></tr></table></figure>
+
+<h4 id="35、查询所有学生的课程及分数情况（重点）"><a href="#35、查询所有学生的课程及分数情况（重点）" class="headerlink" title="35、查询所有学生的课程及分数情况（重点）"></a>35、查询所有学生的课程及分数情况（重点）</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> st.s_id, st.s_name,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;01&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;语文&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;02&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;数学&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;03&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;英语&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;04&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;计算机&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> student st <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> st.s_id = sc.s_id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> st.s_id;</span><br></pre></td></tr></table></figure>
+
+<h4 id="40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）"><a href="#40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）" class="headerlink" title="40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）"></a>40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> temp.c_name, temp.s_name, temp.s_score</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> c.c_name, st.s_name, sc.s_score, <span class="keyword">rank</span>() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> c.c_id <span class="keyword">order</span> <span class="keyword">by</span> sc.s_score <span class="keyword">desc</span>) rnk</span><br><span class="line"><span class="keyword">FROM</span> teacher t <span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">on</span> t.t_id = c.t_id <span class="keyword">INNER</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> c.c_id = sc.c_id <span class="keyword">INNER</span> <span class="keyword">JOIN</span> student st <span class="keyword">ON</span> sc.s_id = st.s_id</span><br><span class="line"><span class="keyword">WHERE</span> t.t_name = <span class="string">&#x27;张数计&#x27;</span>) temp</span><br><span class="line"><span class="keyword">WHERE</span> temp.rnk = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="41-查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩"><a href="#41-查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩" class="headerlink" title="41.查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩"></a>41.查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩</h4><h5 id="不会-✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式"><a href="#不会-✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式" class="headerlink" title="不会 ✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式"></a>不会 ✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> sc1.s_id, sc1.c_id, sc2.s_id, sc2.c_id</span><br><span class="line"><span class="keyword">FROM</span> score sc1, score sc2</span><br><span class="line"><span class="keyword">WHERE</span> sc1.s_score = sc2.s_score <span class="keyword">AND</span> sc1.s_id != sc2.s_id <span class="keyword">AND</span> sc1.c_id != sc2.c_id;</span><br></pre></td></tr></table></figure>
+
+<h5 id="和互相关注的人那道题特别像"><a href="#和互相关注的人那道题特别像" class="headerlink" title="和互相关注的人那道题特别像"></a>和互相关注的人那道题特别像</h5><h5 id="还一种理解是学的课程分数都相同的同学。思路：max-min"><a href="#还一种理解是学的课程分数都相同的同学。思路：max-min" class="headerlink" title="还一种理解是学的课程分数都相同的同学。思路：max = min"></a>还一种理解是学的课程分数都相同的同学。思路：max = min</h5><h5 id="思路，groupby后只有一条记录"><a href="#思路，groupby后只有一条记录" class="headerlink" title="思路，groupby后只有一条记录"></a>思路，groupby后只有一条记录</h5>]]></content>
+      <categories>
+        <category>SQL</category>
+        <category>SQL经典50题</category>
+      </categories>
+      <tags>
+        <tag>SQL-练习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>假设检验</title>
+    <url>/2021/07/29/hive%E5%86%85%E5%AD%98%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210803000311830.png" alt="image-20210803000311830"></p>
+<p>明显看到CPU负载超了.</p>
+<p>虚拟内存溢出：2.1 GB of 2.1 GB virtual memory used. Killing container</p>
+<p>解决方案：</p>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210803002733418.png" alt="image-20210803002733418"></p>
+<p>运行一下还是报同样的错误。</p>
+<p>再次添加如下内容：</p>
+<ol>
+<li><p>将虚拟机内存和cpu升级，从2g内存1cpu变成nn4+2，dn2+1。</p>
+</li>
+<li><p>修改mapred-site.xml 配置文件，加入如下内容</p>
+</li>
+</ol>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210803002636497.png" alt="image-20210803002636497"></p>
+<p>重新配置application manager, map和reduce的内存。</p>
+<p>明天应该尝试一下只增加虚拟机内存，不改变mapred-site中设置的内存。跑同样的sql</p>
+<p><code>select empno, sal from emp order by empno, sal;</code></p>
+]]></content>
+      <categories>
+        <category>统计学知识</category>
+      </categories>
+      <tags>
+        <tag>统计学知识</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SKlearn的pipeline机制</title>
     <url>/2020/10/20/sklearn%E7%9A%84pipeline%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<p>基本上所有评估其和转换器都有三个方法，fit,transform,和fit_transform。而在pipeline中，它的最后一部分为评估器，<strong>也就是说最后一步一定是个分类器</strong>，而前面的预处理、降维、正则化等都是转换器。</p>
@@ -484,32 +614,51 @@
 ]]></content>
       <categories>
         <category>Python</category>
-        <category>SKlearn</category>
+        <category>机器学习</category>
       </categories>
       <tags>
         <tag>Python</tag>
       </tags>
   </entry>
   <entry>
-    <title>Sql-经典50题(重点题)</title>
-    <url>/2020/11/23/Sql-%E7%BB%8F%E5%85%B850%E9%A2%98(%E9%87%8D%E7%82%B9%E9%A2%98)/</url>
-    <content><![CDATA[<p>本文主要涵盖了SQL经典50题中个人认为比较有技巧的几题。</p>
+    <title>Sql-几种中位数求法</title>
+    <url>/2020/12/01/sql-%E5%87%A0%E7%A7%8D%E4%B8%AD%E4%BD%8D%E6%95%B0%E6%B1%82%E6%B3%95/</url>
+    <content><![CDATA[<p>本文记录了牛客和leetcode上面几道求中位数的题目，其中比较核心的思路有三个</p>
+<ul>
+<li>中位数的排序&gt;=总数/2并且&lt;=总数/2+1。</li>
+<li>中位数正序位置与倒序位置的差</li>
+<li>正序位置与倒序位置分别&gt;=总数/2。（<strong>此法不光适用于枚举数据，也适用于累加数据）</strong></li>
+</ul>
 <a id="more"></a>
 
-<h4 id="23、使用分段-100-85-85-70-70-60-lt-60-来统计各科成绩，分别统计各分数段人数：课程ID和课程名称-重点和18题类似"><a href="#23、使用分段-100-85-85-70-70-60-lt-60-来统计各科成绩，分别统计各分数段人数：课程ID和课程名称-重点和18题类似" class="headerlink" title="23、使用分段[100-85],[85-70],[70-60],[&lt;60]来统计各科成绩，分别统计各分数段人数：课程ID和课程名称(重点和18题类似)"></a>23、使用分段[100-85],[85-70],[70-60],[&lt;60]来统计各科成绩，分别统计各分数段人数：课程ID和课程名称(重点和18题类似)</h4><h5 id="思路1，一步到位"><a href="#思路1，一步到位" class="headerlink" title="思路1，一步到位"></a>思路1，一步到位</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> sc.c_id, c.c_name, </span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score <span class="keyword">between</span> <span class="number">85</span> <span class="keyword">and</span> <span class="number">100</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[100-85]&quot;</span>,</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score <span class="keyword">between</span> <span class="number">70</span> <span class="keyword">and</span> <span class="number">85</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[85-70]&quot;</span>,</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score <span class="keyword">between</span> <span class="number">60</span> <span class="keyword">and</span> <span class="number">70</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[70-60]&quot;</span>,</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score &lt;<span class="number">60</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>) <span class="string">&quot;[&lt;60]&quot;</span></span><br><span class="line"><span class="keyword">FROM</span> score sc <span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">ON</span> sc.c_id = c.c_id </span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> sc.c_id;</span><br></pre></td></tr></table></figure>
+<h3 id="1-牛客网-考试分数"><a href="#1-牛客网-考试分数" class="headerlink" title="1.牛客网-考试分数"></a>1.牛客网-考试分数</h3><p>链接：</p>
+<p><a href="https://www.nowcoder.com/practice/b626ff9e2ad04789954c2132c74c0512?tpId=82&amp;&amp;tqId=35496&amp;rp=1&amp;ru=/ta/sql&amp;qru=/ta/sql/question-ranking">https://www.nowcoder.com/practice/b626ff9e2ad04789954c2132c74c0512?tpId=82&amp;&amp;tqId=35496&amp;rp=1&amp;ru=/ta/sql&amp;qru=/ta/sql/question-ranking</a></p>
+<h4 id="解法1：利用表联结"><a href="#解法1：利用表联结" class="headerlink" title="解法1：利用表联结"></a>解法1：利用表联结</h4><p>思路：中位数的排序&gt;=总数/2并且&lt;=总数/2+1</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.id, a.job, a.score, a.rnk</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *, row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) rnk</span><br><span class="line"><span class="keyword">FROM</span> grade) a</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">(<span class="keyword">SELECT</span> job, <span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">as</span> <span class="keyword">num</span></span><br><span class="line"><span class="keyword">FROM</span> grade</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> job) b</span><br><span class="line"><span class="keyword">ON</span> a.job = b.job</span><br><span class="line"><span class="keyword">WHERE</span> a.rnk&gt;=b.num/<span class="number">2</span> <span class="keyword">AND</span> a.rnk&lt;=b.num/<span class="number">2</span>+<span class="number">1</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> a.id;</span><br></pre></td></tr></table></figure>
 
-<h5 id="思路2，case-when做中间值，表结构会发生改变"><a href="#思路2，case-when做中间值，表结构会发生改变" class="headerlink" title="思路2，case when做中间值，表结构会发生改变"></a>思路2，case when做中间值，表结构会发生改变</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.c_id, c.c_name, t.category, <span class="keyword">count</span>(t.s_id)</span><br><span class="line"><span class="keyword">FROM</span> course c <span class="keyword">INNER</span> <span class="keyword">JOIN</span></span><br><span class="line">(<span class="keyword">SELECT</span> c_id, s_score, s_id,</span><br><span class="line">       <span class="keyword">CASE</span> <span class="keyword">WHEN</span> s_score&gt;=<span class="number">85</span> <span class="keyword">AND</span> s_score&lt;=<span class="number">100</span> <span class="keyword">THEN</span> <span class="string">&quot;[100-85]&quot;</span></span><br><span class="line">       <span class="keyword">WHEN</span> s_score&gt;=<span class="number">70</span> <span class="keyword">AND</span> s_score&lt;=<span class="number">85</span> <span class="keyword">THEN</span> <span class="string">&quot;[85-70]&quot;</span></span><br><span class="line">       <span class="keyword">WHEN</span> s_score&gt;=<span class="number">60</span> <span class="keyword">AND</span> s_score&lt;=<span class="number">70</span> <span class="keyword">THEN</span> <span class="string">&quot;[60-70]&quot;</span></span><br><span class="line">       <span class="keyword">ELSE</span> <span class="string">&quot;[&lt;60]&quot;</span> <span class="keyword">END</span> <span class="keyword">as</span> <span class="keyword">category</span></span><br><span class="line"><span class="keyword">FROM</span> score) t <span class="keyword">ON</span> c.c_id = t.c_id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> t.c_id, c.c_name, t.category</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> c.c_id;</span><br></pre></td></tr></table></figure>
+<h4 id="解法2：分别正序、倒序排列（最常用）"><a href="#解法2：分别正序、倒序排列（最常用）" class="headerlink" title="解法2：分别正序、倒序排列（最常用）"></a>解法2：分别正序、倒序排列（最常用）</h4><h5 id="思路1"><a href="#思路1" class="headerlink" title="思路1"></a>思路1</h5><p>若排序总数为奇数，则中位数的正序位置与倒序位置相等，若排序总数为偶数，则中位数的正序位置与倒序位置正好差1。</p>
+<h5 id="注意点："><a href="#注意点：" class="headerlink" title="注意点："></a>注意点：</h5><p>如果不加cast(字段 as signed)，则会报错：</p>
+<ul>
+<li>BIGINT UNSIGNED value is out of range</li>
+</ul>
+<p><strong>原因：</strong>unsigned是无符号数，相减会造成补数溢出的错误。在mysql中signed就相当于是int类型，所以需要加上<code>cast(xx as signed)</code></p>
+<p><strong>注意：</strong>cast后直接跟括号，不要加空格。</p>
+<p><strong>解决方案：</strong></p>
+<p>一、修改字段类型</p>
+<p>二、使用cast函数转字段为signed类型：select cast(1 as signed)-2</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.id, t.job, t.score, t.inv_rnk </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">asc</span>) rnk,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) inv_rnk</span><br><span class="line"><span class="keyword">FROM</span> grade) t</span><br><span class="line"><span class="keyword">WHERE</span> t.rnk = t.inv_rnk <span class="keyword">OR</span> <span class="keyword">abs</span>(<span class="keyword">cast</span>(t.rnk <span class="keyword">as</span> signed) - <span class="keyword">cast</span>(t.inv_rnk <span class="keyword">as</span> signed))=<span class="number">1</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> t.id;</span><br></pre></td></tr></table></figure>
 
-<h4 id="35、查询所有学生的课程及分数情况（重点）"><a href="#35、查询所有学生的课程及分数情况（重点）" class="headerlink" title="35、查询所有学生的课程及分数情况（重点）"></a>35、查询所有学生的课程及分数情况（重点）</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> st.s_id, st.s_name,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;01&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;语文&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;02&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;数学&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;03&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;英语&#x27;</span>,</span><br><span class="line">       <span class="keyword">IFNULL</span>(<span class="keyword">max</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> c_id = <span class="string">&#x27;04&#x27;</span> <span class="keyword">THEN</span> <span class="keyword">IFNULL</span>(s_score,<span class="string">&quot;缺考&quot;</span>) <span class="keyword">ELSE</span> <span class="literal">NULL</span> <span class="keyword">END</span>),<span class="string">&quot;未选&quot;</span>) <span class="string">&#x27;计算机&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> student st <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> st.s_id = sc.s_id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> st.s_id;</span><br></pre></td></tr></table></figure>
+<h5 id="思路2"><a href="#思路2" class="headerlink" title="思路2"></a>思路2</h5><p>分别正向排序以及逆向排序后，再去得到总量，最后正序&gt;=总量/2且逆序&gt;=总量/2的位置就是中位数。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> tmp.id, tmp.job, tmp.score, tmp.inv_rnk t_rank</span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">(<span class="keyword">select</span> *,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">asc</span>) rnk,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) inv_rnk,</span><br><span class="line">       <span class="keyword">count</span>(score) <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job) nums </span><br><span class="line"><span class="keyword">from</span> grade) tmp</span><br><span class="line"><span class="keyword">where</span> rnk&gt;=nums/<span class="number">2</span> <span class="keyword">and</span> inv_rnk&gt;=nums/<span class="number">2</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> tmp.id</span><br></pre></td></tr></table></figure>
 
-<h4 id="40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）"><a href="#40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）" class="headerlink" title="40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）"></a>40、查询选修“张数计”老师所授课程的学生中成绩最高的学生姓名及其成绩（重要）</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> temp.c_name, temp.s_name, temp.s_score</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> c.c_name, st.s_name, sc.s_score, <span class="keyword">rank</span>() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> c.c_id <span class="keyword">order</span> <span class="keyword">by</span> sc.s_score <span class="keyword">desc</span>) rnk</span><br><span class="line"><span class="keyword">FROM</span> teacher t <span class="keyword">INNER</span> <span class="keyword">JOIN</span> course c <span class="keyword">on</span> t.t_id = c.t_id <span class="keyword">INNER</span> <span class="keyword">JOIN</span> score sc <span class="keyword">ON</span> c.c_id = sc.c_id <span class="keyword">INNER</span> <span class="keyword">JOIN</span> student st <span class="keyword">ON</span> sc.s_id = st.s_id</span><br><span class="line"><span class="keyword">WHERE</span> t.t_name = <span class="string">&#x27;张数计&#x27;</span>) temp</span><br><span class="line"><span class="keyword">WHERE</span> temp.rnk = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="2-补充"><a href="#2-补充" class="headerlink" title="2. 补充"></a>2. 补充</h3><p>如果有两个中位数，需要得到其平均数，该怎么做？</p>
+<p>其实很简单，如果我们得到了中位数构成的表，通过group by+avg即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">with t as (</span><br><span class="line">-- 上面的代码直接复制过来</span><br><span class="line">SELECT t.id, t.job, t.score, t.inv_rnk </span><br><span class="line">FROM</span><br><span class="line">(SELECT *,</span><br><span class="line">       row_number() over(partition by job order by score asc) rnk,</span><br><span class="line">       row_number() over(partition by job order by score desc) inv_rnk</span><br><span class="line">FROM grade) t</span><br><span class="line">WHERE t.rnk &#x3D; t.inv_rnk OR abs(cast(t.rnk as signed) - cast(t.inv_rnk as signed))&#x3D;1</span><br><span class="line">order by t.id;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"> SELECT t.job, avg(score)</span><br><span class="line"> from t</span><br><span class="line"> group by t.job</span><br></pre></td></tr></table></figure>
 
-<h4 id="41-查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩"><a href="#41-查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩" class="headerlink" title="41.查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩"></a>41.查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩</h4><h5 id="不会-✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式"><a href="#不会-✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式" class="headerlink" title="不会 ✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式"></a>不会 ✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳✳，一种非常重要的去重方式</h5><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> sc1.s_id, sc1.c_id, sc2.s_id, sc2.c_id</span><br><span class="line"><span class="keyword">FROM</span> score sc1, score sc2</span><br><span class="line"><span class="keyword">WHERE</span> sc1.s_score = sc2.s_score <span class="keyword">AND</span> sc1.s_id != sc2.s_id <span class="keyword">AND</span> sc1.c_id != sc2.c_id;</span><br></pre></td></tr></table></figure>
-
-<h5 id="和互相关注的人那道题特别像"><a href="#和互相关注的人那道题特别像" class="headerlink" title="和互相关注的人那道题特别像"></a>和互相关注的人那道题特别像</h5><h5 id="还一种理解是学的课程分数都相同的同学。思路：max-min"><a href="#还一种理解是学的课程分数都相同的同学。思路：max-min" class="headerlink" title="还一种理解是学的课程分数都相同的同学。思路：max = min"></a>还一种理解是学的课程分数都相同的同学。思路：max = min</h5><h5 id="思路，groupby后只有一条记录"><a href="#思路，groupby后只有一条记录" class="headerlink" title="思路，groupby后只有一条记录"></a>思路，groupby后只有一条记录</h5>]]></content>
+]]></content>
       <categories>
         <category>SQL</category>
-        <category>SQL经典50题</category>
+        <category>SQL随笔</category>
       </categories>
       <tags>
         <tag>SQL-练习</tag>
@@ -593,40 +742,161 @@
       </tags>
   </entry>
   <entry>
-    <title>Sql-几种中位数求法</title>
-    <url>/2020/12/01/sql-%E5%87%A0%E7%A7%8D%E4%B8%AD%E4%BD%8D%E6%95%B0%E6%B1%82%E6%B3%95/</url>
-    <content><![CDATA[<p>本文记录了牛客和leetcode上面几道求中位数的题目，其中比较核心的思路是中位数的排序&gt;=总数/2并且&lt;=总数/2+1。</p>
-<a id="more"></a>
-
-<h3 id="1-牛客网-考试分数"><a href="#1-牛客网-考试分数" class="headerlink" title="1.牛客网-考试分数"></a>1.牛客网-考试分数</h3><p>链接：</p>
-<p><a href="https://www.nowcoder.com/practice/b626ff9e2ad04789954c2132c74c0512?tpId=82&amp;&amp;tqId=35496&amp;rp=1&amp;ru=/ta/sql&amp;qru=/ta/sql/question-ranking">https://www.nowcoder.com/practice/b626ff9e2ad04789954c2132c74c0512?tpId=82&amp;&amp;tqId=35496&amp;rp=1&amp;ru=/ta/sql&amp;qru=/ta/sql/question-ranking</a></p>
-<h5 id="解法1：利用表联结"><a href="#解法1：利用表联结" class="headerlink" title="解法1：利用表联结"></a>解法1：利用表联结</h5><p>思路：中位数的排序&gt;=总数/2并且&lt;=总数/2+1</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.id, a.job, a.score, a.rnk</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *, row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) rnk</span><br><span class="line"><span class="keyword">FROM</span> grade) a</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">(<span class="keyword">SELECT</span> job, <span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">as</span> <span class="keyword">num</span></span><br><span class="line"><span class="keyword">FROM</span> grade</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> job) b</span><br><span class="line"><span class="keyword">ON</span> a.job = b.job</span><br><span class="line"><span class="keyword">WHERE</span> a.rnk&gt;=b.num/<span class="number">2</span> <span class="keyword">AND</span> a.rnk&lt;=b.num/<span class="number">2</span>+<span class="number">1</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> a.id;</span><br></pre></td></tr></table></figure>
-
-<h5 id="解法2：分别正序、倒序排列（最常用）"><a href="#解法2：分别正序、倒序排列（最常用）" class="headerlink" title="解法2：分别正序、倒序排列（最常用）"></a>解法2：分别正序、倒序排列（最常用）</h5><p>思路：若排序总数为奇数，则中位数的正序位置与倒序位置相等，若排序总数为偶数，则中位数的正序位置与倒序位置正好差1。</p>
-<h5 id="注意点："><a href="#注意点：" class="headerlink" title="注意点："></a>注意点：</h5><p>如果不加cast(字段 as signed)，则会报错：</p>
-<ul>
-<li>BIGINT UNSIGNED value is out of range</li>
-</ul>
-<p><strong>原因：</strong>unsigned是无符号数，相减会造成补数溢出的错误。在mysql中signed就相当于是int类型，所以需要加上<code>cast(xx as signed)</code></p>
-<p><strong>注意：</strong>cast后直接跟括号，不要加空格。</p>
-<p><strong>解决方案：</strong></p>
-<p>一、修改字段类型</p>
-<p>二、使用cast函数转字段为signed类型：select cast(1 as signed)-2</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.id, t.job, t.score, t.inv_rnk </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> *,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">asc</span>) rnk,</span><br><span class="line">       row_number() <span class="keyword">over</span>(<span class="keyword">partition</span> <span class="keyword">by</span> job <span class="keyword">order</span> <span class="keyword">by</span> score <span class="keyword">desc</span>) inv_rnk</span><br><span class="line"><span class="keyword">FROM</span> grade) t</span><br><span class="line"><span class="keyword">WHERE</span> t.rnk = t.inv_rnk <span class="keyword">OR</span> <span class="keyword">abs</span>(<span class="keyword">cast</span>(t.rnk <span class="keyword">as</span> signed) - <span class="keyword">cast</span>(t.inv_rnk <span class="keyword">as</span> signed))=<span class="number">1</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> t.id;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-补充"><a href="#2-补充" class="headerlink" title="2. 补充"></a>2. 补充</h3><p>如果有两个中位数，需要得到其平均数，该怎么做？</p>
-<p>其实很简单，如果我们得到了中位数构成的表，通过group by+avg即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">with t as (</span><br><span class="line">-- 上面的代码直接复制过来</span><br><span class="line">SELECT t.id, t.job, t.score, t.inv_rnk </span><br><span class="line">FROM</span><br><span class="line">(SELECT *,</span><br><span class="line">       row_number() over(partition by job order by score asc) rnk,</span><br><span class="line">       row_number() over(partition by job order by score desc) inv_rnk</span><br><span class="line">FROM grade) t</span><br><span class="line">WHERE t.rnk &#x3D; t.inv_rnk OR abs(cast(t.rnk as signed) - cast(t.inv_rnk as signed))&#x3D;1</span><br><span class="line">order by t.id;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"> SELECT t.job, avg(score)</span><br><span class="line"> from t</span><br><span class="line"> group by t.job</span><br></pre></td></tr></table></figure>
-
+    <title>假设检验</title>
+    <url>/2021/07/29/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/</url>
+    <content><![CDATA[<p><strong>假设检验定义</strong></p>
+<p>假设检验是先对总体参数提出一个假设值，然后利用样本信息判断这一假设是否成立。</p>
+<p>p-value，z检验，t检验之间的区别</p>
+<p><strong>为什么统计者想要拒绝的假设放在原假设呢？</strong></p>
+<p>证明是真很难，但是证明是假很简单。</p>
+<p>因为原假设备被拒绝如果出错的话，只能犯第I类错误，而犯第I类错误的概率已经被<strong>规定的显著性水平所控制。</strong></p>
+<p>第I类错误：去真错误，原来是真的，但是拒绝了。</p>
+<p>第II类错误：取假错误，原来是假的，但是接受了。</p>
+<p><strong>显著性水平</strong></p>
+<p>显著性水平是指假设H0成立，检验统计量落在拒绝域的概率，简单理解就是犯弃真错误的概率。这个值是我们做假设检验之前统计者根据业务情况定好的。</p>
+<p><strong>检验方式</strong></p>
+<p>检验方式分为两种：双侧检验和单侧检验。单侧检验又分为两种：左侧检验和右侧检验。</p>
+<p>双侧检验：备择假设没有特定的方向性，形式为“≠”这种检验假设称为双侧检验。</p>
+<p>单侧检验：备择假设带有特定的方向性 形式为”&gt;””&lt;”的假设检验，称为单侧检验 “&lt;”称为左侧检验 “&gt;”称为右侧检验。</p>
+<p><strong>检验统计量</strong></p>
+<p>定义：据以对原假设和备择假设作出决策的某个样本统计量，称为检验统计量。</p>
+<p><strong>拒绝域</strong></p>
+<p>定义：拒绝域是由显著性水平围成的区域</p>
 ]]></content>
       <categories>
-        <category>SQL</category>
-        <category>SQL随笔</category>
+        <category>统计学知识</category>
       </categories>
       <tags>
-        <tag>SQL-练习</tag>
+        <tag>统计学知识</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>分类数据编码方法</title>
+    <url>/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81/</url>
+    <content><![CDATA[<p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
+<a id="more"></a>
+
+<h3 id="Label-Encoding"><a href="#Label-Encoding" class="headerlink" title="Label Encoding"></a>Label Encoding</h3><p>针对有序变量可以使用label encoding，比如做运动的频次：”从不 (0)”&lt;”很少 (1)”&lt;”经常 (2)”&lt;”每天 (3)”。</p>
+<h4 id="Label-Encoding的两个问题："><a href="#Label-Encoding的两个问题：" class="headerlink" title="Label Encoding的两个问题："></a><strong>Label Encoding的两个问题：</strong></h4><ol>
+<li><p><strong>如果测试集中存在新的标签值（如”每天两次 (4)”），且该标签从未在训练集中出现过，该怎么做？</strong></p>
+<p>可以分别定义good_features及bad_features，good_features是在训练集和测试集中，所有不同取值都同时出现的features。bad_features是只在测试集中出现过的labels所对应的feature。</p>
+<ul>
+<li>文本型分类数据：从不、很少、经常 、每天</li>
+<li>数值型分类数据：0、1、2、3</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dataframe中文本型分类数据的类型为object</span></span><br><span class="line">all_features  = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns() <span class="keyword">if</span> X_train[col].dtype == <span class="string">&#x27;object&#x27;</span>]</span><br><span class="line"><span class="comment"># 从all_features中选取good_features,判断标准是训练集和测试集中分类数据的值完全相同。</span></span><br><span class="line">good_features = [col <span class="keyword">for</span> col <span class="keyword">in</span> all_features <span class="keyword">if</span> <span class="built_in">set</span>(X_train[col]) == <span class="built_in">set</span>(X_test[col])]</span><br><span class="line"></span><br><span class="line">bad_features  = <span class="built_in">list</span>(<span class="built_in">set</span>(all_features) - <span class="built_in">set</span>(good_features)) <span class="comment">#只有set能相减求差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清洗掉bad_features</span></span><br><span class="line">X_train = X_train.drop(bad_features,axis = <span class="number">1</span>)</span><br><span class="line">X_test  = X_test.drop(bad_features, axis = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>label encoding通用手法是随机分配数值给不同的标签，如果我们可以为序数变量提供更好的信息标签，可以提升性能。</strong></p>
+<p>可以直接用字典进行替换。下面分别是通过label Encoding和自定义标签值的方式进行的分类数据编码。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.DataFrame([[<span class="string">&quot;A&quot;</span>,<span class="string">&quot;从不&quot;</span>],[<span class="string">&quot;B&quot;</span>,<span class="string">&quot;偶尔&quot;</span>],[<span class="string">&quot;C&quot;</span>,<span class="string">&#x27;经常&#x27;</span>],[<span class="string">&quot;D&quot;</span>,<span class="string">&quot;每天&quot;</span>]], columns = [<span class="string">&#x27;姓名&#x27;</span>,<span class="string">&#x27;运动频率&#x27;</span>])</span><br><span class="line">data1 = data.copy()</span><br><span class="line">data1[<span class="string">&#x27;运动频率&#x27;</span>] = data[<span class="string">&#x27;运动频率&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;从不&quot;</span>:<span class="number">0</span>, <span class="string">&quot;偶尔&quot;</span>:<span class="number">1</span>, <span class="string">&quot;经常&quot;</span>:<span class="number">2</span>, <span class="string">&quot;每天&quot;</span>:<span class="number">3</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg" alt="1"></p>
+<p>参考链接：</p>
+<p><a href="https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242</a></p>
+<h3 id="Onehot-Encoding"><a href="#Onehot-Encoding" class="headerlink" title="Onehot Encoding"></a>Onehot Encoding</h3><h4 id="编码原理及实现。"><a href="#编码原理及实现。" class="headerlink" title="编码原理及实现。"></a>编码原理及实现。</h4><p>一个m行n列的数据，他会分别对第i个特征进行评估，看n个样本中的第i个特征有几个值。比如下面第3号特征有0、1、3值。</p>
+<p>然后分别对每一个特征进行onehot展开，最终变成2+3+3+3=11个特征值。</p>
+<p><img src="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg" alt="1"></p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>onehot编码会产生线性信息，比如下方的onehot编码：</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png" alt="img" style="zoom:33%;" />
+
+<p>会产生5个新的特征，但这5个特征之间会存在X1+X2+X3+X4+X5 = 1的关系。</p>
+<p>假设我们现在获得了一个onehot编码后的模型：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3<br>$$</p>
+<p>$$<br>s.t. x1+x2+x3=1<br>$$</p>
+<p>如果用x1，x2去替代x3：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3\<br>=β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=(β<em>{0}+β</em>{3})+(β<em>{1}-β</em>{3})x1+(β<em>{2}-β</em>{3})x2+0x3<br>$$<br>此时同一个模型可以被两套参数给表达，说明这个模型是不稳定的，<strong>换句话说一个模型的最优解可能有不止一个</strong>。解决这个问题的方法有以下三种：</p>
+<ol>
+<li><p>使用L2正则化，将参数的选择上加一个限制，就是选择参数元素值小的那个作为最终参数，这样我们得到的参数就唯一了，模型也就稳定了。</p>
+</li>
+<li><p>去掉intercept_，也可以解决同一个模型参数等价的问题。<br>$$<br>y = β<em>{1}x1+β</em>{2}x2+β<em>{3}x3\<br>=β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=β<em>{3}+(β</em>{1}-β<em>{3})x1+(β</em>{2}-β_{3})x2+0·x3<br>$$<br>可以发现一开始去掉intercept项，在变形后会重新得到intercept_，和原始模型完全不同，参数等价问题得到解决。</p>
+</li>
+<li><p>再加上bias项的前提下，使用哑变量编码代替one-hot编码，此时去除了x3，也就不存在之前一种特征可以用其他特征表示的问题了。</p>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804100527770.png" alt="image-20210804100527770"></p>
+</li>
+</ol>
+<p><strong>总结：使用one-hot编码时，通常我们的模型不加bias项或者加上bias项然后使用L2正则化去约束参数；当我们使用哑变量编码时，通常我们的模型都会加bias项，因为不加bias项会导致固有属性的丢失</strong>。</p>
+<h3 id="Dummies"><a href="#Dummies" class="headerlink" title="Dummies"></a>Dummies</h3><p>哑变量编码直观的解释就是任意的将一个状态位去除。还是拿上面的例子来说，我们用4个状态位就足够反应上述5个类别的信息，也就是我们仅仅使用前四个状态位 [0,0,0,0] 就可以表达博士了。只是因为对于一个我们研究的样本，他已不是小学生、也不是中学生、也不是大学生、又不是研究生，那么我们就可以默认他是博士。</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png" alt="img" style="zoom:33%;" />
+
+<p><strong>实现方式及结果：</strong></p>
+<p>直接是pandas中的函数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pd.get_dummies(df,drop_first=<span class="literal">True</span>) </span><br><span class="line"><span class="comment"># 如果不加drop_first参数，则与onehot效果一样。</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804102023540.png" alt="image-20210804102023540"></p>
+<p>参考链接：<a href="https://blog.csdn.net/ningyanggege/article/details/88427398">https://blog.csdn.net/ningyanggege/article/details/88427398</a></p>
+<h3 id="Target-Encoding"><a href="#Target-Encoding" class="headerlink" title="Target Encoding"></a>Target Encoding</h3><h4 id="二分类及多分类的编码方式"><a href="#二分类及多分类的编码方式" class="headerlink" title="二分类及多分类的编码方式"></a>二分类及多分类的编码方式</h4><p>参见：<a href="https://www.cnblogs.com/lryou/p/14627564.html">https://www.cnblogs.com/lryou/p/14627564.html</a></p>
+<h4 id="cross-validation解决数据泄露"><a href="#cross-validation解决数据泄露" class="headerlink" title="cross_validation解决数据泄露"></a>cross_validation解决数据泄露</h4><p>Cross-validation将训练数据分成k份，在计算某一份的target encoding时，我们不使用这一份中对应的目标值进行计算，而是使用剩余k-1份数据，进行对应标签的target encoding计算。<br>对于同一个属性值，这种方式产生的encoding一般是不一致的。在测试集中，对应的target encoding可以通过将训练集中这些属性的encoding取平均获得。[<a href="https://datascience.stackexchange.com/questions/45881/target-encoding-with-cross-validation">9]</a></p>
+<p>参见：<a href="https://blog.csdn.net/weixin_37737254/article/details/108786828">https://blog.csdn.net/weixin_37737254/article/details/108786828</a></p>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分类数据编码方法</title>
+    <url>/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
+<a id="more"></a>
+
+<h3 id="Label-Encoding"><a href="#Label-Encoding" class="headerlink" title="Label Encoding"></a>Label Encoding</h3><p>针对有序变量可以使用label encoding，比如做运动的频次：”从不 (0)”&lt;”很少 (1)”&lt;”经常 (2)”&lt;”每天 (3)”。</p>
+<h4 id="Label-Encoding的两个问题："><a href="#Label-Encoding的两个问题：" class="headerlink" title="Label Encoding的两个问题："></a><strong>Label Encoding的两个问题：</strong></h4><ol>
+<li><p><strong>如果测试集中存在新的标签值（如”每天两次 (4)”），且该标签从未在训练集中出现过，该怎么做？</strong></p>
+<p>可以分别定义good_features及bad_features，good_features是在训练集和测试集中，所有不同取值都同时出现的features。bad_features是只在测试集中出现过的labels所对应的feature。</p>
+<ul>
+<li>文本型分类数据：从不、很少、经常 、每天</li>
+<li>数值型分类数据：0、1、2、3</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dataframe中文本型分类数据的类型为object</span></span><br><span class="line">all_features  = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns() <span class="keyword">if</span> X_train[col].dtype == <span class="string">&#x27;object&#x27;</span>]</span><br><span class="line"><span class="comment"># 从all_features中选取good_features,判断标准是训练集和测试集中分类数据的值完全相同。</span></span><br><span class="line">good_features = [col <span class="keyword">for</span> col <span class="keyword">in</span> all_features <span class="keyword">if</span> <span class="built_in">set</span>(X_train[col]) == <span class="built_in">set</span>(X_test[col])]</span><br><span class="line"></span><br><span class="line">bad_features  = <span class="built_in">list</span>(<span class="built_in">set</span>(all_features) - <span class="built_in">set</span>(good_features)) <span class="comment">#只有set能相减求差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清洗掉bad_features</span></span><br><span class="line">X_train = X_train.drop(bad_features,axis = <span class="number">1</span>)</span><br><span class="line">X_test  = X_test.drop(bad_features, axis = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>label encoding通用手法是随机分配数值给不同的标签，如果我们可以为序数变量提供更好的信息标签，可以提升性能。</strong></p>
+<p>可以直接用字典进行替换。下面分别是通过label Encoding和自定义标签值的方式进行的分类数据编码。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.DataFrame([[<span class="string">&quot;A&quot;</span>,<span class="string">&quot;从不&quot;</span>],[<span class="string">&quot;B&quot;</span>,<span class="string">&quot;偶尔&quot;</span>],[<span class="string">&quot;C&quot;</span>,<span class="string">&#x27;经常&#x27;</span>],[<span class="string">&quot;D&quot;</span>,<span class="string">&quot;每天&quot;</span>]], columns = [<span class="string">&#x27;姓名&#x27;</span>,<span class="string">&#x27;运动频率&#x27;</span>])</span><br><span class="line">data1 = data.copy()</span><br><span class="line">data1[<span class="string">&#x27;运动频率&#x27;</span>] = data[<span class="string">&#x27;运动频率&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;从不&quot;</span>:<span class="number">0</span>, <span class="string">&quot;偶尔&quot;</span>:<span class="number">1</span>, <span class="string">&quot;经常&quot;</span>:<span class="number">2</span>, <span class="string">&quot;每天&quot;</span>:<span class="number">3</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg" alt="1"></p>
+<p>参考链接：</p>
+<p><a href="https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242</a></p>
+<h3 id="Onehot-Encoding"><a href="#Onehot-Encoding" class="headerlink" title="Onehot Encoding"></a>Onehot Encoding</h3><h4 id="编码原理及实现。"><a href="#编码原理及实现。" class="headerlink" title="编码原理及实现。"></a>编码原理及实现。</h4><p>一个m行n列的数据，他会分别对第i个特征进行评估，看n个样本中的第i个特征有几个值。比如下面第3号特征有0、1、3值。</p>
+<p>然后分别对每一个特征进行onehot展开，最终变成2+3+3+3=11个特征值。</p>
+<p><img src="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg" alt="1"></p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>onehot编码会产生线性信息，比如下方的onehot编码：</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png" alt="img" style="zoom:33%;" />
+
+<p>会产生5个新的特征，但这5个特征之间会存在X1+X2+X3+X4+X5 = 1的关系。</p>
+<p>假设我们现在获得了一个onehot编码后的模型：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3<br>$$</p>
+<p>$$<br>s.t. x1+x2+x3=1<br>$$</p>
+<p>如果用x1，x2去替代x3：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3\<br>=β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=(β<em>{0}+β</em>{3})+(β<em>{1}-β</em>{3})x1+(β<em>{2}-β</em>{3})x2+0x3<br>$$<br>此时同一个模型可以被两套参数给表达，说明这个模型是不稳定的，<strong>换句话说一个模型的最优解可能有不止一个</strong>。解决这个问题的方法有以下三种：</p>
+<ol>
+<li><p>使用L2正则化，将参数的选择上加一个限制，就是选择参数元素值小的那个作为最终参数，这样我们得到的参数就唯一了，模型也就稳定了。</p>
+</li>
+<li><p>去掉intercept_，也可以解决同一个模型参数等价的问题。<br>$$<br>y = β<em>{1}x1+β</em>{2}x2+β<em>{3}x3\<br>=β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=β<em>{3}+(β</em>{1}-β<em>{3})x1+(β</em>{2}-β_{3})x2+0·x3<br>$$<br>可以发现一开始去掉intercept项，在变形后会重新得到intercept_，和原始模型完全不同，参数等价问题得到解决。</p>
+</li>
+<li><p>再加上bias项的前提下，使用哑变量编码代替one-hot编码，此时去除了x3，也就不存在之前一种特征可以用其他特征表示的问题了。</p>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804100527770.png" alt="image-20210804100527770"></p>
+</li>
+</ol>
+<p><strong>总结：使用one-hot编码时，通常我们的模型不加bias项或者加上bias项然后使用L2正则化去约束参数；当我们使用哑变量编码时，通常我们的模型都会加bias项，因为不加bias项会导致固有属性的丢失</strong>。</p>
+<h3 id="Dummies"><a href="#Dummies" class="headerlink" title="Dummies"></a>Dummies</h3><p>哑变量编码直观的解释就是任意的将一个状态位去除。还是拿上面的例子来说，我们用4个状态位就足够反应上述5个类别的信息，也就是我们仅仅使用前四个状态位 [0,0,0,0] 就可以表达博士了。只是因为对于一个我们研究的样本，他已不是小学生、也不是中学生、也不是大学生、又不是研究生，那么我们就可以默认他是博士。</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png" alt="img" style="zoom:33%;" />
+
+<p><strong>实现方式及结果：</strong></p>
+<p>直接是pandas中的函数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pd.get_dummies(df,drop_first=<span class="literal">True</span>) </span><br><span class="line"><span class="comment"># 如果不加drop_first参数，则与onehot效果一样。</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804102023540.png" alt="image-20210804102023540"></p>
+<p>参考链接：<a href="https://blog.csdn.net/ningyanggege/article/details/88427398">https://blog.csdn.net/ningyanggege/article/details/88427398</a></p>
+<h3 id="Target-Encoding"><a href="#Target-Encoding" class="headerlink" title="Target Encoding"></a>Target Encoding</h3><h4 id="二分类及多分类的编码方式"><a href="#二分类及多分类的编码方式" class="headerlink" title="二分类及多分类的编码方式"></a>二分类及多分类的编码方式</h4><p>参见：<a href="https://www.cnblogs.com/lryou/p/14627564.html">https://www.cnblogs.com/lryou/p/14627564.html</a></p>
+<h4 id="cross-validation解决数据泄露"><a href="#cross-validation解决数据泄露" class="headerlink" title="cross_validation解决数据泄露"></a>cross_validation解决数据泄露</h4><p>Cross-validation将训练数据分成k份，在计算某一份的target encoding时，我们不使用这一份中对应的目标值进行计算，而是使用剩余k-1份数据，进行对应标签的target encoding计算。<br>对于同一个属性值，这种方式产生的encoding一般是不一致的。在测试集中，对应的target encoding可以通过将训练集中这些属性的encoding取平均获得。[<a href="https://datascience.stackexchange.com/questions/45881/target-encoding-with-cross-validation">9]</a></p>
+<p>参见：<a href="https://blog.csdn.net/weixin_37737254/article/details/108786828">https://blog.csdn.net/weixin_37737254/article/details/108786828</a></p>
+]]></content>
+      <categories>
+        <category>统计学知识</category>
+      </categories>
   </entry>
   <entry>
     <title>基于时间的合作商绩效考核体系搭建</title>
@@ -679,83 +949,6 @@
 ]]></content>
       <categories>
         <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>数据预处理</title>
-    <url>/2020/09/08/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<p>本文基于kaggle上的房价预测项目，对数据预处理的流程进行总结。由于这是上手的第一个项目，数据预处理的过程相对比较简单，主要涵盖了数据感知可视化，outliers的清理，空值填充，及初步选取特征四个方面，后续会不断加入categorical encoding，添加特征等方法。</p>
-<a id="more"></a>
-
-<h2 id="1-关于题目"><a href="#1-关于题目" class="headerlink" title="1.关于题目"></a>1.关于题目</h2><p>题目链接：<a href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques%E3%80%82">https://www.kaggle.com/c/house-prices-advanced-regression-techniques。</a></p>
-<p>题目解读：围绕79个特征对Ames市的房价进行预测，其中44个特征是离散型的分类，35个特征是连续型的数值。</p>
-<p>本文策略：在填充空值时，优先将筛选出的特征中的空值进行填充，而不是将所有特征中的空值填充，这样做的好处是比较简单，但同时注定无法构造一个底子很好的baseline。</p>
-<h2 id="2-数据预处理"><a href="#2-数据预处理" class="headerlink" title="2.数据预处理"></a>2.数据预处理</h2><h3 id="1-导入必要包及数据"><a href="#1-导入必要包及数据" class="headerlink" title="1.导入必要包及数据"></a>1.导入必要包及数据</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="comment">#matplotlit infine</span></span><br><span class="line"></span><br><span class="line">train_data = pd.read_csv(<span class="string">&#x27;train.csv&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-对数据进行初步探索"><a href="#2-对数据进行初步探索" class="headerlink" title="2.对数据进行初步探索"></a>2.对数据进行初步探索</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 探索数据维度,是否有空值等信息</span></span><br><span class="line">train_data.info()</span><br></pre></td></tr></table></figure>
-
-<p>从这步可以看出来，Alley、FireplaceQu、PoolQC、Fence等特征存在较多的空值；同时有很多特征具有很强的相关性，比如GarageCars与GarageArea，1stFlrSF，2ndFlrSF 与GrLivArea等。这些可以留作后面优化baseline的策略；此外，观察了数据，发现有些空值存在的原因是因为一些房子本身就没有该配套设施所导致的，比如Garagetype为空的原因是该房子根本没有garage。</p>
-<h3 id="3-观察特征X与SalePrice之间的相关性"><a href="#3-观察特征X与SalePrice之间的相关性" class="headerlink" title="3.观察特征X与SalePrice之间的相关性"></a>3.观察特征X与SalePrice之间的相关性</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 利用pandas自带的关联矩阵，可以观察到变量与结果之间的相关性，并以热力图的方式呈现。</span></span><br><span class="line">corr = train_data.corr() <span class="comment">#生成相关性矩阵，默认的method是&#x27;pearson&#x27;，即皮尔森相关系数。</span></span><br><span class="line">fig = plt.figure(figsize =(<span class="number">10</span>,<span class="number">10</span>)) <span class="comment"># 构造画布</span></span><br><span class="line">sns.heatmap(data = corr, vmin= <span class="number">0.2</span>，cmap=<span class="string">&#x27;YlGnBu&#x27;</span>,square = <span class="literal">True</span>) <span class="comment">#过滤相关性在0.2以下的值,颜色采用蓝色系，以方形图表示。</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljdrakaaj31180vctfc.jpg" alt="1.png"></p>
-<p>由此可以看到SalePrice一项与特征中的’OverallQual’，’GrLivArea’，’TotalBsmtSF’，’GarageCars’四项的相关性比较大（热力图中颜色较深），故想单独把这4个特征提取出来，看看他们与SalePrice是否真的呈现某种线性关系。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 围绕四个相关性大的特征进行观察其与SalePrice的线性关系</span></span><br><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>,<span class="string">&#x27;GarageCars&#x27;</span>]</span><br><span class="line">fig = plt.figure()</span><br><span class="line">sns.pairplot(x_vars=cols, y_vars=<span class="string">&#x27;SalePrice&#x27;</span>, data=train_data)</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gilje597yij315w0e0tbu.jpg" alt="2.png"></p>
-<h3 id="3-针对outliers分析"><a href="#3-针对outliers分析" class="headerlink" title="3.针对outliers分析"></a>3.针对outliers分析</h3><p>通过图形可以发现，上述四个特征确实与SalePrice有较为明显的线性关系，但其中也有一些outliers，为了不影响模型的拟合，将这些outliers分析一下，如果确实比较离谱则将其丢弃。</p>
-<h4 id="针对OverallCond："><a href="#针对OverallCond：" class="headerlink" title="针对OverallCond："></a>针对OverallCond：</h4><p>这个是我后面发现的，有一个OverallCond=2的样本点的售价远高于其他样本点，故将其drop掉。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.drop(index = train_data[(train_data[<span class="string">&#x27;OverallCond&#x27;</span>]==<span class="number">2</span>) &amp; (train_data[<span class="string">&#x27;SalePrice&#x27;</span>]&gt;<span class="number">200000</span>)].index,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
-<h4 id="针对GrLivArea："><a href="#针对GrLivArea：" class="headerlink" title="针对GrLivArea："></a>针对GrLivArea：</h4><p>有两个点的非常靠右，但是售价非常低，大致估计其原因应该是地处偏僻，故直接删除。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.drop(index = train_data[(train_data[<span class="string">&#x27;GrLivArea&#x27;</span>]&gt;<span class="number">4000</span>) &amp; (train_data[<span class="string">&#x27;SalePrice&#x27;</span>]&lt;<span class="number">200000</span>)].index,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
-<h4 id="针对TotalBsmtSF"><a href="#针对TotalBsmtSF" class="headerlink" title="针对TotalBsmtSF:"></a>针对TotalBsmtSF:</h4><p>同样有一个点的地下室面积非常大，但是售价很低，故将其drop。另外大于2500房价却小与200000数据点需要找出来单独分析一下原因，观察是不是outliers。(这里没找，没找到，略过了)</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先drop离谱点，事实证明这就是刚刚drop掉那两个样本点中的一个</span></span><br><span class="line">train_data.drop(index = train_data[train_data[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">6000</span>].index,inplace=<span class="literal">True</span>) </span><br></pre></td></tr></table></figure>
-
-<h4 id="针对GarageCars"><a href="#针对GarageCars" class="headerlink" title="针对GarageCars:"></a>针对GarageCars:</h4><p>针对GarageCars我重新做了箱线图，发现可以容纳4个车位的Garage平均售价远低于可以容纳3个车位的房子，我不知道是不是应该将他们drop点。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 围绕GarageCars做的箱线图</span></span><br><span class="line">sns.boxplot(x=<span class="string">&#x27;GarageCars&#x27;</span>,y=<span class="string">&#x27;SalePrice&#x27;</span>,data=train_data)</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljh0g8fkj30qq0fkmy4.jpg" alt="3.png"></p>
-<p>将所有GarageCars=4的数据提取出来进行观察。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.loc[index_of_4cars,:][[<span class="string">&#x27;SalePrice&#x27;</span>,<span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>]]</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljm41z7gj30h409wt91.jpg" alt="4.png"></p>
-<p>另外求一下不同GarageCars的房子的平均GarageArea。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data[<span class="string">&#x27;GarageArea&#x27;</span>].groupby(train_data[<span class="string">&#x27;GarageCars&#x27;</span>]).mean()</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1giljqay95kj30eo06oq36.jpg" alt="5.png"></p>
-<p>可以发现1340号房屋的GarageCars虽然是4，但是其GarageArea非常小，同时它的车库还是未完工的状态（Unf），所以1340号房屋的售价较低是可以解释的。不过1190号房屋的车库面积非常大，同时是完工状态，不过其售价非常低，有悖于刚刚的结论，所以考虑将其删除。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 删除1190号房屋</span></span><br><span class="line">train_data.drop(index=<span class="number">1190</span>,inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
-<p>目前已经针对几个主要属性，将部分outliers进行过滤，下面将训练集的index进行重置。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_data.reset_index(inplace=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-围绕Garage属性进行特征筛选"><a href="#4-围绕Garage属性进行特征筛选" class="headerlink" title="4.围绕Garage属性进行特征筛选"></a>4.围绕Garage属性进行特征筛选</h3><p>由于数据集中经常出现GarageCars很大但GarageArea小的情况，比如一个可以容纳4个车的车库只有480平，反之，样本中也可能出现只容纳1个车但车库面积非常大的现象。所以我打算用GarageArea除以GarageCars，观察每个车位的平均Area，看该特征下SalePrice的线性是否明显。    </p>
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillwztz7wj30cc0bagmh.jpg" alt="6.png"></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 构建一个新的字段</span></span><br><span class="line">train_data[<span class="string">&#x27;Avg_Garage&#x27;</span>] = train_data[<span class="string">&#x27;GarageArea&#x27;</span>]/(train_data[<span class="string">&#x27;GarageCars&#x27;</span>]+<span class="number">0.001</span>)</span><br><span class="line"><span class="comment"># 观察以Avg_Garage为自变量的SalePrice变化。</span></span><br><span class="line">sns.pairplot[x_vars=<span class="string">&#x27;Avg_Garage&#x27;</span>,y_vars=<span class="string">&#x27;SalePrice&#x27;</span>,data=train_data]</span><br></pre></td></tr></table></figure>
-
-<p>依然没看出来有线性关系，当Avg_Garage变大时，部分房子的售价非常的低，所以不打算就这个Avg_Garage再深入了。另外我观察了GarageArea的散点图，发现它的线性关系更加明显，所以最终二选一的话我会选Area而不是Cars。<img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillwlgw03j30c40ast9s.jpg" alt="8.png"></p>
-<p>接下来我围绕GarageCars和GarageFinish进行groupby，观察到在每个档次的GarageCars里，Fin&gt;Rfn&gt;Ufn。所以我想把GarageFinish也当作一个影响总价的重要特征，纳入考虑。</p>
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillx805c9j30iu0cwt9l.jpg" alt="7.png"></p>
-<p>综上，围绕Garage我将选择GarageArea及GarageFinish作为两个主要特征。</p>
-<h3 id="5-利用pearson相关系数找到与SalePrice最相关的几个属性。"><a href="#5-利用pearson相关系数找到与SalePrice最相关的几个属性。" class="headerlink" title="5.利用pearson相关系数找到与SalePrice最相关的几个属性。"></a>5.利用pearson相关系数找到与SalePrice最相关的几个属性。</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">corr = train_data.corr() <span class="comment"># 相关性矩阵（dataframe）</span></span><br><span class="line">k = <span class="number">10</span></span><br><span class="line">cols = corr.nlargest(k,<span class="string">&#x27;SalePrice&#x27;</span>).index <span class="comment">#按&#x27;SalePrice&#x27;排列的前k行，并返回它们的index</span></span><br><span class="line">cm = np.corrcoef(train_data[cols].values.T) <span class="comment"># 计算pearson相关系数，接受的参数是一个矩阵，返回的也是一个矩阵，</span></span><br><span class="line">sns.<span class="built_in">set</span>(font_scale=<span class="number">0.8</span>)</span><br><span class="line">heatmap = sns.heatmap(cm,annot=<span class="literal">True</span>,yticklabels=cols.values,xticklabels=cols.values,cmap=<span class="string">&#x27;YlGnBu&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww1.sinaimg.cn/mw690/0060e3lIly1gillxfyxodj30ne0gwjwa.jpg" alt="9.png"></p>
-<p>综上，我将选择OverallQual,GrLivArea,TotalBsmtSF,GarageArea,GarageFinish,</p>
-<p>1stFirSF,FullBath,TotRmsAbvGrd,YearBuilt作为最终特征。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;1stFirSF&#x27;</span>,<span class="string">&#x27;TotRmsAbvGrd&#x27;</span>,<span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line"><span class="comment"># 将GarageFinish进行Categorical编码</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cols = [<span class="string">&#x27;OverallQual&#x27;</span>,<span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageArea&#x27;</span>,<span class="string">&#x27;GarageFinish&#x27;</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;1stFirSF&#x27;</span>,<span class="string">&#x27;TotRmsAbvGrd&#x27;</span>,<span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line">x = train_data[cols].values</span><br><span class="line">y = train_data[<span class="string">&#x27;SalePrice&#x27;</span>].values</span><br><span class="line">x_scaled = preprocessing.StandardScaler().fit_transform(x)</span><br><span class="line">y_scaled = preprocessing.StandardScaler().fit_transform(y.reshape(<span class="number">-1</span>,<span class="number">1</span>))</span><br><span class="line">X_train,X_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=<span class="number">0.33</span>, random_state=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>Python</category>
-        <category>SKlearn</category>
       </categories>
       <tags>
         <tag>Python</tag>
@@ -942,6 +1135,50 @@
       </tags>
   </entry>
   <entry>
+    <title>罗格斯特征数</title>
+    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
+    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
+<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+<th align="center">8</th>
+<th align="center">9</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p>思路： 判断哪个数字应该出现的次数最多</p>
+]]></content>
+      <categories>
+        <category>概率论</category>
+      </categories>
+      <tags>
+        <tag>概率趣味题</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>赛马问题</title>
     <url>/2020/11/07/%E8%B5%9B%E9%A9%AC%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>有64匹马，一共有8个赛道，想要找出最快的4匹马，要比赛最少多少轮才可以？</p>
@@ -1034,50 +1271,6 @@
 </ol>
 <p>前三种情况下都只需要1轮，就能下决断，只有第四种情况需要为判断B1和A4而多加1轮。</p>
 <p>综上所述，10轮或11轮都有可能。</p>
-]]></content>
-      <categories>
-        <category>概率论</category>
-      </categories>
-      <tags>
-        <tag>概率趣味题</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>罗格斯特征数</title>
-    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
-    <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
-<p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
-<a id="more"></a>
-
-<table>
-<thead>
-<tr>
-<th align="center">0</th>
-<th align="center">1</th>
-<th align="center">2</th>
-<th align="center">3</th>
-<th align="center">4</th>
-<th align="center">5</th>
-<th align="center">6</th>
-<th align="center">7</th>
-<th align="center">8</th>
-<th align="center">9</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>思路： 判断哪个数字应该出现的次数最多</p>
 ]]></content>
       <categories>
         <category>概率论</category>

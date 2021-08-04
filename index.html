@@ -225,7 +225,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-26 15:27:19" itemprop="dateModified" datetime="2021-07-26T15:27:19+08:00">2021-07-26</time>
+                <time title="修改时间：2021-07-27 11:47:25" itemprop="dateModified" datetime="2021-07-27T11:47:25+08:00">2021-07-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,14 +247,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -269,7 +269,12 @@
 <!-- 自定义，用于添加摘要图片，文章中不显示 -->
 		
 <!-- 自定义结束 -->
-          <p>本文记录了牛客和leetcode上面几道求中位数的题目，其中比较核心的思路是中位数的排序&gt;=总数/2并且&lt;=总数/2+1。</p>
+          <p>本文记录了牛客和leetcode上面几道求中位数的题目，其中比较核心的思路有三个</p>
+<ul>
+<li>中位数的排序&gt;=总数/2并且&lt;=总数/2+1。</li>
+<li>中位数正序位置与倒序位置的差</li>
+<li>正序位置与倒序位置分别&gt;=总数/2。（<strong>此法不光适用于枚举数据，也适用于累加数据）</strong></li>
+</ul>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/12/01/sql-%E5%87%A0%E7%A7%8D%E4%B8%AD%E4%BD%8D%E6%95%B0%E6%B1%82%E6%B3%95/" rel="contents">
@@ -333,7 +338,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-27 10:54:06" itemprop="dateModified" datetime="2021-07-27T10:54:06+08:00">2021-07-27</time>
+                <time title="修改时间：2021-07-27 10:57:03" itemprop="dateModified" datetime="2021-07-27T10:57:03+08:00">2021-07-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -355,7 +360,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
+              <span>2.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -517,6 +522,423 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/hive%E5%86%85%E5%AD%98%E6%8A%A5%E9%94%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/29/hive%E5%86%85%E5%AD%98%E6%8A%A5%E9%94%99/" class="post-title-link" itemprop="url">假设检验</a>
+        </h2>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-29 09:51:51" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-03 00:30:23" itemprop="dateModified" datetime="2021-08-03T00:30:23+08:00">2021-08-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">统计学知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>277</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+<!-- 自定义，用于添加摘要图片，文章中不显示 -->
+		
+<!-- 自定义结束 -->
+          <p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210803000311830.png" alt="image-20210803000311830"></p>
+<p>明显看到CPU负载超了.</p>
+<p>虚拟内存溢出：2.1 GB of 2.1 GB virtual memory used. Killing container</p>
+<p>解决方案：</p>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210803002733418.png" alt="image-20210803002733418"></p>
+<p>运行一下还是报同样的错误。</p>
+<p>再次添加如下内容：</p>
+<ol>
+<li><p>将虚拟机内存和cpu升级，从2g内存1cpu变成nn4+2，dn2+1。</p>
+</li>
+<li><p>修改mapred-site.xml 配置文件，加入如下内容</p>
+</li>
+</ol>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210803002636497.png" alt="image-20210803002636497"></p>
+<p>重新配置application manager, map和reduce的内存。</p>
+<p>明天应该尝试一下只增加虚拟机内存，不改变mapred-site中设置的内存。跑同样的sql</p>
+<p><code>select empno, sal from emp order by empno, sal;</code></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/29/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/" class="post-title-link" itemprop="url">假设检验</a>
+        </h2>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-29 09:51:51 / 修改时间：18:16:12" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">统计学知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>482</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+<!-- 自定义，用于添加摘要图片，文章中不显示 -->
+		
+<!-- 自定义结束 -->
+          <p><strong>假设检验定义</strong></p>
+<p>假设检验是先对总体参数提出一个假设值，然后利用样本信息判断这一假设是否成立。</p>
+<p>p-value，z检验，t检验之间的区别</p>
+<p><strong>为什么统计者想要拒绝的假设放在原假设呢？</strong></p>
+<p>证明是真很难，但是证明是假很简单。</p>
+<p>因为原假设备被拒绝如果出错的话，只能犯第I类错误，而犯第I类错误的概率已经被<strong>规定的显著性水平所控制。</strong></p>
+<p>第I类错误：去真错误，原来是真的，但是拒绝了。</p>
+<p>第II类错误：取假错误，原来是假的，但是接受了。</p>
+<p><strong>显著性水平</strong></p>
+<p>显著性水平是指假设H0成立，检验统计量落在拒绝域的概率，简单理解就是犯弃真错误的概率。这个值是我们做假设检验之前统计者根据业务情况定好的。</p>
+<p><strong>检验方式</strong></p>
+<p>检验方式分为两种：双侧检验和单侧检验。单侧检验又分为两种：左侧检验和右侧检验。</p>
+<p>双侧检验：备择假设没有特定的方向性，形式为“≠”这种检验假设称为双侧检验。</p>
+<p>单侧检验：备择假设带有特定的方向性 形式为”&gt;””&lt;”的假设检验，称为单侧检验 “&lt;”称为左侧检验 “&gt;”称为右侧检验。</p>
+<p><strong>检验统计量</strong></p>
+<p>定义：据以对原假设和备择假设作出决策的某个样本统计量，称为检验统计量。</p>
+<p><strong>拒绝域</strong></p>
+<p>定义：拒绝域是由显著性水平围成的区域</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81/" class="post-title-link" itemprop="url">分类数据编码方法</a>
+        </h2>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-29 09:51:51" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-04 10:33:18" itemprop="dateModified" datetime="2021-08-04T10:33:18+08:00">2021-08-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+<!-- 自定义，用于添加摘要图片，文章中不显示 -->
+		
+<!-- 自定义结束 -->
+          <p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81/" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/" class="post-title-link" itemprop="url">分类数据编码方法</a>
+        </h2>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-29 09:51:51" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-04 10:32:56" itemprop="dateModified" datetime="2021-08-04T10:32:56+08:00">2021-08-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">统计学知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+<!-- 自定义，用于添加摘要图片，文章中不显示 -->
+		
+<!-- 自定义结束 -->
+          <p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E5%90%88%E4%BD%9C%E5%95%86%E7%BB%A9%E6%95%88%E8%80%83%E6%A0%B8%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -619,404 +1041,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/25/Sql-%E4%B8%A4%E7%A7%8D%E2%80%9C%E8%BF%9E%E7%BB%AD%E2%80%9D%E7%9A%84%E9%A2%98%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/123.gif">
-      <meta itemprop="name" content="Max">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阿乐·Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/25/Sql-%E4%B8%A4%E7%A7%8D%E2%80%9C%E8%BF%9E%E7%BB%AD%E2%80%9D%E7%9A%84%E9%A2%98%E5%9E%8B/" class="post-title-link" itemprop="url">Sql-两种“连续”的题型</a>
-        </h2>
-
-        <div class="post-meta">
-          
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-25 14:11:44" itemprop="dateCreated datePublished" datetime="2020-12-25T14:11:44+08:00">2020-12-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-28 08:04:07" itemprop="dateModified" datetime="2020-12-28T08:04:07+08:00">2020-12-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SQL/" itemprop="url" rel="index"><span itemprop="name">SQL</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SQL/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-<!-- 自定义，用于添加摘要图片，文章中不显示 -->
-		
-<!-- 自定义结束 -->
-          <p>本篇blog主要记录了在刷leetcode中遇到的两种<strong>求连续</strong>类型的题目。分别是180题和601题，不同的是180题只要找出连续出现的即可（去重），而601题需要把所有符合条件且连续的case全找出来。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/25/Sql-%E4%B8%A4%E7%A7%8D%E2%80%9C%E8%BF%9E%E7%BB%AD%E2%80%9D%E7%9A%84%E9%A2%98%E5%9E%8B/" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/25/Sql-%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E9%82%AE%E7%AE%B1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/123.gif">
-      <meta itemprop="name" content="Max">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阿乐·Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/25/Sql-%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E9%82%AE%E7%AE%B1/" class="post-title-link" itemprop="url">Sql-删除重复邮箱</a>
-        </h2>
-
-        <div class="post-meta">
-          
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-12-25 13:51:22 / 修改时间：14:01:53" itemprop="dateCreated datePublished" datetime="2020-12-25T13:51:22+08:00">2020-12-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SQL/" itemprop="url" rel="index"><span itemprop="name">SQL</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SQL/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>899</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-<!-- 自定义，用于添加摘要图片，文章中不显示 -->
-		
-<!-- 自定义结束 -->
-          <p>编写一个 SQL 查询，来删除 <code>Person</code> 表中所有重复的电子邮箱，重复的邮箱里只保留 <strong>Id</strong> <em>最小</em> 的那个。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/25/Sql-%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E9%82%AE%E7%AE%B1/" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/HiveSQL%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE(1)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/123.gif">
-      <meta itemprop="name" content="Max">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阿乐·Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/24/HiveSQL%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE(1)/" class="post-title-link" itemprop="url">HiveSQL部分题目(1-11)</a>
-        </h2>
-
-        <div class="post-meta">
-          
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-11-24 19:58:44 / 修改时间：20:08:18" itemprop="dateCreated datePublished" datetime="2020-11-24T19:58:44+08:00">2020-11-24</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Hive/" itemprop="url" rel="index"><span itemprop="name">Hive</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Hive/HiveSQL%E8%AF%AD%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">HiveSQL语法</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-<!-- 自定义，用于添加摘要图片，文章中不显示 -->
-		
-<!-- 自定义结束 -->
-          <p>HiveSQL的语法上和SQL还是非常像的，本文主要是记录了一些HQL的相关题目。比较简单的题一笔带过了，思路复杂一些的则会花大点的篇幅重点分析。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/24/HiveSQL%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE(1)/" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/Sql-%E5%BB%BA%E8%A1%A8%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/123.gif">
-      <meta itemprop="name" content="Max">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阿乐·Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/24/Sql-%E5%BB%BA%E8%A1%A8%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C/" class="post-title-link" itemprop="url">Sql-建表相关操作</a>
-        </h2>
-
-        <div class="post-meta">
-          
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-11-24 19:48:35 / 修改时间：19:57:28" itemprop="dateCreated datePublished" datetime="2020-11-24T19:48:35+08:00">2020-11-24</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SQL/" itemprop="url" rel="index"><span itemprop="name">SQL</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SQL/SQL%E9%9A%8F%E7%AC%94/" itemprop="url" rel="index"><span itemprop="name">SQL随笔</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-<!-- 自定义，用于添加摘要图片，文章中不显示 -->
-		
-<!-- 自定义结束 -->
-          <p>在日常工作中，SQL更多的是用来提取业务相关的数据，大部分人都没办法直接处理原数据。所以平时练的最多的也是SELECT语句，而有关建表、处理表的操作很少涉及。所以在这里把表处理的相关操作记录一下吧，毕竟熟能生巧啊（省的每次都要上网重新搜）。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/24/Sql-%E5%BB%BA%E8%A1%A8%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C/" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1088,20 +1112,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1138,13 +1162,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">48k</span>
+    <span title="站点总字数">55k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">43 分钟</span>
+    <span title="站点阅读时长">50 分钟</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
   </div>
