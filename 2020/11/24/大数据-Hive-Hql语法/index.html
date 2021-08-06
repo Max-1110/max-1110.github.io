@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16.png">
+  <link rel="mask-icon" href="/images/180.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Consolas:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="HiveSQL的语法上和SQL还是非常像的，本文主要是记录了一些HQL的相关题目。比较简单的题一笔带过了，思路复杂一些的则会花大点的篇幅重点分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HiveSQL部分题目(1-11)">
+<meta property="og:url" content="http://example.com/2020/11/24/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-Hql%E8%AF%AD%E6%B3%95/index.html">
+<meta property="og:site_name" content="阿乐·Blog">
+<meta property="og:description" content="HiveSQL的语法上和SQL还是非常像的，本文主要是记录了一些HQL的相关题目。比较简单的题一笔带过了，思路复杂一些的则会花大点的篇幅重点分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-24T11:58:44.000Z">
+<meta property="article:modified_time" content="2021-08-05T02:51:00.057Z">
+<meta property="article:author" content="Max">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/11/24/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-Hql%E8%AF%AD%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <title>HiveSQL部分题目(1-11) | 阿乐·Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿乐·Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>时光轴</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-Hql%E8%AF%AD%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HiveSQL部分题目(1-11)
+        </h1>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-24 19:58:44" itemprop="dateCreated datePublished" datetime="2020-11-24T19:58:44+08:00">2020-11-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-05 10:51:00" itemprop="dateModified" datetime="2021-08-05T10:51:00+08:00">2021-08-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hive/" itemprop="url" rel="index"><span itemprop="name">Hive</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>HiveSQL的语法上和SQL还是非常像的，本文主要是记录了一些HQL的相关题目。比较简单的题一笔带过了，思路复杂一些的则会花大点的篇幅重点分析。</p>
+<a id="more"></a>
+
+<h3 id="1-执行顺序"><a href="#1-执行顺序" class="headerlink" title="1.执行顺序"></a>1.执行顺序</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM<span class="comment">--&gt;ON--&gt;JOIN--&gt;WHERE--&gt;GROUP BY--&gt;WITH(CUBE/ROLLUP)--&gt;HAVING--&gt;SELECT--&gt;DISTINCT--&gt;ORDER BY--&gt;LIMIT</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-解题思路"><a href="#2-解题思路" class="headerlink" title="2.解题思路"></a>2.解题思路</h3><p>有很多题目可以用不同的解题思路，比如第1部分第5题，除了常规用法还可以用窗口函数。实际工作时要选择更为高效的解决方案。</p>
+<h2 id="题目篇"><a href="#题目篇" class="headerlink" title="题目篇"></a>题目篇</h2><p><strong>（本篇重点为第9题）</strong></p>
+<ol>
+<li><p>选出城市在北京，性别为女的10个用户名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> user_id,user_name</span><br><span class="line"><span class="keyword">FROM</span> user_info</span><br><span class="line"><span class="keyword">WHERE</span> city=<span class="string">&#x27;Beijing&#x27;</span> <span class="keyword">AND</span> sex = <span class="string">&#x27;female&#x27;</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2019年4月9号，购买品类为food的明细（用户名，购买数，支付金额）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> user_name,piece,pay_amount</span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> goods_category=<span class="string">&#x27;food&#x27;</span></span><br><span class="line"><span class="keyword">AND</span> dt=<span class="string">&#x27;2019-04-09&#x27;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2019年1月-4月，每个品类有多少人购买，累计金额是多少</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> goods_category,<span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> user_name),<span class="keyword">SUM</span>(pay_amount) <span class="keyword">as</span> total_pay</span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> dt <span class="keyword">BETWEEN</span> <span class="string">&#x27;2019-01-01&#x27;</span> <span class="keyword">AND</span> <span class="string">&#x27;2019-04-30&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> goods_category;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2019年4月，支付金额超过5万元的用户</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> user_name,<span class="keyword">SUM</span>(pay_amount) <span class="keyword">as</span> total_pay</span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">substr</span>(dt,<span class="number">1</span>,<span class="number">7</span>)=<span class="string">&#x27;2019-04&#x27;</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> user_name</span><br><span class="line"><span class="keyword">having</span> <span class="keyword">SUM</span>(pay_amount)&gt;<span class="number">50000</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2019年4月，支付金额最多的TOP5用户</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 写法1 (43.638seconds)</span></span><br><span class="line"><span class="keyword">SELECT</span> user_name,<span class="keyword">SUM</span>(pay_amount) <span class="keyword">as</span> total_pay</span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> dt <span class="keyword">BETWEEN</span> <span class="string">&#x27;2019-04-01&#x27;</span> <span class="keyword">AND</span> <span class="string">&#x27;2019-04-30&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> user_name</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> total_pay <span class="keyword">desc</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">5</span>;</span><br><span class="line"><span class="comment">-- </span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 写法2 (45.074seconds)</span></span><br><span class="line"><span class="keyword">SELECT</span> a.user_name,a.total_pay,a.rank</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> user_name, <span class="keyword">SUM</span>(pay_amount) <span class="keyword">as</span> total_pay,</span><br><span class="line">        row_number() <span class="keyword">over</span>(<span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">SUM</span>(pay_amount) <span class="keyword">desc</span>) <span class="keyword">as</span> <span class="keyword">rank</span>         </span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> dt <span class="keyword">BETWEEN</span> <span class="string">&#x27;2019-04-01&#x27;</span> <span class="keyword">AND</span> <span class="string">&#x27;2019-04-30&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> user_name) a</span><br><span class="line"><span class="keyword">where</span> a.rank&lt;=<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>把2019年4月9日，所有支付的时间戳转化为具体时间</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> pay_time,from_unixtime(pay_time,<span class="string">&#x27;yyyy-mm-dd hh:mm:ss&#x27;</span>)</span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> dt=<span class="string">&#x27;2019-04-09&#x27;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>把2019年4月9日转化为时间戳(没啥意义感觉)</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">unix_timestamp</span>(<span class="string">&#x27;2019-04-09 00:00:00&#x27;</span>)</span><br><span class="line"><span class="keyword">FROM</span> user_trade</span><br><span class="line"><span class="keyword">WHERE</span> dt=<span class="string">&#x27;2019-04-09&#x27;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>每个用户首次激活时间距离2019年5月1日的日期间隔</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> user_id,user_name,</span><br><span class="line">       firstactivetime,<span class="keyword">datediff</span>(<span class="string">&#x27;2019-05-01&#x27;</span>,firstactivetime) <span class="keyword">as</span> diff </span><br><span class="line"><span class="keyword">FROM</span> user_info;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>统计以下四个年龄段20岁以下、20-30岁、30-40岁、40岁以上的用户数</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 写法1</span></span><br><span class="line"><span class="keyword">SELECT</span> a.age_type,<span class="keyword">COUNT</span>(a.user_id)</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> user_id,</span><br><span class="line">       <span class="keyword">CASE</span> <span class="keyword">WHEN</span> age&lt;<span class="number">20</span> <span class="keyword">THEN</span> <span class="string">&#x27;20岁以下&#x27;</span></span><br><span class="line">            <span class="keyword">WHEN</span> age&gt;=<span class="number">20</span> <span class="keyword">and</span> age&lt;<span class="number">30</span> <span class="keyword">THEN</span> <span class="string">&#x27;20-30岁&#x27;</span></span><br><span class="line">            <span class="keyword">WHEN</span> age&gt;=<span class="number">30</span> <span class="keyword">and</span> age&lt;<span class="number">40</span> <span class="keyword">THEN</span> <span class="string">&#x27;30-40岁&#x27;</span></span><br><span class="line">            <span class="keyword">ELSE</span> <span class="string">&#x27;40岁以上&#x27;</span> <span class="keyword">END</span> <span class="keyword">AS</span> age_type</span><br><span class="line"><span class="keyword">FROM</span> user_info) a</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> a.age_type;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 写法2</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CASE</span> <span class="keyword">WHEN</span> age&lt;<span class="number">20</span> <span class="keyword">THEN</span> <span class="string">&#x27;20岁以下&#x27;</span></span><br><span class="line">            <span class="keyword">WHEN</span> age&gt;=<span class="number">20</span> <span class="keyword">and</span> age&lt;<span class="number">30</span> <span class="keyword">THEN</span> <span class="string">&#x27;20-30岁&#x27;</span></span><br><span class="line">            <span class="keyword">WHEN</span> age&gt;=<span class="number">30</span> <span class="keyword">and</span> age&lt;<span class="number">40</span> <span class="keyword">THEN</span> <span class="string">&#x27;30-40岁&#x27;</span></span><br><span class="line">            <span class="keyword">ELSE</span> <span class="string">&#x27;40岁以上&#x27;</span> <span class="keyword">END</span> <span class="keyword">AS</span> age_type,</span><br><span class="line">            <span class="keyword">COUNT</span>(user_id)</span><br><span class="line"><span class="keyword">FROM</span> user_info</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">CASE</span> <span class="keyword">WHEN</span> age&lt;<span class="number">20</span> <span class="keyword">THEN</span> <span class="string">&#x27;20岁以下&#x27;</span></span><br><span class="line">            <span class="keyword">WHEN</span> age&gt;=<span class="number">20</span> <span class="keyword">and</span> age&lt;<span class="number">30</span> <span class="keyword">THEN</span> <span class="string">&#x27;20-30岁&#x27;</span></span><br><span class="line">            <span class="keyword">WHEN</span> age&gt;=<span class="number">30</span> <span class="keyword">and</span> age&lt;<span class="number">40</span> <span class="keyword">THEN</span> <span class="string">&#x27;30-40岁&#x27;</span></span><br><span class="line">            <span class="keyword">ELSE</span> <span class="string">&#x27;40岁以上&#x27;</span> <span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>统计每个性别用户等级高低的分布情况（level&gt;5为高级）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> sex,</span><br><span class="line">       <span class="keyword">IF</span>(<span class="keyword">level</span>&gt;<span class="number">5</span>,<span class="string">&#x27;高级用户&#x27;</span>,<span class="string">&#x27;普通用户&#x27;</span>) <span class="keyword">as</span> user_level,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> user_id)</span><br><span class="line"><span class="keyword">FROM</span> user_info</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> sex,<span class="keyword">IF</span>(<span class="keyword">level</span>&gt;<span class="number">5</span>,<span class="string">&#x27;高级用户&#x27;</span>,<span class="string">&#x27;普通用户&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>每个月新激活的用户数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 写法1</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">year</span>(firstactivetime),<span class="keyword">month</span>(firstactivetime),</span><br><span class="line">       <span class="keyword">count</span>(<span class="keyword">distinct</span> user_id)</span><br><span class="line"><span class="keyword">FROM</span> user_info</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">year</span>(firstactivetime),<span class="keyword">month</span>(firstactivetime);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 写法2</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">substr</span>(firstactivetime,<span class="number">1</span>,<span class="number">7</span>) <span class="keyword">as</span> active_time,</span><br><span class="line">       <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> user_id)</span><br><span class="line"><span class="keyword">FROM</span> user_info</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">substr</span>(firstactivetime,<span class="number">1</span>,<span class="number">7</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Hive/" rel="tag"><i class="fa fa-tag"></i> Hive</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/24/Sql-%E5%BB%BA%E8%A1%A8%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C/" rel="prev" title="Sql-建表相关操作">
+      <i class="fa fa-chevron-left"></i> Sql-建表相关操作
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/01/Sql-%E5%87%A0%E7%A7%8D%E4%B8%AD%E4%BD%8D%E6%95%B0%E6%B1%82%E6%B3%95/" rel="next" title="Sql-几种中位数求法">
+      Sql-几种中位数求法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-number">1.</span> <span class="nav-text">1.执行顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">2.解题思路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E7%AF%87"><span class="nav-number"></span> <span class="nav-text">题目篇</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Max"
+      src="/images/123.gif">
+  <p class="site-author-name" itemprop="name">Max</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Max</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">52 分钟</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

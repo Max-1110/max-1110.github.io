@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>Sql-几种中位数求法</title>
-    <url>/2020/12/01/sql-%E5%87%A0%E7%A7%8D%E4%B8%AD%E4%BD%8D%E6%95%B0%E6%B1%82%E6%B3%95/</url>
+    <url>/2020/12/01/Sql-%E5%87%A0%E7%A7%8D%E4%B8%AD%E4%BD%8D%E6%95%B0%E6%B1%82%E6%B3%95/</url>
     <content><![CDATA[<p>本文记录了牛客和leetcode上面几道求中位数的题目，其中比较核心的思路有三个</p>
 <ul>
 <li>中位数的排序&gt;=总数/2并且&lt;=总数/2+1。</li>
@@ -101,8 +101,173 @@
       </tags>
   </entry>
   <entry>
+    <title>widget使用套路</title>
+    <url>/2021/07/29/Python-%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95-widget%E4%BD%BF%E7%94%A8%E5%A5%97%E8%B7%AF/</url>
+    <content><![CDATA[<p>widget包结合matplotlib可以将多个图片分页展示，可以节省页面空间，方便观看。而widget中tab页面的使用有固定套路，在此进行记录。</p>
+<a id="more"></a>
+
+<h3 id="相关的包导进来"><a href="#相关的包导进来" class="headerlink" title="相关的包导进来"></a>相关的包导进来</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from ipywidgets      import HBox,Output,VBox,Layout</span><br><span class="line">from IPython.display import display</span><br><span class="line">import ipywidgets as widgets</span><br></pre></td></tr></table></figure>
+
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>先得到所有Output，并制作成list。Output好比卷子，把图画在Output上，然后把Output装订成一页页的Tab页面，最后再在Tab页面上写名字(set_title)</p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MzQzNjViZTdkZjkyM2QwZTk0NjhjYWFlYTJlOGYxYThfUWFlVDJtMnh4VVpKWXVRanB3Tml3OEMyWDNSTGdSQXRfVG9rZW46Ym94Y25ucmJxWm5NVGdGODhjM1RoNUhDRzRkXzE2MjgyMTc1NjQ6MTYyODIyMTE2NF9WNA" alt="img"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_tabs</span>():</span></span><br><span class="line"><span class="comment"># 1. 制作output列表</span></span><br><span class="line">    inner_tab_list = [widgets.Output() <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>)]</span><br><span class="line"><span class="comment"># 2. 制作tab页面，让tab页面的children是Output列表</span></span><br><span class="line">    inner_tab = widgets.Tab(children = inner_tab_list)</span><br><span class="line"><span class="comment"># 3. 为tab页起名，并给每个Tab下的Output画图</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        inner_tab.set_title(i, <span class="string">&#x27;pic &#x27;</span> + <span class="built_in">str</span>(i))</span><br><span class="line">        <span class="keyword">with</span> inner_tab_list[i]:</span><br><span class="line">            plot() <span class="comment"># plot这里是一个画图函数，表示在每个Output上画图</span></span><br><span class="line">    display(inner_tab) <span class="comment">#最终展示的是tab页面</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="加强"><a href="#加强" class="headerlink" title="加强"></a>加强</h3><p>如果有固定的list去替换这里的range(5)，则可以得到：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Create inner Tabs</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_inner_tabs</span>():</span>        </span><br><span class="line">    inner_tabs_list=[widgets.Output() <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(cat_var))]</span><br><span class="line">    inner_tab = widgets.Tab(inner_tabs_list)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span> (<span class="built_in">len</span>(cat_var)):</span><br><span class="line">        inner_tab.set_title(i,cat_var[i])</span><br><span class="line">        <span class="keyword">with</span> inner_tabs_list[i]:      </span><br><span class="line">            ctab(cat_var[i]);</span><br><span class="line">    display(inner_tab)</span><br></pre></td></tr></table></figure>
+
+<h3 id="外部widget"><a href="#外部widget" class="headerlink" title="外部widget"></a>外部widget</h3><p>原理一致，只不过在with每个外部tab的时候，调用内部tab函数即可。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_outer_tab</span>():</span></span><br><span class="line">    <span class="comment"># 1. 创建output list</span></span><br><span class="line">    outer_tab_list = [widgets.Output() <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>)] <span class="comment">#对应cat和num两类</span></span><br><span class="line">    <span class="comment"># 2. 把output list加入到Tab页里</span></span><br><span class="line">    outer_tab = widgets.Tab(outer_tab_list)</span><br><span class="line">    <span class="comment"># 3. 配置tab页名字和Output内容</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        outer_tab.set_title(i, <span class="string">&#x27;名字&#x27;</span>) <span class="comment"># 一般名字取自列表</span></span><br><span class="line">        <span class="keyword">with</span> outer_tab_list[i]: <span class="comment">#Output呈现内容</span></span><br><span class="line">            <span class="keyword">if</span> i == <span class="number">0</span>: </span><br><span class="line">                create_inner_tabs() <span class="comment">#让外tab呈现内容为子Tab</span></span><br><span class="line">            <span class="keyword">else</span>: <span class="comment">#可以直接定义图像</span></span><br><span class="line">                plt.figure(figsize=(<span class="number">11</span>,<span class="number">4</span>),dpi=<span class="number">200</span>)</span><br><span class="line">                <span class="comment"># 因为agg后dataframe的index是函数名，q(.25)返回q_(0.25)，其函数名是25%</span></span><br><span class="line">                df_n=data_eda[num_var].agg([<span class="string">&quot;count&quot;</span>,<span class="string">&quot;mean&quot;</span>,<span class="string">&quot;std&quot;</span>,<span class="string">&quot;skew&quot;</span>,<span class="string">&quot;kurt&quot;</span>,<span class="string">&quot;min&quot;</span>,q(<span class="number">.25</span>),<span class="string">&quot;median&quot;</span>,q(<span class="number">.75</span>),<span class="string">&quot;max&quot;</span>]).T</span><br><span class="line">                <span class="comment"># 见下方x函数就知道为什么要放倒了，纯粹是为了美观</span></span><br><span class="line">                df_n[<span class="string">&quot;range&quot;</span>]=df_n[<span class="string">&quot;max&quot;</span>]-df_n[<span class="string">&quot;min&quot;</span>]</span><br><span class="line">                df_n[<span class="string">&quot;IQR&quot;</span>]  =df_n[<span class="string">&quot;75%&quot;</span>]-df_n[<span class="string">&quot;25%&quot;</span>] <span class="comment"># 此时体现了为上面q_函数重命名的好处，也有一部分原因是agg函数造成的</span></span><br><span class="line">                sns.heatmap(df_n , annot=<span class="literal">True</span>,cmap = <span class="string">&quot;Blues&quot;</span>, fmt= <span class="string">&#x27;.2f&#x27;</span>,linewidths = <span class="number">5</span>, cbar = <span class="literal">False</span>,annot_kws=&#123;<span class="string">&quot;size&quot;</span>: <span class="number">9</span>&#125;)</span><br><span class="line">                plt.xticks(size = <span class="number">10</span>)</span><br><span class="line"><span class="comment">#                 plt.xlabel(&quot;xixi&quot;)</span></span><br><span class="line"><span class="comment">#                 plt.ylabel(&quot;ahaha&quot;)</span></span><br><span class="line">                plt.yticks(size = <span class="number">10</span>, rotation = <span class="number">0</span>);</span><br><span class="line">                plt.title(<span class="string">&quot;Descriptive Statistics&quot;</span>, size = <span class="number">16</span>)</span><br><span class="line">                plt.show()</span><br><span class="line">    display(outer_tab)</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>基础语法</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Map和Apply函数</title>
+    <url>/2021/07/29/Python-%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95-Map%E5%92%8CApply%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p>本文主要介绍pandas中的map和apply函数的用法，总体上apply函数比map函数实现的功能更复杂。</p>
+<a id="more"></a>
+
+<h3 id="Series的map"><a href="#Series的map" class="headerlink" title="Series的map"></a>Series的map</h3><p>既有Map也有Apply。</p>
+<h4 id="传入字典"><a href="#传入字典" class="headerlink" title="- 传入字典"></a>- 传入字典</h4><p>常用的就是把”描述性分类属性”和”数值型分类属性”进行互换。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">df[&#39;sex&#39;].map(&#123;&quot;Male&quot;:1, &quot;Female&quot;:0&#125;)</span><br><span class="line"># or</span><br><span class="line">df[&#39;sex&#39;].map(&#123;1:&quot;Male&quot;, 0:&quot;Female&quot;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDU5YjlmZmUxNjMwNzIwNTU1NzUxMDdmNDZlZjY3YjZfazdzanRYNmFTSjFSRjJJWTBzZ01QaW91MTdFYkNIeEJfVG9rZW46Ym94Y24zZ2xOdm9hRXZyUU45Q0lUZjU0Tk1nXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<h4 id="传入函数"><a href="#传入函数" class="headerlink" title="- 传入函数"></a>- 传入函数</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gendertrans</span>(<span class="params">sex</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> <span class="keyword">if</span> sex == <span class="string">&#x27;Male&#x27;</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">df[<span class="string">&#x27;sex&#x27;</span>].<span class="built_in">map</span>(gendertrans)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YzUzYTdhMzFmNTllMzU5YWQ4NDM4MmM3ZjdmYzM4Y2ZfVW1sVXpLWW55OXdDZVVmZVhGUDViM3FRdFp6bFJFaFhfVG9rZW46Ym94Y25WQWdVTnZjUDRUdjRTOFQ3M2Zqc0hoXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NTcxNjk1MGUzZDk1NmQ5NTk4Mjg5NTA4NDE2OWZmODJfY2x0V29SZHZHUXFZTnVLWEFTV2JIOHlTMFk1c0pvOEpfVG9rZW46Ym94Y255eWJOZW13R29jNlpJallJZjI1ZDNIXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<h3 id="Seires的apply"><a href="#Seires的apply" class="headerlink" title="Seires的apply"></a>Seires的apply</h3><p>Map只能传入一个参数，可以是字典也可以是一个方程。但是Series的apply允许传入更多的参数。这是因为apply的函数可能含有多个参数，这些参数需要以元组的方式传递给apply的args参数，<strong>注意(-3)不叫元组，(-3,)才叫元组。</strong></p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=M2NjMzc3ZGIxMzA5NTVkMjI3ODIxYWRkYmRlY2FmNDNfbFlTd0JSbXhSalhBUkJkQjZkdmNMeGg3QkdQOWxLSUFfVG9rZW46Ym94Y25Ld0NuQVhPS0d3S3RxTm5leWpXTzdnXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<h4 id="DataFrame的apply"><a href="#DataFrame的apply" class="headerlink" title="DataFrame的apply"></a>DataFrame的apply</h4><h4 id="Apply"><a href="#Apply" class="headerlink" title="Apply"></a>Apply</h4><p>先看一下官网的参数解释：</p>
+<ul>
+<li>Axis决定了function作用于每一行还是每一列。</li>
+<li>args如果function有其他参数需要以元组的形式加入，此处与Series一致。</li>
+</ul>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MzU0ZmQzNWRlZmFhOWI4ZmExMDM5OGQ2ZWYxNzBjNTZfZFFWa3NkSFlFN1Vua1ZFN2RUa21YaUhQRTVnQnd6TGhfVG9rZW46Ym94Y245STR1cUw4NnFzM1FVNTRhalpuTWdnXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDEyNDJlYzZiZjRhNDUyYmEzNTFjNzlmMGY5MzFlM2Zfa3I4cW05a3N4ZndGTE5BME9nejl3MXQ1c2tnUENpUmpfVG9rZW46Ym94Y25FVDB1Y2NiaXdYMDdId1Z6a3Q2Wk9hXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dataframe</span></span><br><span class="line">boolean=[<span class="literal">True</span>,<span class="literal">False</span>]</span><br><span class="line">gender=[<span class="string">&quot;男&quot;</span>,<span class="string">&quot;女&quot;</span>]</span><br><span class="line">color=[<span class="string">&quot;white&quot;</span>,<span class="string">&quot;black&quot;</span>,<span class="string">&quot;yellow&quot;</span>]</span><br><span class="line">data=pd.DataFrame(&#123;</span><br><span class="line">    <span class="string">&quot;height&quot;</span>:np.random.randint(<span class="number">150</span>,<span class="number">190</span>,<span class="number">100</span>),</span><br><span class="line">    <span class="string">&quot;weight&quot;</span>:np.random.randint(<span class="number">40</span>,<span class="number">90</span>,<span class="number">100</span>),</span><br><span class="line">    <span class="string">&quot;smoker&quot;</span>:[boolean[x] <span class="keyword">for</span> x <span class="keyword">in</span> np.random.randint(<span class="number">0</span>,<span class="number">2</span>,<span class="number">100</span>)],</span><br><span class="line">    <span class="string">&quot;gender&quot;</span>:[gender[x] <span class="keyword">for</span> x <span class="keyword">in</span> np.random.randint(<span class="number">0</span>,<span class="number">2</span>,<span class="number">100</span>)],</span><br><span class="line">    <span class="string">&quot;age&quot;</span>:np.random.randint(<span class="number">15</span>,<span class="number">90</span>,<span class="number">100</span>),</span><br><span class="line">    <span class="string">&quot;color&quot;</span>:[color[x] <span class="keyword">for</span> x <span class="keyword">in</span> np.random.randint(<span class="number">0</span>,<span class="built_in">len</span>(color),<span class="number">100</span>) ]</span><br><span class="line">&#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># function</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">BMI</span>(<span class="params">series</span>):</span></span><br><span class="line">    weight = series[<span class="string">&quot;weight&quot;</span>]</span><br><span class="line">    height = series[<span class="string">&quot;height&quot;</span>]/<span class="number">100</span></span><br><span class="line">    BMI = weight/height**<span class="number">2</span></span><br><span class="line">    <span class="keyword">return</span> BMI</span><br><span class="line"></span><br><span class="line">data[<span class="string">&quot;BMI&quot;</span>] = data.apply(BMI,axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MTFiYzZmMzc3ZTFjZDFhMjk3NWRmNDA1YjZjMGY1OGZfclV2Wm9JaFlNc3pnUndzRjZCZ3F5MkRzTnlPNEhTRHhfVG9rZW46Ym94Y25hVng4dDZzUW1hNTNMR0tqVFFGR0lmXzE2MjgyMTcyMTg6MTYyODIyMDgxOF9WNA" alt="img"></p>
+<p>会发现，axis=1时以每行拆分为series，并往function传输。最终得到的也是一个Series。</p>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>基础语法</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分类数据编码方法</title>
+    <url>/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
+<a id="more"></a>
+
+<h3 id="Label-Encoding"><a href="#Label-Encoding" class="headerlink" title="Label Encoding"></a>Label Encoding</h3><p>针对有序变量可以使用label encoding，比如做运动的频次：”从不 (0)”&lt;”很少 (1)”&lt;”经常 (2)”&lt;”每天 (3)”。</p>
+<h4 id="Label-Encoding的两个问题："><a href="#Label-Encoding的两个问题：" class="headerlink" title="Label Encoding的两个问题："></a><strong>Label Encoding的两个问题：</strong></h4><ol>
+<li><p><strong>如果测试集中存在新的标签值（如”每天两次 (4)”），且该标签从未在训练集中出现过，该怎么做？</strong></p>
+<p>可以分别定义good_features及bad_features，good_features是在训练集和测试集中，所有不同取值都同时出现的features。bad_features是只在测试集中出现过的labels所对应的feature。</p>
+<ul>
+<li>文本型分类数据：从不、很少、经常 、每天</li>
+<li>数值型分类数据：0、1、2、3</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dataframe中文本型分类数据的类型为object</span></span><br><span class="line">all_features  = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns() <span class="keyword">if</span> X_train[col].dtype == <span class="string">&#x27;object&#x27;</span>]</span><br><span class="line"><span class="comment"># 从all_features中选取good_features,判断标准是训练集和测试集中分类数据的值完全相同。</span></span><br><span class="line">good_features = [col <span class="keyword">for</span> col <span class="keyword">in</span> all_features <span class="keyword">if</span> <span class="built_in">set</span>(X_train[col]) == <span class="built_in">set</span>(X_test[col])]</span><br><span class="line"></span><br><span class="line">bad_features  = <span class="built_in">list</span>(<span class="built_in">set</span>(all_features) - <span class="built_in">set</span>(good_features)) <span class="comment">#只有set能相减求差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清洗掉bad_features</span></span><br><span class="line">X_train = X_train.drop(bad_features,axis = <span class="number">1</span>)</span><br><span class="line">X_test  = X_test.drop(bad_features, axis = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>label encoding通用手法是随机分配数值给不同的标签，如果我们可以为序数变量提供更好的信息标签，可以提升性能。</strong></p>
+<p>可以直接用字典进行替换。下面分别是通过label Encoding和自定义标签值的方式进行的分类数据编码。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.DataFrame([[<span class="string">&quot;A&quot;</span>,<span class="string">&quot;从不&quot;</span>],[<span class="string">&quot;B&quot;</span>,<span class="string">&quot;偶尔&quot;</span>],[<span class="string">&quot;C&quot;</span>,<span class="string">&#x27;经常&#x27;</span>],[<span class="string">&quot;D&quot;</span>,<span class="string">&quot;每天&quot;</span>]], columns = [<span class="string">&#x27;姓名&#x27;</span>,<span class="string">&#x27;运动频率&#x27;</span>])</span><br><span class="line">data1 = data.copy()</span><br><span class="line">data1[<span class="string">&#x27;运动频率&#x27;</span>] = data[<span class="string">&#x27;运动频率&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;从不&quot;</span>:<span class="number">0</span>, <span class="string">&quot;偶尔&quot;</span>:<span class="number">1</span>, <span class="string">&quot;经常&quot;</span>:<span class="number">2</span>, <span class="string">&quot;每天&quot;</span>:<span class="number">3</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg" alt="1"></p>
+<p>参考链接：</p>
+<p><a href="https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242</a></p>
+<h3 id="Onehot-Encoding"><a href="#Onehot-Encoding" class="headerlink" title="Onehot Encoding"></a>Onehot Encoding</h3><h4 id="编码原理及实现。"><a href="#编码原理及实现。" class="headerlink" title="编码原理及实现。"></a>编码原理及实现。</h4><p>一个m行n列的数据，他会分别对第i个特征进行评估，看n个样本中的第i个特征有几个值。比如下面第3号特征有0、1、3值。</p>
+<p>然后分别对每一个特征进行onehot展开，最终变成2+3+3+3=11个特征值。</p>
+<p><img src="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg" alt="1"></p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>onehot编码会产生线性信息，比如下方的onehot编码：</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png" alt="img" style="zoom:33%;" />
+
+<p>会产生5个新的特征，但这5个特征之间会存在X1+X2+X3+X4+X5 = 1的关系。</p>
+<p>假设我们现在获得了一个onehot编码后的模型：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3<br>$$</p>
+<p>$$<br>s.t. x1+x2+x3=1<br>$$</p>
+<p>如果用x1，x2去替代x3：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3\<br>=β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=(β<em>{0}+β</em>{3})+(β<em>{1}-β</em>{3})x1+(β<em>{2}-β</em>{3})x2+0x3<br>$$<br>此时同一个模型可以被两套参数给表达，说明这个模型是不稳定的，<strong>换句话说一个模型的最优解可能有不止一个</strong>。解决这个问题的方法有以下三种：</p>
+<ol>
+<li><p>使用L2正则化，将参数的选择上加一个限制，就是选择参数元素值小的那个作为最终参数，这样我们得到的参数就唯一了，模型也就稳定了。</p>
+</li>
+<li><p>去掉intercept_，也可以解决同一个模型参数等价的问题。<br>$$<br>y = β<em>{1}x1+β</em>{2}x2+β<em>{3}x3\<br>=β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=β<em>{3}+(β</em>{1}-β<em>{3})x1+(β</em>{2}-β_{3})x2+0·x3<br>$$<br>可以发现一开始去掉intercept项，在变形后会重新得到intercept_，和原始模型完全不同，参数等价问题得到解决。</p>
+</li>
+<li><p>再加上bias项的前提下，使用哑变量编码代替one-hot编码，此时去除了x3，也就不存在之前一种特征可以用其他特征表示的问题了。</p>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804100527770.png" alt="image-20210804100527770"></p>
+</li>
+</ol>
+<p><strong>总结：使用one-hot编码时，通常我们的模型不加bias项或者加上bias项然后使用L2正则化去约束参数；当我们使用哑变量编码时，通常我们的模型都会加bias项，因为不加bias项会导致固有属性的丢失</strong>。</p>
+<h3 id="Dummies"><a href="#Dummies" class="headerlink" title="Dummies"></a>Dummies</h3><p>哑变量编码直观的解释就是任意的将一个状态位去除。还是拿上面的例子来说，我们用4个状态位就足够反应上述5个类别的信息，也就是我们仅仅使用前四个状态位 [0,0,0,0] 就可以表达博士了。只是因为对于一个我们研究的样本，他已不是小学生、也不是中学生、也不是大学生、又不是研究生，那么我们就可以默认他是博士。</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png" alt="img" style="zoom:33%;" />
+
+<p><strong>实现方式及结果：</strong></p>
+<p>直接是pandas中的函数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pd.get_dummies(df,drop_first=<span class="literal">True</span>) </span><br><span class="line"><span class="comment"># 如果不加drop_first参数，则与onehot效果一样。</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804102023540.png" alt="image-20210804102023540"></p>
+<p>参考链接：<a href="https://blog.csdn.net/ningyanggege/article/details/88427398">https://blog.csdn.net/ningyanggege/article/details/88427398</a></p>
+<h3 id="Target-Encoding"><a href="#Target-Encoding" class="headerlink" title="Target Encoding"></a>Target Encoding</h3><h4 id="二分类及多分类的编码方式"><a href="#二分类及多分类的编码方式" class="headerlink" title="二分类及多分类的编码方式"></a>二分类及多分类的编码方式</h4><p>参见：<a href="https://www.cnblogs.com/lryou/p/14627564.html">https://www.cnblogs.com/lryou/p/14627564.html</a></p>
+<h4 id="cross-validation解决数据泄露"><a href="#cross-validation解决数据泄露" class="headerlink" title="cross_validation解决数据泄露"></a>cross_validation解决数据泄露</h4><p>Cross-validation将训练数据分成k份，在计算某一份的target encoding时，我们不使用这一份中对应的目标值进行计算，而是使用剩余k-1份数据，进行对应标签的target encoding计算。<br>对于同一个属性值，这种方式产生的encoding一般是不一致的。在测试集中，对应的target encoding可以通过将训练集中这些属性的encoding取平均获得。[<a href="https://datascience.stackexchange.com/questions/45881/target-encoding-with-cross-validation">9]</a></p>
+<p>参见：<a href="https://blog.csdn.net/weixin_37737254/article/details/108786828">https://blog.csdn.net/weixin_37737254/article/details/108786828</a></p>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>缺失值寻找及填充</title>
+    <url>/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%BC%BA%E5%A4%B1%E5%80%BC%E5%AF%BB%E6%89%BE%E5%8F%8A%E5%A1%AB%E5%85%85/</url>
+    <content><![CDATA[<p>本文主要记录一下dataframe中寻找缺失值以及对缺失值填充的三种方法。</p>
+<a id="more"></a>
+
+<h3 id="Missing-Value"><a href="#Missing-Value" class="headerlink" title="Missing Value"></a>Missing Value</h3><p><code>dataframe.isnull()</code>会返回一个dataframe每一个位置上是否为null的布尔值</p>
+<p><code>dataframe.sum()</code>，默认<code>axis=0</code>，返回以row为累加方向的求和，如果是string也会累加求和。</p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YTNmMWE2ZjQwNTRkMmVlNDliMmU2Yzk5YzkzMzUyMTBfOUMyYXFDblNVWVRVbmZhTzlyQXhiV2xHc2VSNDZ1NXBfVG9rZW46Ym94Y24yTUlnV040blRWRDczcEU4U0k0eFpnXzE2MjgyMTgxMzk6MTYyODIyMTczOV9WNA" alt="img">结合使用可以得到每个column上的缺失值个数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data_eda.isnull().<span class="built_in">sum</span>()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Filling-Value"><a href="#Filling-Value" class="headerlink" title="Filling Value"></a>Filling Value</h3><p><code>dataframe.fillna(value)</code>，value的选择不同，填充方式也不同</p>
+<ul>
+<li><h4 id="value是一个Scalar"><a href="#value是一个Scalar" class="headerlink" title="value是一个Scalar"></a>value是一个Scalar</h4></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># value为一个scalar，则所有na固定填充该常数，不予展示</span></span><br><span class="line">df.fillna(<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="value是一个dict或Series"><a href="#value是一个dict或Series" class="headerlink" title="value是一个dict或Series"></a>value是一个dict或Series</h4></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># value为一个dict或者Series，则把字典中key或者Series中index对应为待填充DataFrame的cols，</span></span><br><span class="line"><span class="comment"># 然后整列进行填充</span></span><br><span class="line">df = pd.DataFrame([[np.nan, <span class="number">2</span>, np.nan, <span class="number">0</span>],</span><br><span class="line">                   [<span class="number">3</span>, <span class="number">4</span>, np.nan, <span class="number">1</span>],</span><br><span class="line">                   [np.nan, np.nan, np.nan, <span class="number">5</span>],</span><br><span class="line">                   [np.nan, <span class="number">3</span>, np.nan, <span class="number">4</span>]],</span><br><span class="line">                   columns=<span class="built_in">list</span>(<span class="string">&quot;ABCD&quot;</span>))</span><br><span class="line">fill_dict1 = &#123;<span class="string">&quot;A&quot;</span>:<span class="number">1</span>, <span class="string">&quot;B&quot;</span>:<span class="number">3</span>, <span class="string">&quot;C&quot;</span>:<span class="number">5</span>, <span class="string">&quot;D&quot;</span>:<span class="number">7</span>&#125;</span><br><span class="line">fill_Se1   = pd.Series([[<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>]], index = <span class="built_in">list</span>(<span class="string">&quot;ABCD&quot;</span>))</span><br><span class="line"><span class="comment"># 下面两个结果相同</span></span><br><span class="line">df.fillna(fill_dict1)</span><br><span class="line">df.fillna(fill_se1)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="value是一个DataFrame"><a href="#value是一个DataFrame" class="headerlink" title="value是一个DataFrame"></a>value是一个DataFrame</h4></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 备用的Dataframe有几行，就给原始dataFrame填充几行</span></span><br><span class="line">fill_df1 = pd.DataFrame([[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]], columns = <span class="built_in">list</span>(<span class="string">&quot;ABCD&quot;</span>))</span><br><span class="line">fill_df2 = pd.DataFrame(np.arange(<span class="number">12</span>).reshape(<span class="number">3</span>,<span class="number">4</span>), columns = <span class="built_in">list</span>(<span class="string">&quot;ABCD&quot;</span>))</span><br><span class="line"></span><br><span class="line">df.fillna(fill_df1) <span class="comment">#只填充一行，因为fill_df1只有一行</span></span><br><span class="line">df.fillna(fill_df2) <span class="comment">#填充一行， 因为fill_df2有三行</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hive内存溢出报错</title>
-    <url>/2021/07/29/Hive%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8A%A5%E9%94%99/</url>
+    <url>/2021/07/29/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8A%A5%E9%94%99/</url>
     <content><![CDATA[<p><img src="https://tvax2.sinaimg.cn/large/0060e3lIly1gt4wacy8djj30rd03rwg9.jpg" alt="image-20210803000311830"></p>
 <p>明显看到CPU负载超了.</p>
 <p>虚拟内存溢出：2.1 GB of 2.1 GB virtual memory used. Killing container</p>
@@ -122,16 +287,37 @@
 <p><code>select empno, sal from emp order by empno, sal;</code></p>
 ]]></content>
       <categories>
+        <category>大数据</category>
         <category>Hive</category>
-        <category>Hive调优报错</category>
       </categories>
       <tags>
         <tag>Hive</tag>
       </tags>
   </entry>
   <entry>
+    <title>相关性分析</title>
+    <url>/2021/07/29/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在使用python检验数据集特征之间的相关性时，通常会用到<code>data.corr()</code>方法，而该方法可以基于3种计算方法，分别是Pearson, Spearman, Kendall，在此进行简要说明。</p>
+<a id="more"></a>
+
+<h3 id="Pearson"><a href="#Pearson" class="headerlink" title="Pearson"></a>Pearson</h3><p>用于判断两个<strong>定距变量</strong>之间是否存在<strong>线性关系</strong>。定距变量：指没有绝对零点的数值型变量，即一个变量的值为0，不代表没有意义，反而代表其值确实为0。（反例：身高）</p>
+<p>pearson是一个介于-1和1之间的值，当两个变量的线性关系增强时，相关系数趋于1或-1；当一个变量增大，另一个变量也增大时，表明它们之间是正相关的，相关系数大于0；如果一个变量增大，另一个变量却减小，表明它们之间是负相关的，相关系数小于0；如果相关系数等于0，表明它们之间不存在线性相关关系。</p>
+<p>计算公式：除以两个标准差的目的是消除量纲。</p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YjU3NmU3ZDM3OWMyM2IwZWY4OWRmM2EyNDI4NTc0YmVfSW5ad3lLZlA3NDJwSnhqdmFUWE5qY3NYenFxSjhLT0tfVG9rZW46Ym94Y256NEs0QjdFRHpUUXdoeWVpSE9xTE5mXzE2MjgyMTc5MTQ6MTYyODIyMTUxNF9WNA" alt="img"></p>
+<h3 id="spearman"><a href="#spearman" class="headerlink" title="spearman"></a>spearman</h3><p>只要两个变量的值是定序变量<strong>（差，良，优）</strong>，或者是由连续变量转化得到的定序变量，就可以用spearman系数判断相关性。</p>
+<h3 id="Kendall"><a href="#Kendall" class="headerlink" title="Kendall"></a>Kendall</h3><p>Kendall相关系数是对于定类变量的统计，定类变量没有内在顺序，比如性别、国家之类的就是定类变量。</p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>三种correlations的变量条件如果无法完全满足时，<strong>优先满足因变量的条件</strong>。</p>
+]]></content>
+      <categories>
+        <category>统计学</category>
+      </categories>
+      <tags>
+        <tag>统计学</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>假设检验</title>
-    <url>/2021/07/29/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/</url>
+    <url>/2021/07/29/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/</url>
     <content><![CDATA[<p><strong>假设检验定义</strong></p>
 <p>假设检验是先对总体参数提出一个假设值，然后利用样本信息判断这一假设是否成立。</p>
 <p>p-value，z检验，t检验之间的区别</p>
@@ -159,140 +345,8 @@
       </tags>
   </entry>
   <entry>
-    <title>分类数据编码方法</title>
-    <url>/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81/</url>
-    <content><![CDATA[<p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
-<a id="more"></a>
-
-<h3 id="Label-Encoding"><a href="#Label-Encoding" class="headerlink" title="Label Encoding"></a>Label Encoding</h3><p>针对有序变量可以使用label encoding，比如做运动的频次：”从不 (0)”&lt;”很少 (1)”&lt;”经常 (2)”&lt;”每天 (3)”。</p>
-<h4 id="Label-Encoding的两个问题："><a href="#Label-Encoding的两个问题：" class="headerlink" title="Label Encoding的两个问题："></a><strong>Label Encoding的两个问题：</strong></h4><ol>
-<li><p><strong>如果测试集中存在新的标签值（如”每天两次 (4)”），且该标签从未在训练集中出现过，该怎么做？</strong></p>
-<p>可以分别定义good_features及bad_features，good_features是在训练集和测试集中，所有不同取值都同时出现的features。bad_features是只在测试集中出现过的labels所对应的feature。</p>
-<ul>
-<li>文本型分类数据：从不、很少、经常 、每天</li>
-<li>数值型分类数据：0、1、2、3</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dataframe中文本型分类数据的类型为object</span></span><br><span class="line">all_features  = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns() <span class="keyword">if</span> X_train[col].dtype == <span class="string">&#x27;object&#x27;</span>]</span><br><span class="line"><span class="comment"># 从all_features中选取good_features,判断标准是训练集和测试集中分类数据的值完全相同。</span></span><br><span class="line">good_features = [col <span class="keyword">for</span> col <span class="keyword">in</span> all_features <span class="keyword">if</span> <span class="built_in">set</span>(X_train[col]) == <span class="built_in">set</span>(X_test[col])]</span><br><span class="line"></span><br><span class="line">bad_features  = <span class="built_in">list</span>(<span class="built_in">set</span>(all_features) - <span class="built_in">set</span>(good_features)) <span class="comment">#只有set能相减求差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清洗掉bad_features</span></span><br><span class="line">X_train = X_train.drop(bad_features,axis = <span class="number">1</span>)</span><br><span class="line">X_test  = X_test.drop(bad_features, axis = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>label encoding通用手法是随机分配数值给不同的标签，如果我们可以为序数变量提供更好的信息标签，可以提升性能。</strong></p>
-<p>可以直接用字典进行替换。下面分别是通过label Encoding和自定义标签值的方式进行的分类数据编码。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.DataFrame([[<span class="string">&quot;A&quot;</span>,<span class="string">&quot;从不&quot;</span>],[<span class="string">&quot;B&quot;</span>,<span class="string">&quot;偶尔&quot;</span>],[<span class="string">&quot;C&quot;</span>,<span class="string">&#x27;经常&#x27;</span>],[<span class="string">&quot;D&quot;</span>,<span class="string">&quot;每天&quot;</span>]], columns = [<span class="string">&#x27;姓名&#x27;</span>,<span class="string">&#x27;运动频率&#x27;</span>])</span><br><span class="line">data1 = data.copy()</span><br><span class="line">data1[<span class="string">&#x27;运动频率&#x27;</span>] = data[<span class="string">&#x27;运动频率&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;从不&quot;</span>:<span class="number">0</span>, <span class="string">&quot;偶尔&quot;</span>:<span class="number">1</span>, <span class="string">&quot;经常&quot;</span>:<span class="number">2</span>, <span class="string">&quot;每天&quot;</span>:<span class="number">3</span> &#125;)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p><img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg" alt="1"></p>
-<p>参考链接：</p>
-<p><a href="https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242</a></p>
-<h3 id="Onehot-Encoding"><a href="#Onehot-Encoding" class="headerlink" title="Onehot Encoding"></a>Onehot Encoding</h3><h4 id="编码原理及实现。"><a href="#编码原理及实现。" class="headerlink" title="编码原理及实现。"></a>编码原理及实现。</h4><p>一个m行n列的数据，他会分别对第i个特征进行评估，看n个样本中的第i个特征有几个值。比如下面第3号特征有0、1、3值。</p>
-<p>然后分别对每一个特征进行onehot展开，最终变成2+3+3+3=11个特征值。</p>
-<p><img src="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg" alt="1"></p>
-<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>onehot编码会产生线性信息，比如下方的onehot编码：</p>
-<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png" alt="img" style="zoom:33%;" />
-
-<p>会产生5个新的特征，但这5个特征之间会存在X1+X2+X3+X4+X5 = 1的关系。</p>
-<p>假设我们现在获得了一个onehot编码后的模型：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3<br>$$</p>
-<p>$$<br>s.t. x1+x2+x3=1<br>$$</p>
-<p>如果用x1，x2去替代x3：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3\<br>=β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=(β<em>{0}+β</em>{3})+(β<em>{1}-β</em>{3})x1+(β<em>{2}-β</em>{3})x2+0x3<br>$$<br>此时同一个模型可以被两套参数给表达，说明这个模型是不稳定的，<strong>换句话说一个模型的最优解可能有不止一个</strong>。解决这个问题的方法有以下三种：</p>
-<ol>
-<li><p>使用L2正则化，将参数的选择上加一个限制，就是选择参数元素值小的那个作为最终参数，这样我们得到的参数就唯一了，模型也就稳定了。</p>
-</li>
-<li><p>去掉intercept_，也可以解决同一个模型参数等价的问题。<br>$$<br>y = β<em>{1}x1+β</em>{2}x2+β<em>{3}x3\<br>=β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=β<em>{3}+(β</em>{1}-β<em>{3})x1+(β</em>{2}-β_{3})x2+0·x3<br>$$<br>可以发现一开始去掉intercept项，在变形后会重新得到intercept_，和原始模型完全不同，参数等价问题得到解决。</p>
-</li>
-<li><p>再加上bias项的前提下，使用哑变量编码代替one-hot编码，此时去除了x3，也就不存在之前一种特征可以用其他特征表示的问题了。</p>
-<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804100527770.png" alt="image-20210804100527770"></p>
-</li>
-</ol>
-<p><strong>总结：使用one-hot编码时，通常我们的模型不加bias项或者加上bias项然后使用L2正则化去约束参数；当我们使用哑变量编码时，通常我们的模型都会加bias项，因为不加bias项会导致固有属性的丢失</strong>。</p>
-<h3 id="Dummies"><a href="#Dummies" class="headerlink" title="Dummies"></a>Dummies</h3><p>哑变量编码直观的解释就是任意的将一个状态位去除。还是拿上面的例子来说，我们用4个状态位就足够反应上述5个类别的信息，也就是我们仅仅使用前四个状态位 [0,0,0,0] 就可以表达博士了。只是因为对于一个我们研究的样本，他已不是小学生、也不是中学生、也不是大学生、又不是研究生，那么我们就可以默认他是博士。</p>
-<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png" alt="img" style="zoom:33%;" />
-
-<p><strong>实现方式及结果：</strong></p>
-<p>直接是pandas中的函数。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pd.get_dummies(df,drop_first=<span class="literal">True</span>) </span><br><span class="line"><span class="comment"># 如果不加drop_first参数，则与onehot效果一样。</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804102023540.png" alt="image-20210804102023540"></p>
-<p>参考链接：<a href="https://blog.csdn.net/ningyanggege/article/details/88427398">https://blog.csdn.net/ningyanggege/article/details/88427398</a></p>
-<h3 id="Target-Encoding"><a href="#Target-Encoding" class="headerlink" title="Target Encoding"></a>Target Encoding</h3><h4 id="二分类及多分类的编码方式"><a href="#二分类及多分类的编码方式" class="headerlink" title="二分类及多分类的编码方式"></a>二分类及多分类的编码方式</h4><p>参见：<a href="https://www.cnblogs.com/lryou/p/14627564.html">https://www.cnblogs.com/lryou/p/14627564.html</a></p>
-<h4 id="cross-validation解决数据泄露"><a href="#cross-validation解决数据泄露" class="headerlink" title="cross_validation解决数据泄露"></a>cross_validation解决数据泄露</h4><p>Cross-validation将训练数据分成k份，在计算某一份的target encoding时，我们不使用这一份中对应的目标值进行计算，而是使用剩余k-1份数据，进行对应标签的target encoding计算。<br>对于同一个属性值，这种方式产生的encoding一般是不一致的。在测试集中，对应的target encoding可以通过将训练集中这些属性的encoding取平均获得。[<a href="https://datascience.stackexchange.com/questions/45881/target-encoding-with-cross-validation">9]</a></p>
-<p>参见：<a href="https://blog.csdn.net/weixin_37737254/article/details/108786828">https://blog.csdn.net/weixin_37737254/article/details/108786828</a></p>
-]]></content>
-      <categories>
-        <category>Python</category>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>分类数据编码方法</title>
-    <url>/2021/07/29/%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
-<a id="more"></a>
-
-<h3 id="Label-Encoding"><a href="#Label-Encoding" class="headerlink" title="Label Encoding"></a>Label Encoding</h3><p>针对有序变量可以使用label encoding，比如做运动的频次：”从不 (0)”&lt;”很少 (1)”&lt;”经常 (2)”&lt;”每天 (3)”。</p>
-<h4 id="Label-Encoding的两个问题："><a href="#Label-Encoding的两个问题：" class="headerlink" title="Label Encoding的两个问题："></a><strong>Label Encoding的两个问题：</strong></h4><ol>
-<li><p><strong>如果测试集中存在新的标签值（如”每天两次 (4)”），且该标签从未在训练集中出现过，该怎么做？</strong></p>
-<p>可以分别定义good_features及bad_features，good_features是在训练集和测试集中，所有不同取值都同时出现的features。bad_features是只在测试集中出现过的labels所对应的feature。</p>
-<ul>
-<li>文本型分类数据：从不、很少、经常 、每天</li>
-<li>数值型分类数据：0、1、2、3</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dataframe中文本型分类数据的类型为object</span></span><br><span class="line">all_features  = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns() <span class="keyword">if</span> X_train[col].dtype == <span class="string">&#x27;object&#x27;</span>]</span><br><span class="line"><span class="comment"># 从all_features中选取good_features,判断标准是训练集和测试集中分类数据的值完全相同。</span></span><br><span class="line">good_features = [col <span class="keyword">for</span> col <span class="keyword">in</span> all_features <span class="keyword">if</span> <span class="built_in">set</span>(X_train[col]) == <span class="built_in">set</span>(X_test[col])]</span><br><span class="line"></span><br><span class="line">bad_features  = <span class="built_in">list</span>(<span class="built_in">set</span>(all_features) - <span class="built_in">set</span>(good_features)) <span class="comment">#只有set能相减求差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清洗掉bad_features</span></span><br><span class="line">X_train = X_train.drop(bad_features,axis = <span class="number">1</span>)</span><br><span class="line">X_test  = X_test.drop(bad_features, axis = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>label encoding通用手法是随机分配数值给不同的标签，如果我们可以为序数变量提供更好的信息标签，可以提升性能。</strong></p>
-<p>可以直接用字典进行替换。下面分别是通过label Encoding和自定义标签值的方式进行的分类数据编码。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.DataFrame([[<span class="string">&quot;A&quot;</span>,<span class="string">&quot;从不&quot;</span>],[<span class="string">&quot;B&quot;</span>,<span class="string">&quot;偶尔&quot;</span>],[<span class="string">&quot;C&quot;</span>,<span class="string">&#x27;经常&#x27;</span>],[<span class="string">&quot;D&quot;</span>,<span class="string">&quot;每天&quot;</span>]], columns = [<span class="string">&#x27;姓名&#x27;</span>,<span class="string">&#x27;运动频率&#x27;</span>])</span><br><span class="line">data1 = data.copy()</span><br><span class="line">data1[<span class="string">&#x27;运动频率&#x27;</span>] = data[<span class="string">&#x27;运动频率&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;从不&quot;</span>:<span class="number">0</span>, <span class="string">&quot;偶尔&quot;</span>:<span class="number">1</span>, <span class="string">&quot;经常&quot;</span>:<span class="number">2</span>, <span class="string">&quot;每天&quot;</span>:<span class="number">3</span> &#125;)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p><img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg" alt="1"></p>
-<p>参考链接：</p>
-<p><a href="https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242</a></p>
-<h3 id="Onehot-Encoding"><a href="#Onehot-Encoding" class="headerlink" title="Onehot Encoding"></a>Onehot Encoding</h3><h4 id="编码原理及实现。"><a href="#编码原理及实现。" class="headerlink" title="编码原理及实现。"></a>编码原理及实现。</h4><p>一个m行n列的数据，他会分别对第i个特征进行评估，看n个样本中的第i个特征有几个值。比如下面第3号特征有0、1、3值。</p>
-<p>然后分别对每一个特征进行onehot展开，最终变成2+3+3+3=11个特征值。</p>
-<p><img src="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg" alt="1"></p>
-<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>onehot编码会产生线性信息，比如下方的onehot编码：</p>
-<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png" alt="img" style="zoom:33%;" />
-
-<p>会产生5个新的特征，但这5个特征之间会存在X1+X2+X3+X4+X5 = 1的关系。</p>
-<p>假设我们现在获得了一个onehot编码后的模型：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3<br>$$</p>
-<p>$$<br>s.t. x1+x2+x3=1<br>$$</p>
-<p>如果用x1，x2去替代x3：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3\<br>=β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=(β<em>{0}+β</em>{3})+(β<em>{1}-β</em>{3})x1+(β<em>{2}-β</em>{3})x2+0x3<br>$$<br>此时同一个模型可以被两套参数给表达，说明这个模型是不稳定的，<strong>换句话说一个模型的最优解可能有不止一个</strong>。解决这个问题的方法有以下三种：</p>
-<ol>
-<li><p>使用L2正则化，将参数的选择上加一个限制，就是选择参数元素值小的那个作为最终参数，这样我们得到的参数就唯一了，模型也就稳定了。</p>
-</li>
-<li><p>去掉intercept_，也可以解决同一个模型参数等价的问题。<br>$$<br>y = β<em>{1}x1+β</em>{2}x2+β<em>{3}x3\<br>=β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=β<em>{3}+(β</em>{1}-β<em>{3})x1+(β</em>{2}-β_{3})x2+0·x3<br>$$<br>可以发现一开始去掉intercept项，在变形后会重新得到intercept_，和原始模型完全不同，参数等价问题得到解决。</p>
-</li>
-<li><p>再加上bias项的前提下，使用哑变量编码代替one-hot编码，此时去除了x3，也就不存在之前一种特征可以用其他特征表示的问题了。</p>
-<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804100527770.png" alt="image-20210804100527770"></p>
-</li>
-</ol>
-<p><strong>总结：使用one-hot编码时，通常我们的模型不加bias项或者加上bias项然后使用L2正则化去约束参数；当我们使用哑变量编码时，通常我们的模型都会加bias项，因为不加bias项会导致固有属性的丢失</strong>。</p>
-<h3 id="Dummies"><a href="#Dummies" class="headerlink" title="Dummies"></a>Dummies</h3><p>哑变量编码直观的解释就是任意的将一个状态位去除。还是拿上面的例子来说，我们用4个状态位就足够反应上述5个类别的信息，也就是我们仅仅使用前四个状态位 [0,0,0,0] 就可以表达博士了。只是因为对于一个我们研究的样本，他已不是小学生、也不是中学生、也不是大学生、又不是研究生，那么我们就可以默认他是博士。</p>
-<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png" alt="img" style="zoom:33%;" />
-
-<p><strong>实现方式及结果：</strong></p>
-<p>直接是pandas中的函数。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pd.get_dummies(df,drop_first=<span class="literal">True</span>) </span><br><span class="line"><span class="comment"># 如果不加drop_first参数，则与onehot效果一样。</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804102023540.png" alt="image-20210804102023540"></p>
-<p>参考链接：<a href="https://blog.csdn.net/ningyanggege/article/details/88427398">https://blog.csdn.net/ningyanggege/article/details/88427398</a></p>
-<h3 id="Target-Encoding"><a href="#Target-Encoding" class="headerlink" title="Target Encoding"></a>Target Encoding</h3><h4 id="二分类及多分类的编码方式"><a href="#二分类及多分类的编码方式" class="headerlink" title="二分类及多分类的编码方式"></a>二分类及多分类的编码方式</h4><p>参见：<a href="https://www.cnblogs.com/lryou/p/14627564.html">https://www.cnblogs.com/lryou/p/14627564.html</a></p>
-<h4 id="cross-validation解决数据泄露"><a href="#cross-validation解决数据泄露" class="headerlink" title="cross_validation解决数据泄露"></a>cross_validation解决数据泄露</h4><p>Cross-validation将训练数据分成k份，在计算某一份的target encoding时，我们不使用这一份中对应的目标值进行计算，而是使用剩余k-1份数据，进行对应标签的target encoding计算。<br>对于同一个属性值，这种方式产生的encoding一般是不一致的。在测试集中，对应的target encoding可以通过将训练集中这些属性的encoding取平均获得。[<a href="https://datascience.stackexchange.com/questions/45881/target-encoding-with-cross-validation">9]</a></p>
-<p>参见：<a href="https://blog.csdn.net/weixin_37737254/article/details/108786828">https://blog.csdn.net/weixin_37737254/article/details/108786828</a></p>
-]]></content>
-      <categories>
-        <category>Python</category>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基于时间的合作商绩效考核体系搭建</title>
-    <url>/2021/01/08/%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E5%90%88%E4%BD%9C%E5%95%86%E7%BB%A9%E6%95%88%E8%80%83%E6%A0%B8%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA/</url>
+    <url>/2021/01/08/%E5%85%B6%E4%BB%96-%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E5%90%88%E4%BD%9C%E5%95%86%E7%BB%A9%E6%95%88%E8%80%83%E6%A0%B8%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<h2 id="1-目标"><a href="#1-目标" class="headerlink" title="1.目标"></a>1.目标</h2><p>为合作商近6个月的贡献情况打分，要求离当前时间越接近，分数的权重越高，且尽量保证公平。</p>
 <h2 id="2-思路"><a href="#2-思路" class="headerlink" title="2.思路"></a>2.思路</h2><p>在建模中用到4个重要特征，包含了三个时间点和一个完成率：</p>
 <p>a. 项目开始时间点</p>
@@ -340,10 +394,10 @@
 <h2 id="6-一些不足"><a href="#6-一些不足" class="headerlink" title="6.一些不足"></a>6.一些不足</h2><p><strong>本报告中默认所有合作业务有相同的考察指标，进而将变量控制在了距离当前时间这一关键点上</strong>，而在实际搭建模型中还需要其他合作业务的评估指标，才能将系统搭建的更为完善。</p>
 ]]></content>
       <categories>
-        <category>Python</category>
+        <category>其他</category>
       </categories>
       <tags>
-        <tag>Python</tag>
+        <tag>其他</tag>
       </tags>
   </entry>
   <entry>
@@ -437,7 +491,7 @@
 ]]></content>
       <categories>
         <category>SQL</category>
-        <category>leetcode</category>
+        <category>SQL随笔</category>
       </categories>
       <tags>
         <tag>SQL-练习</tag>
@@ -447,22 +501,20 @@
     <title>Sql-删除重复邮箱</title>
     <url>/2020/12/25/Sql-%E5%88%A0%E9%99%A4%E9%87%8D%E5%A4%8D%E9%82%AE%E7%AE%B1/</url>
     <content><![CDATA[<p>编写一个 SQL 查询，来删除 <code>Person</code> 表中所有重复的电子邮箱，重复的邮箱里只保留 <strong>Id</strong> <em>最小</em> 的那个。</p>
+<p>这里需要注意的点是：<strong>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：You can’t specify target table ‘PERSON’ for update in FROM clause</strong></p>
 <a id="more"></a>
 
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#111;&#104;&#110;&#64;&#x65;&#x78;&#97;&#109;&#x70;&#x6c;&#x65;&#46;&#99;&#x6f;&#109;">&#x6a;&#111;&#104;&#110;&#64;&#x65;&#x78;&#97;&#109;&#x70;&#x6c;&#x65;&#46;&#99;&#x6f;&#109;</a> |<br>| 2  | <a href="mailto:&#x62;&#111;&#98;&#64;&#x65;&#120;&#x61;&#x6d;&#112;&#x6c;&#101;&#x2e;&#99;&#111;&#109;">&#x62;&#111;&#98;&#64;&#x65;&#120;&#x61;&#x6d;&#112;&#x6c;&#101;&#x2e;&#99;&#111;&#109;</a>  |<br>| 3  | <a href="mailto:&#x6a;&#x6f;&#x68;&#x6e;&#64;&#x65;&#x78;&#97;&#109;&#112;&#108;&#101;&#x2e;&#99;&#x6f;&#x6d;">&#x6a;&#x6f;&#x68;&#x6e;&#64;&#x65;&#x78;&#97;&#109;&#112;&#108;&#101;&#x2e;&#99;&#x6f;&#x6d;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#x6f;&#x68;&#x6e;&#64;&#101;&#120;&#97;&#109;&#112;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;">&#x6a;&#x6f;&#x68;&#x6e;&#64;&#101;&#120;&#97;&#109;&#112;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;</a> |<br>| 2  | <a href="mailto:&#98;&#x6f;&#x62;&#64;&#101;&#x78;&#97;&#x6d;&#112;&#108;&#x65;&#46;&#99;&#111;&#109;">&#98;&#x6f;&#x62;&#64;&#101;&#x78;&#97;&#x6d;&#112;&#108;&#x65;&#46;&#99;&#111;&#109;</a>  |<br>| 3  | <a href="mailto:&#106;&#x6f;&#104;&#x6e;&#64;&#x65;&#120;&#97;&#109;&#112;&#x6c;&#101;&#x2e;&#99;&#111;&#x6d;">&#106;&#x6f;&#104;&#x6e;&#64;&#x65;&#120;&#97;&#109;&#112;&#x6c;&#101;&#x2e;&#99;&#111;&#x6d;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
 <p>例如，在运行你的查询语句之后，上面的 <code>Person</code> 表应返回以下几行:</p>
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#x6f;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x63;&#x6f;&#x6d;">&#106;&#x6f;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x63;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#x6f;&#98;&#x40;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#111;&#x6d;">&#x62;&#x6f;&#98;&#x40;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#111;&#x6d;</a>  |<br>+—-+——————+</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#111;&#x68;&#x6e;&#64;&#101;&#120;&#97;&#109;&#112;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;">&#x6a;&#111;&#x68;&#x6e;&#64;&#101;&#120;&#97;&#109;&#112;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;</a> |<br>| 2  | <a href="mailto:&#98;&#111;&#98;&#x40;&#x65;&#x78;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#99;&#x6f;&#109;">&#98;&#111;&#98;&#x40;&#x65;&#x78;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#99;&#x6f;&#109;</a>  |<br>+—-+——————+</p>
 <p><strong>解法：</strong></p>
-<p>题目本身不难，但是有一个点需要注意：</p>
-<p>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：</p>
-<p><code>You can&#39;t specify target table &#39;PERSON&#39; for update in FROM clause</code></p>
-<p>所以要把查找出来的东西先放在另一个表里（这里是t）过渡一下。</p>
+<p>把查找出来的东西先放在另一个表里（这里是t）过渡一下。</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> PERSON</span><br><span class="line"><span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">not</span> <span class="keyword">in</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">SELECT</span> t.m_id</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> <span class="keyword">MIN</span>(<span class="keyword">id</span>) m_id</span><br><span class="line"><span class="keyword">FROM</span> person <span class="keyword">GROUP</span> <span class="keyword">BY</span> email) t</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
         <category>SQL</category>
-        <category>leetcode</category>
+        <category>SQL随笔</category>
       </categories>
       <tags>
         <tag>SQL-练习</tag>
@@ -470,7 +522,7 @@
   </entry>
   <entry>
     <title>HiveSQL部分题目(1-11)</title>
-    <url>/2020/11/24/HiveSQL%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE(1)/</url>
+    <url>/2020/11/24/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-Hql%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<p>HiveSQL的语法上和SQL还是非常像的，本文主要是记录了一些HQL的相关题目。比较简单的题一笔带过了，思路复杂一些的则会花大点的篇幅重点分析。</p>
 <a id="more"></a>
 
@@ -521,8 +573,8 @@
 </ol>
 ]]></content>
       <categories>
+        <category>大数据</category>
         <category>Hive</category>
-        <category>HiveSQL语法</category>
       </categories>
       <tags>
         <tag>Hive</tag>
@@ -617,7 +669,7 @@
   </entry>
   <entry>
     <title>Sql-经典50题(20-50)</title>
-    <url>/2020/11/22/sql-%E7%BB%8F%E5%85%B850%E9%A2%98(20-50)/</url>
+    <url>/2020/11/22/Sql-%E7%BB%8F%E5%85%B850%E9%A2%98(20-50)/</url>
     <content><![CDATA[<p>B站链接：<a href="https://www.bilibili.com/video/BV1q4411G7Lw?p=9">https://www.bilibili.com/video/BV1q4411G7Lw?p=9</a> </p>
 <p>本篇文章不包含23，35，40，41题，在”Sql-经典50题(重点题)”中单独分析，文章链接在下面：</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line">https://www.sqlcat.cn/2020/11/23/Sql-%E7%BB%8F%E5%85%B850%E9%A2%98(%E9%87%8D%E7%82%B9%E9%A2%98)/</span><br></pre></td></tr></table></figure>
@@ -732,7 +784,7 @@
   </entry>
   <entry>
     <title>R²和Adjusted R²</title>
-    <url>/2020/11/17/R-square/</url>
+    <url>/2020/11/17/%E7%BB%9F%E8%AE%A1%E5%AD%A6-R-square/</url>
     <content><![CDATA[<p>未完待续</p>
 <p>在构建好机器学习模型后，评判该模型是否优秀是非常重要的。本文简单的介绍了一种机器学习种较为常用的模型评估方法，即R²。</p>
 <a id="more"></a>
@@ -842,8 +894,70 @@
       </tags>
   </entry>
   <entry>
+    <title>期货期权常识</title>
+    <url>/2020/11/07/%E5%85%B6%E4%BB%96-%E6%9C%9F%E8%B4%A7%E6%9C%9F%E6%9D%83%E5%B8%B8%E8%AF%86/</url>
+    <content><![CDATA[<h2 id="期权"><a href="#期权" class="headerlink" title="期权"></a>期权</h2><p>分为看涨期权和看跌期权。看涨期权是赌涨，看跌期权是赌跌。期权里股票的最小成交单位是100股。</p>
+<a id="more"></a>
+
+<h4 id="看涨期权call-option—单买"><a href="#看涨期权call-option—单买" class="headerlink" title="看涨期权call option—单买"></a>看涨期权call option—单买</h4><p>当前苹果股票130美元，想在3个月后购入苹果股票，但担心到时候股票会涨价，就以5美元的权利金购买了看涨期权。3个月后，如果股票跌到了100美元，你可以不行权，以市场价买入，这样只亏权利金5美元。如果股票涨到200美元，如果按市场价买就太贵了，但是如果行权，还是会以130美元买入股票，到时候倒手一卖，这样盈利就是200-130-5=65美元。所以我的利润区间是[-5,+∞)。</p>
+<p>而卖我看涨期权的人，最多挣5美元，最多无限亏（因为如果股票涨到1000美元了，还是他负责1000买，然后130美元卖我，他亏了870美元。）</p>
+<h4 id="看跌期权put-option—单买"><a href="#看跌期权put-option—单买" class="headerlink" title="看跌期权put option—单买"></a>看跌期权put option—单买</h4><p>手头不持股，以5美元的权利金买入130美元/股的看跌期权，3个月内可以以130美元卖出股票。如果3个月后，股票价格涨到200美元，你手头没股票，也就不必行权了，亏5美元。如果3个月后，股票跌到每股100美元，则可以用市场价100美元买入，再行权以130美元卖出去，则怒挣25美元。如此看来，利润区间是[-5,125]，因为股票最低0美元。</p>
+<p>而卖我看跌期权的人，最多挣5美元，最多亏125美元（因为他要承接我130美元卖出去的原价0美元股票）。</p>
+<h4 id="看跌期权put-option—先买股票再买看跌期权"><a href="#看跌期权put-option—先买股票再买看跌期权" class="headerlink" title="看跌期权put option—先买股票再买看跌期权"></a>看跌期权put option—先买股票再买看跌期权</h4><p>比如当前持有的苹果股票130美元，你担心未来3个月内苹果股票会跌，就以5美元的权利金购买了看跌期权。3个月后，如果股票涨到了200美元，你可以不行权，以市场价卖出去这样利润是200-130-5=65美元。如果股票跌到100美元，如果按市场价卖就损失了30美元，但是如果行权，还是会以130美元卖出股票，这样亏损就是5美元。所以我的利润区间是[-5,+∞)。</p>
+<h3 id="期权的底层资产"><a href="#期权的底层资产" class="headerlink" title="期权的底层资产"></a>期权的底层资产</h3><p>指期权的作用物，可以是股票，也可以是期货。</p>
+<h3 id="期权可以单独交易"><a href="#期权可以单独交易" class="headerlink" title="期权可以单独交易"></a>期权可以单独交易</h3><p>可以5美元的权利金买到期日3个月，行权价130美元的看涨期权。之后这个权利金可能会涨到6美元，那可以直接把这个期权卖出去，赚1美元。</p>
+<h4 id="期权价格为什么会变化？"><a href="#期权价格为什么会变化？" class="headerlink" title="期权价格为什么会变化？"></a><strong>期权价格为什么会变化？</strong></h4><ul>
+<li><h5 id="标的价格（市场价）。"><a href="#标的价格（市场价）。" class="headerlink" title="标的价格（市场价）。"></a>标的价格（市场价）。</h5><p>标的价格上涨，则认购期权价格上涨，而认沽期权价格下跌。苹果股票从130涨到150，看涨期权赚的更多，所以期权价格也会涨。而同样若苹果股票从130涨到150，买了看跌期权的人大概率不能行权，为了少亏点权利金，就会降价卖看跌期权，自己少赔点，让哪些依然看跌的人接盘。</p>
+</li>
+<li><h5 id="行权价"><a href="#行权价" class="headerlink" title="行权价"></a>行权价</h5><p>行权价高，则认购期权的价格越低，认沽期权的价格越高。同样的高行权价，看涨的人是以行权价买，所以大概率不会行权，除非市场价比行权价还高很多（不大可能，行权价本身已经是看涨的了）；但看跌的人是以行权价卖，这样非常容易赚钱。</p>
+<ul>
+<li>认购期权 = 看涨期权</li>
+<li>认沽期权 = 看跌期权</li>
+<li>行权价格 = 执行价格</li>
+</ul>
+</li>
+<li><h5 id="合约到期期限"><a href="#合约到期期限" class="headerlink" title="合约到期期限"></a>合约到期期限</h5><p>对于期权来说，期权到期期限越长，期权买方获利的可能性越大，期权卖方须承担的风险也越大，因此期权价格越高。从另外一个角度看，期权到期期限越长，期权的时间价值也就越高，这是要特别注意的期权价格影响因素。</p>
+</li>
+<li><h5 id="标的证券价格波动率（股票价格波动）。"><a href="#标的证券价格波动率（股票价格波动）。" class="headerlink" title="标的证券价格波动率（股票价格波动）。"></a>标的证券价格波动率（股票价格波动）。</h5><p>标的证券价格的波动率是用来衡量标的证券未来价格变动不确定性的指标，简单地说，标的证券价格波动率越高，期权合约到期时成为实值期权的可能性就越高，因此相应合约具有更高的价格。（因为期货价格一般与当前执行价格距离较大）</p>
+<ul>
+<li><strong>实值期权</strong>：能挣钱，比如期货价格&lt;执行价格的认购期权，或期货价格&gt;执行价格的认沽期权。</li>
+<li><strong>平值期权</strong>：期货价格 = 执行价格</li>
+<li><strong>虚值期权</strong>：不会行权的，期货价格&gt;执行价格的认购期权，或期货价格&lt;执行价格的认沽期权。</li>
+</ul>
+</li>
+<li><h5 id="市场无风险利率。"><a href="#市场无风险利率。" class="headerlink" title="市场无风险利率。"></a>市场无风险利率。</h5><p>认购期权具有融资买入标的证券的性质，市场无风险利率越高，意味着融资成本越高，标的价格越容易涨，所以认购期权的价格就越高。</p>
+</li>
+</ul>
+<h3 id="期权价格怎么定"><a href="#期权价格怎么定" class="headerlink" title="期权价格怎么定"></a><strong>期权价格怎么定</strong></h3><p>期权价格是由买卖双方竞价产生的。期权价格分成两部分，即内涵价值和时间价值。期权价格=内涵价值+时间价值。</p>
+<h4 id="内涵价值"><a href="#内涵价值" class="headerlink" title="内涵价值"></a><strong>内涵价值</strong></h4><p>内涵价值是<strong>立即执行</strong>期权合约时可获取的利润。只有“实值期权”具有内涵价值，“平值期权”内涵价值为零，“虚值期权”无内涵价值。</p>
+<p>比如：期货价格100元，执行价格90元的看涨期权，内含价值10元，如果此时权利金15元，则说明时间价值为5元。</p>
+<p>再比如：期货价格90元，执行价格100元的看涨期权，是虚值期权，如果此时权利金为5元，则说明时间价值为5元。</p>
+<p>一般来说，在其它条件一定的情况下，到期时间越长，期权的时间价值越大。在期权临近到期的时候，时间价值逐渐降低，在到期日当天，时间价值全部转变为内含价值。</p>
+<h3 id="期权是跟谁购买？做市商"><a href="#期权是跟谁购买？做市商" class="headerlink" title="期权是跟谁购买？做市商"></a><strong>期权是跟谁购买？做市商</strong></h3><p>注意：买call option的对手可不是买put option的人哦，他们俩都是买方，其共同的对手是做市商。</p>
+<p>做市商：指在证券市场上，由具备一定实力和信誉的独立证券经营法人作为特许交易商，不断向公众投资者报出某些特定证券的买卖价格（即双向报价），并在该价位上接受公众投资者的买卖要求，以其自有资金和证券与投资者进行证券交易。</p>
+<h2 id="期货"><a href="#期货" class="headerlink" title="期货"></a>期货</h2><h3 id="套期保值"><a href="#套期保值" class="headerlink" title="套期保值"></a><strong>套期保值</strong></h3><p>某一时间点，在<strong>现货市场和期货市场</strong>对同一种类的商品同时进行<strong>数量相等但方向相反</strong>的买卖活动，即在买进或卖出实货的同时，在期货市场上卖出或买进同等数量的期货，经过一段时间，当价格变动使现货买卖上出现盈亏时，可由期货交易上的亏盈得到抵消或弥补。从而在“现”与“期”之间、近期和远期之间建立一种对冲机制，以使价格风险降低到最低限度。</p>
+<p>例子</p>
+<p>猪肉市场价10000，期货价9000，投机者如果看多猪肉，则可以做多猪肉，买入10手猪肉期货。如果到期猪肉涨到了现货20000，期货18000，那他可以18000卖出10手猪肉期货，实现平仓，赚10*(18000-9000)=9w。</p>
+<p>但对猪肉养殖场来说，他们手头有猪肉，如果他们也看涨猪肉，也可以做多猪肉，买10手猪肉期货。如果到期猪肉涨到了现货20000，期货18000，那他可以18000卖出10手猪肉期货，实现平仓，在期货市场是赚10*(18000-9000) = 9w，另外现货市场上也可以赚到10×(20000-10000)=10w。（<strong>但只有SB这么玩，如果猪肉跌了，他在现货市场和期货市场都要赔钱</strong>）</p>
+<p>如果养殖场看空猪肉，则可以先10000卖出10手生猪期货，如果到时候真跌到了现货8000和期货8200，他现货市场会亏10×(10000-8000)=20000；但在期货市场，如果他以8200元买入10手生猪期货进行平仓，可以赚10×(9000-8200)=8000元。这样一对冲他就只亏12000元。</p>
+<h3 id="期货合约"><a href="#期货合约" class="headerlink" title="期货合约"></a><strong>期货合约</strong></h3><p>3个月后以10000块钱买卖生猪，合约金5%.</p>
+<h3 id="做多和做空"><a href="#做多和做空" class="headerlink" title="做多和做空"></a><strong>做多和做空</strong></h3><p>做多者觉得某个商品未来会涨价，他买入期货。</p>
+<p>做空者觉得某个商品未来会降价，他卖出期货。</p>
+<ul>
+<li>3个月后，生猪期货涨到了20000，为了平仓，做多的人卖出价值20000的期货，挣10000。而做空者要买入价值20000的期货，亏10000。</li>
+<li>3个月后，生猪期货跌到了5000，为了平仓，做多的人卖出价值5000的期货，亏5000。而做空者要买入价值5000的期货，挣5000。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其他</category>
+      </categories>
+      <tags>
+        <tag>其他</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>赛马问题</title>
-    <url>/2020/11/07/%E8%B5%9B%E9%A9%AC%E9%97%AE%E9%A2%98/</url>
+    <url>/2020/11/07/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E8%B5%9B%E9%A9%AC%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>有64匹马，一共有8个赛道，想要找出最快的4匹马，要比赛最少多少轮才可以？</p>
 <a id="more"></a>
 
@@ -936,15 +1050,15 @@
 <p>综上所述，10轮或11轮都有可能。</p>
 ]]></content>
       <categories>
-        <category>概率论</category>
+        <category>统计学</category>
       </categories>
       <tags>
-        <tag>概率趣味题</tag>
+        <tag>统计学</tag>
       </tags>
   </entry>
   <entry>
     <title>罗格斯特征数</title>
-    <url>/2020/10/27/%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
+    <url>/2020/10/27/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E7%BD%97%E6%A0%BC%E6%96%AF%E7%89%B9%E5%BE%81%E6%95%B0/</url>
     <content><![CDATA[<p>现第一行有0 1 2 3 4 5 6 7 8 9这10个数字。</p>
 <p>在第二行这10个数字下方以如下方法填入新的数字：每个位置填入的数字是上方对应的数字将要在第二行出现的次数。</p>
 <a id="more"></a>
@@ -980,15 +1094,15 @@
 <p>思路： 判断哪个数字应该出现的次数最多</p>
 ]]></content>
       <categories>
-        <category>概率论</category>
+        <category>统计学</category>
       </categories>
       <tags>
-        <tag>概率趣味题</tag>
+        <tag>统计学</tag>
       </tags>
   </entry>
   <entry>
     <title>SKlearn部分配置</title>
-    <url>/2020/10/27/%E6%B6%88%E9%99%A4%E8%AD%A6%E5%91%8A%E4%BF%A1%E6%81%AF/</url>
+    <url>/2020/10/27/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-SKlearn%E9%83%A8%E5%88%86%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<p>本文记录了使用SKlearn进行机器学习过程中遇到的一些问题，包括数据可视化及数据预处理。</p>
 <a id="more"></a>
 
@@ -1062,7 +1176,7 @@
   </entry>
   <entry>
     <title>SKlearn的pipeline机制</title>
-    <url>/2020/10/20/sklearn%E7%9A%84pipeline%E6%9C%BA%E5%88%B6/</url>
+    <url>/2020/10/20/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-sklearn%E7%9A%84pipeline%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<p>基本上所有评估其和转换器都有三个方法，fit,transform,和fit_transform。而在pipeline中，它的最后一部分为评估器，<strong>也就是说最后一步一定是个分类器</strong>，而前面的预处理、降维、正则化等都是转换器。</p>
 <a id="more"></a>
 
@@ -1103,7 +1217,7 @@
   </entry>
   <entry>
     <title>Airbnb房价预测-数据预处理</title>
-    <url>/2020/09/08/Airbnb%E6%88%BF%E4%BB%B7%E9%A2%84%E6%B5%8B-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
+    <url>/2020/09/08/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Airbnb%E6%88%BF%E4%BB%B7%E9%A2%84%E6%B5%8B_%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<p>本文基于kaggle上的房价预测项目，对数据预处理的流程进行总结。由于这是上手的第一个项目，数据预处理的过程相对比较简单，主要涵盖了数据感知可视化，outliers的清理，空值填充，及初步选取特征四个方面，后续会不断加入categorical encoding，添加特征等方法。</p>
 <a id="more"></a>
 
@@ -1176,113 +1290,6 @@
       </categories>
       <tags>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>字符与字符串</title>
-    <url>/2019/12/26/%E5%AD%97%E7%AC%A6%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2/</url>
-    <content><![CDATA[<p>C语言中字符和字符串的相关知识点。</p>
-<a id="more"></a>
-
-<h3 id="1-1字符型与整数型的输入输出"><a href="#1-1字符型与整数型的输入输出" class="headerlink" title="1.1字符型与整数型的输入输出"></a>1.1字符型与整数型的输入输出</h3><p>首先1与’1’在计算机中是不同的</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> c1;</span><br><span class="line">    <span class="keyword">char</span> c2;</span><br><span class="line">    c1 = <span class="number">1</span>;</span><br><span class="line">    c2 =<span class="string">&#x27;1&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span>(c1==c2)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;相同&quot;</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;不同&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由此可发现他们是不同的，分别以%d的形式输出c1，c2,<br>会得到c1=1,c2=49.<br>（char也是一种整型，所以可以按%d输出，但不能直接以%d形式输入。）</p>
-<h3 id="1-2字符型输入的两种方式"><a href="#1-2字符型输入的两种方式" class="headerlink" title="1.2字符型输入的两种方式"></a>1.2字符型输入的两种方式</h3><p>1.直接以%c配合字符形式输入。</p>
-<blockquote>
-<p>scanf(“%c”,&amp;c1);</p>
-</blockquote>
-<p>此时输入’1’,即可将’1’赋给c1。</p>
-<blockquote>
-<p>printf(“‘%c’”,c1);</p>
-</blockquote>
-<p>得到1。</p>
-<p>2.先用%d给另一个整型变量i输入，再将该i值赋给字符s1。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int i;</span><br><span class="line">scanf(&quot;%d&quot;,&amp;i);</span><br><span class="line">s1&#x3D;i;</span><br><span class="line">printf(&quot;&#39;%c&#39;&quot;,s1);</span><br></pre></td></tr></table></figure>
-<p>此时如果给i输入49，则i将49传给s1，若按%c输出s1就是’1’，若按%d输出则为49.</p>
-<h3 id="1-3混合输入输出"><a href="#1-3混合输入输出" class="headerlink" title="1.3混合输入输出"></a>1.3混合输入输出</h3><blockquote>
-<p>scanf(“%d %c”,&amp;i,&amp;s1);</p>
-</blockquote>
-<blockquote>
-<p>scanf(“%d%c”,&amp;i,&amp;s1);</p>
-</blockquote>
-<p>由于第一个函数%d与%c之间有空格，那么输完一个整型数字后的所有空格,tab,return都会被读掉，然后再去读s1.</p>
-<p>而第二个函数%d%c之间没空格，所以整数就只读到整数结束为止，下面的东西读给s1,无论是空格，tab还是return都会给到c.</p>
-<h3 id="1-4字符运算"><a href="#1-4字符运算" class="headerlink" title="1.4字符运算"></a>1.4字符运算</h3><p>注意两个式子：</p>
-<blockquote>
-<p>char a =’A;</p>
-</blockquote>
-<blockquote>
-<p>a++;</p>
-</blockquote>
-<p>则a=’B’</p>
-<p>如果要求两个字母间的距离，要用int</p>
-<blockquote>
-<p>int i= ‘a’-‘A;</p>
-</blockquote>
-<blockquote>
-<p>printf(“%d”,i)=25</p>
-</blockquote>
-<p>用a+’a’-‘A’从大写变小写<br>用a+’A’-‘a’从小写变大写<br>注意第一个a是整数，不是字符，这里想表达一种变化性，当然也可以写成某一个特定字符。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">    <span class="keyword">char</span> d;</span><br><span class="line">    c=<span class="string">&#x27;d&#x27;</span>+<span class="string">&#x27;A&#x27;</span>-<span class="string">&#x27;a&#x27;</span>;<span class="comment">//注意是字符d，</span></span><br><span class="line">    d=c+<span class="string">&#x27;a&#x27;</span>-<span class="string">&#x27;A&#x27;</span>;<span class="comment">//注意是变量c</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;c=%c d=%c&quot;</span>,c,d);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>结果</p>
-<blockquote>
-<p>c=D d=d</p>
-</blockquote>
-<h2 id="二、字符串"><a href="#二、字符串" class="headerlink" title="二、字符串"></a>二、字符串</h2><h3 id="2-1字符数组与字符串——数组方式初始化字符串"><a href="#2-1字符数组与字符串——数组方式初始化字符串" class="headerlink" title="2.1字符数组与字符串——数组方式初始化字符串"></a>2.1字符数组与字符串——数组方式初始化字符串</h3><p>字符串也是字符数组，不过它的结尾是数字0（多表示成’\0’）。</p>
-<p>正常的字符数组初始化：</p>
-<blockquote>
-<p>char s[]={‘H’,’E’,’L’,’L’,’O’,’!’};</p>
-</blockquote>
-<p>字符串数组的初始化：</p>
-<blockquote>
-<p>char s[]={‘H’,’E’,’L’,’L’,’O’,’!’,’\0’};</p>
-</blockquote>
-<p>就是因为结尾的0，才让这个字符数组变成了C语言的字符串。</p>
-<h3 id="2-2字符串的存在形式"><a href="#2-2字符串的存在形式" class="headerlink" title="2.2字符串的存在形式"></a>2.2字符串的存在形式</h3><p>字符串以数组的形式存在，可以通过数组或指针的方式进行访问。</p>
-<p>！！指针方式：</p>
-<blockquote>
-<p>char *str=”Hello”;</p>
-</blockquote>
-<p>注意这表示str是一个指针，指向的内容是字符类型的，只不过现在这个情况下它指的是个字符数组，所以它是字符串，他也完全可以指向一个单个字符，那就不是字符串了！</p>
-<p>数组方式：除了上述的依次枚举表达方式，还有如下：</p>
-<blockquote>
-<p>char word[]=”Hello”;</p>
-</blockquote>
-<blockquote>
-<p>char line[10]=”Hello”;</p>
-</blockquote>
-<p>注意双引号。</p>
-<p>此外，紧密相邻的字符串会被连接起来：</p>
-<blockquote>
-<p>printf(“A”</p>
-</blockquote>
-<blockquote>
-<p>“B”);</p>
-</blockquote>
-<p>最终会输出AB.</p>
-<h3 id="2-3字符串在内存中的存储方式"><a href="#2-3字符串在内存中的存储方式" class="headerlink" title="2.3字符串在内存中的存储方式"></a>2.3字符串在内存中的存储方式</h3><p>以数组方式表达的字符串，其地址存在于计算机的代码段，是只读的，所以无法对数组表达的字符串进行修改。</p>
-<p>同时，存储相同字符串的不同变量，他们的地址相同，相当于一人分饰两角。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> *s=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="keyword">char</span> *s1=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;s=%p s1=%p&quot;</span>,s,s1); <span class="comment">//会发现s==s1;</span></span><br><span class="line">s[<span class="number">0</span>]=<span class="string">&#x27;B&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%c&quot;</span>,s[<span class="number">0</span>]);</span><br></pre></td></tr></table></figure>
-<p>这样的程序是会报错的。换句话说：</p>
-<p>char *s == const char *s 即指针所指向的char类型内容（即字符串）是const型的。</p>
-<h3 id="2-4字符串的输入输出"><a href="#2-4字符串的输入输出" class="headerlink" title="2.4字符串的输入输出"></a>2.4字符串的输入输出</h3><p>常见的方式都是通过数组表达字符串，然后对其进行输入输出</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> <span class="built_in">string</span>[<span class="number">8</span>];</span><br><span class="line"><span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,<span class="built_in">string</span>);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>,<span class="built_in">string</span>);</span><br></pre></td></tr></table></figure>
-<p>此处注意%s只读入单词，当你输入tab，空格，return都会默认该单词读完了。</p>
-<p>为了更安全的输入，会写成%ns，n代表能输入的最大位数，由于本数组大小为8，且最后一位有0，所以最多还能输7位。</p>
-<h2 id="三、指针方式的输入输出"><a href="#三、指针方式的输入输出" class="headerlink" title="三、指针方式的输入输出"></a>三、指针方式的输入输出</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> *s=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="keyword">char</span> *s1=<span class="string">&quot;Hello,World!&quot;</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%s %s&quot;</span>,s,s1);</span><br></pre></td></tr></table></figure>
-<p>我发现都可以输出Hello,World!.<br>这让我很疑惑，因为s和s1不是存放的地址吗，而想输出*s,*s1却也可以通过编译，但是无法输出内容。</p>
-<p>我尝试了：</p>
-<blockquote>
-<p>printf(“%c %d”,*s,*s);</p>
-</blockquote>
-<p>输出得到了’H’ 72 (‘H’的ASCII码)</p>
-<p>所以关于<strong>指针和数组</strong>之间的关系，我必须再看看C primer plus.</p>
-]]></content>
-      <categories>
-        <category>C语言</category>
-      </categories>
-      <tags>
-        <tag>C语言</tag>
       </tags>
   </entry>
 </search>

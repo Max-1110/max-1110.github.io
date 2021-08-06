@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16.png">
+  <link rel="mask-icon" href="/images/180.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Consolas:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="期权分为看涨期权和看跌期权。看涨期权是赌涨，看跌期权是赌跌。期权里股票的最小成交单位是100股。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="期货期权常识">
+<meta property="og:url" content="http://example.com/2020/11/07/%E5%85%B6%E4%BB%96-%E6%9C%9F%E8%B4%A7%E6%9C%9F%E6%9D%83%E5%B8%B8%E8%AF%86/index.html">
+<meta property="og:site_name" content="阿乐·Blog">
+<meta property="og:description" content="期权分为看涨期权和看跌期权。看涨期权是赌涨，看跌期权是赌跌。期权里股票的最小成交单位是100股。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-07T00:41:33.000Z">
+<meta property="article:modified_time" content="2021-08-05T02:49:32.035Z">
+<meta property="article:author" content="Max">
+<meta property="article:tag" content="其他">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/11/07/%E5%85%B6%E4%BB%96-%E6%9C%9F%E8%B4%A7%E6%9C%9F%E6%9D%83%E5%B8%B8%E8%AF%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <title>期货期权常识 | 阿乐·Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿乐·Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>时光轴</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/07/%E5%85%B6%E4%BB%96-%E6%9C%9F%E8%B4%A7%E6%9C%9F%E6%9D%83%E5%B8%B8%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          期货期权常识
+        </h1>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-07 08:41:33" itemprop="dateCreated datePublished" datetime="2020-11-07T08:41:33+08:00">2020-11-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-05 10:49:32" itemprop="dateModified" datetime="2021-08-05T10:49:32+08:00">2021-08-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="期权"><a href="#期权" class="headerlink" title="期权"></a>期权</h2><p>分为看涨期权和看跌期权。看涨期权是赌涨，看跌期权是赌跌。期权里股票的最小成交单位是100股。</p>
+<a id="more"></a>
+
+<h4 id="看涨期权call-option—单买"><a href="#看涨期权call-option—单买" class="headerlink" title="看涨期权call option—单买"></a>看涨期权call option—单买</h4><p>当前苹果股票130美元，想在3个月后购入苹果股票，但担心到时候股票会涨价，就以5美元的权利金购买了看涨期权。3个月后，如果股票跌到了100美元，你可以不行权，以市场价买入，这样只亏权利金5美元。如果股票涨到200美元，如果按市场价买就太贵了，但是如果行权，还是会以130美元买入股票，到时候倒手一卖，这样盈利就是200-130-5=65美元。所以我的利润区间是[-5,+∞)。</p>
+<p>而卖我看涨期权的人，最多挣5美元，最多无限亏（因为如果股票涨到1000美元了，还是他负责1000买，然后130美元卖我，他亏了870美元。）</p>
+<h4 id="看跌期权put-option—单买"><a href="#看跌期权put-option—单买" class="headerlink" title="看跌期权put option—单买"></a>看跌期权put option—单买</h4><p>手头不持股，以5美元的权利金买入130美元/股的看跌期权，3个月内可以以130美元卖出股票。如果3个月后，股票价格涨到200美元，你手头没股票，也就不必行权了，亏5美元。如果3个月后，股票跌到每股100美元，则可以用市场价100美元买入，再行权以130美元卖出去，则怒挣25美元。如此看来，利润区间是[-5,125]，因为股票最低0美元。</p>
+<p>而卖我看跌期权的人，最多挣5美元，最多亏125美元（因为他要承接我130美元卖出去的原价0美元股票）。</p>
+<h4 id="看跌期权put-option—先买股票再买看跌期权"><a href="#看跌期权put-option—先买股票再买看跌期权" class="headerlink" title="看跌期权put option—先买股票再买看跌期权"></a>看跌期权put option—先买股票再买看跌期权</h4><p>比如当前持有的苹果股票130美元，你担心未来3个月内苹果股票会跌，就以5美元的权利金购买了看跌期权。3个月后，如果股票涨到了200美元，你可以不行权，以市场价卖出去这样利润是200-130-5=65美元。如果股票跌到100美元，如果按市场价卖就损失了30美元，但是如果行权，还是会以130美元卖出股票，这样亏损就是5美元。所以我的利润区间是[-5,+∞)。</p>
+<h3 id="期权的底层资产"><a href="#期权的底层资产" class="headerlink" title="期权的底层资产"></a>期权的底层资产</h3><p>指期权的作用物，可以是股票，也可以是期货。</p>
+<h3 id="期权可以单独交易"><a href="#期权可以单独交易" class="headerlink" title="期权可以单独交易"></a>期权可以单独交易</h3><p>可以5美元的权利金买到期日3个月，行权价130美元的看涨期权。之后这个权利金可能会涨到6美元，那可以直接把这个期权卖出去，赚1美元。</p>
+<h4 id="期权价格为什么会变化？"><a href="#期权价格为什么会变化？" class="headerlink" title="期权价格为什么会变化？"></a><strong>期权价格为什么会变化？</strong></h4><ul>
+<li><h5 id="标的价格（市场价）。"><a href="#标的价格（市场价）。" class="headerlink" title="标的价格（市场价）。"></a>标的价格（市场价）。</h5><p>标的价格上涨，则认购期权价格上涨，而认沽期权价格下跌。苹果股票从130涨到150，看涨期权赚的更多，所以期权价格也会涨。而同样若苹果股票从130涨到150，买了看跌期权的人大概率不能行权，为了少亏点权利金，就会降价卖看跌期权，自己少赔点，让哪些依然看跌的人接盘。</p>
+</li>
+<li><h5 id="行权价"><a href="#行权价" class="headerlink" title="行权价"></a>行权价</h5><p>行权价高，则认购期权的价格越低，认沽期权的价格越高。同样的高行权价，看涨的人是以行权价买，所以大概率不会行权，除非市场价比行权价还高很多（不大可能，行权价本身已经是看涨的了）；但看跌的人是以行权价卖，这样非常容易赚钱。</p>
+<ul>
+<li>认购期权 = 看涨期权</li>
+<li>认沽期权 = 看跌期权</li>
+<li>行权价格 = 执行价格</li>
+</ul>
+</li>
+<li><h5 id="合约到期期限"><a href="#合约到期期限" class="headerlink" title="合约到期期限"></a>合约到期期限</h5><p>对于期权来说，期权到期期限越长，期权买方获利的可能性越大，期权卖方须承担的风险也越大，因此期权价格越高。从另外一个角度看，期权到期期限越长，期权的时间价值也就越高，这是要特别注意的期权价格影响因素。</p>
+</li>
+<li><h5 id="标的证券价格波动率（股票价格波动）。"><a href="#标的证券价格波动率（股票价格波动）。" class="headerlink" title="标的证券价格波动率（股票价格波动）。"></a>标的证券价格波动率（股票价格波动）。</h5><p>标的证券价格的波动率是用来衡量标的证券未来价格变动不确定性的指标，简单地说，标的证券价格波动率越高，期权合约到期时成为实值期权的可能性就越高，因此相应合约具有更高的价格。（因为期货价格一般与当前执行价格距离较大）</p>
+<ul>
+<li><strong>实值期权</strong>：能挣钱，比如期货价格&lt;执行价格的认购期权，或期货价格&gt;执行价格的认沽期权。</li>
+<li><strong>平值期权</strong>：期货价格 = 执行价格</li>
+<li><strong>虚值期权</strong>：不会行权的，期货价格&gt;执行价格的认购期权，或期货价格&lt;执行价格的认沽期权。</li>
+</ul>
+</li>
+<li><h5 id="市场无风险利率。"><a href="#市场无风险利率。" class="headerlink" title="市场无风险利率。"></a>市场无风险利率。</h5><p>认购期权具有融资买入标的证券的性质，市场无风险利率越高，意味着融资成本越高，标的价格越容易涨，所以认购期权的价格就越高。</p>
+</li>
+</ul>
+<h3 id="期权价格怎么定"><a href="#期权价格怎么定" class="headerlink" title="期权价格怎么定"></a><strong>期权价格怎么定</strong></h3><p>期权价格是由买卖双方竞价产生的。期权价格分成两部分，即内涵价值和时间价值。期权价格=内涵价值+时间价值。</p>
+<h4 id="内涵价值"><a href="#内涵价值" class="headerlink" title="内涵价值"></a><strong>内涵价值</strong></h4><p>内涵价值是<strong>立即执行</strong>期权合约时可获取的利润。只有“实值期权”具有内涵价值，“平值期权”内涵价值为零，“虚值期权”无内涵价值。</p>
+<p>比如：期货价格100元，执行价格90元的看涨期权，内含价值10元，如果此时权利金15元，则说明时间价值为5元。</p>
+<p>再比如：期货价格90元，执行价格100元的看涨期权，是虚值期权，如果此时权利金为5元，则说明时间价值为5元。</p>
+<p>一般来说，在其它条件一定的情况下，到期时间越长，期权的时间价值越大。在期权临近到期的时候，时间价值逐渐降低，在到期日当天，时间价值全部转变为内含价值。</p>
+<h3 id="期权是跟谁购买？做市商"><a href="#期权是跟谁购买？做市商" class="headerlink" title="期权是跟谁购买？做市商"></a><strong>期权是跟谁购买？做市商</strong></h3><p>注意：买call option的对手可不是买put option的人哦，他们俩都是买方，其共同的对手是做市商。</p>
+<p>做市商：指在证券市场上，由具备一定实力和信誉的独立证券经营法人作为特许交易商，不断向公众投资者报出某些特定证券的买卖价格（即双向报价），并在该价位上接受公众投资者的买卖要求，以其自有资金和证券与投资者进行证券交易。</p>
+<h2 id="期货"><a href="#期货" class="headerlink" title="期货"></a>期货</h2><h3 id="套期保值"><a href="#套期保值" class="headerlink" title="套期保值"></a><strong>套期保值</strong></h3><p>某一时间点，在<strong>现货市场和期货市场</strong>对同一种类的商品同时进行<strong>数量相等但方向相反</strong>的买卖活动，即在买进或卖出实货的同时，在期货市场上卖出或买进同等数量的期货，经过一段时间，当价格变动使现货买卖上出现盈亏时，可由期货交易上的亏盈得到抵消或弥补。从而在“现”与“期”之间、近期和远期之间建立一种对冲机制，以使价格风险降低到最低限度。</p>
+<p>例子</p>
+<p>猪肉市场价10000，期货价9000，投机者如果看多猪肉，则可以做多猪肉，买入10手猪肉期货。如果到期猪肉涨到了现货20000，期货18000，那他可以18000卖出10手猪肉期货，实现平仓，赚10*(18000-9000)=9w。</p>
+<p>但对猪肉养殖场来说，他们手头有猪肉，如果他们也看涨猪肉，也可以做多猪肉，买10手猪肉期货。如果到期猪肉涨到了现货20000，期货18000，那他可以18000卖出10手猪肉期货，实现平仓，在期货市场是赚10*(18000-9000) = 9w，另外现货市场上也可以赚到10×(20000-10000)=10w。（<strong>但只有SB这么玩，如果猪肉跌了，他在现货市场和期货市场都要赔钱</strong>）</p>
+<p>如果养殖场看空猪肉，则可以先10000卖出10手生猪期货，如果到时候真跌到了现货8000和期货8200，他现货市场会亏10×(10000-8000)=20000；但在期货市场，如果他以8200元买入10手生猪期货进行平仓，可以赚10×(9000-8200)=8000元。这样一对冲他就只亏12000元。</p>
+<h3 id="期货合约"><a href="#期货合约" class="headerlink" title="期货合约"></a><strong>期货合约</strong></h3><p>3个月后以10000块钱买卖生猪，合约金5%.</p>
+<h3 id="做多和做空"><a href="#做多和做空" class="headerlink" title="做多和做空"></a><strong>做多和做空</strong></h3><p>做多者觉得某个商品未来会涨价，他买入期货。</p>
+<p>做空者觉得某个商品未来会降价，他卖出期货。</p>
+<ul>
+<li>3个月后，生猪期货涨到了20000，为了平仓，做多的人卖出价值20000的期货，挣10000。而做空者要买入价值20000的期货，亏10000。</li>
+<li>3个月后，生猪期货跌到了5000，为了平仓，做多的人卖出价值5000的期货，亏5000。而做空者要买入价值5000的期货，挣5000。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%85%B6%E4%BB%96/" rel="tag"><i class="fa fa-tag"></i> 其他</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/07/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E8%B5%9B%E9%A9%AC%E9%97%AE%E9%A2%98/" rel="prev" title="赛马问题">
+      <i class="fa fa-chevron-left"></i> 赛马问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/16/Sql-%E7%BB%8F%E5%85%B850%E9%A2%98(1-6)/" rel="next" title="SQL经典50题(1-6)">
+      SQL经典50题(1-6) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%9F%E6%9D%83"><span class="nav-number">1.</span> <span class="nav-text">期权</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9C%8B%E6%B6%A8%E6%9C%9F%E6%9D%83call-option%E2%80%94%E5%8D%95%E4%B9%B0"><span class="nav-number">1.0.1.</span> <span class="nav-text">看涨期权call option—单买</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9C%8B%E8%B7%8C%E6%9C%9F%E6%9D%83put-option%E2%80%94%E5%8D%95%E4%B9%B0"><span class="nav-number">1.0.2.</span> <span class="nav-text">看跌期权put option—单买</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9C%8B%E8%B7%8C%E6%9C%9F%E6%9D%83put-option%E2%80%94%E5%85%88%E4%B9%B0%E8%82%A1%E7%A5%A8%E5%86%8D%E4%B9%B0%E7%9C%8B%E8%B7%8C%E6%9C%9F%E6%9D%83"><span class="nav-number">1.0.3.</span> <span class="nav-text">看跌期权put option—先买股票再买看跌期权</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%9F%E6%9D%83%E7%9A%84%E5%BA%95%E5%B1%82%E8%B5%84%E4%BA%A7"><span class="nav-number">1.1.</span> <span class="nav-text">期权的底层资产</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%9F%E6%9D%83%E5%8F%AF%E4%BB%A5%E5%8D%95%E7%8B%AC%E4%BA%A4%E6%98%93"><span class="nav-number">1.2.</span> <span class="nav-text">期权可以单独交易</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%9F%E6%9D%83%E4%BB%B7%E6%A0%BC%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%8F%98%E5%8C%96%EF%BC%9F"><span class="nav-number">1.2.1.</span> <span class="nav-text">期权价格为什么会变化？</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%87%E7%9A%84%E4%BB%B7%E6%A0%BC%EF%BC%88%E5%B8%82%E5%9C%BA%E4%BB%B7%EF%BC%89%E3%80%82"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">标的价格（市场价）。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A1%8C%E6%9D%83%E4%BB%B7"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">行权价</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E5%88%B0%E6%9C%9F%E6%9C%9F%E9%99%90"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">合约到期期限</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%87%E7%9A%84%E8%AF%81%E5%88%B8%E4%BB%B7%E6%A0%BC%E6%B3%A2%E5%8A%A8%E7%8E%87%EF%BC%88%E8%82%A1%E7%A5%A8%E4%BB%B7%E6%A0%BC%E6%B3%A2%E5%8A%A8%EF%BC%89%E3%80%82"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">标的证券价格波动率（股票价格波动）。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%82%E5%9C%BA%E6%97%A0%E9%A3%8E%E9%99%A9%E5%88%A9%E7%8E%87%E3%80%82"><span class="nav-number">1.2.1.5.</span> <span class="nav-text">市场无风险利率。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%9F%E6%9D%83%E4%BB%B7%E6%A0%BC%E6%80%8E%E4%B9%88%E5%AE%9A"><span class="nav-number">1.3.</span> <span class="nav-text">期权价格怎么定</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E6%B6%B5%E4%BB%B7%E5%80%BC"><span class="nav-number">1.3.1.</span> <span class="nav-text">内涵价值</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%9F%E6%9D%83%E6%98%AF%E8%B7%9F%E8%B0%81%E8%B4%AD%E4%B9%B0%EF%BC%9F%E5%81%9A%E5%B8%82%E5%95%86"><span class="nav-number">1.4.</span> <span class="nav-text">期权是跟谁购买？做市商</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%9F%E8%B4%A7"><span class="nav-number">2.</span> <span class="nav-text">期货</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A5%97%E6%9C%9F%E4%BF%9D%E5%80%BC"><span class="nav-number">2.1.</span> <span class="nav-text">套期保值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%9F%E8%B4%A7%E5%90%88%E7%BA%A6"><span class="nav-number">2.2.</span> <span class="nav-text">期货合约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%9A%E5%A4%9A%E5%92%8C%E5%81%9A%E7%A9%BA"><span class="nav-number">2.3.</span> <span class="nav-text">做多和做空</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Max"
+      src="/images/123.gif">
+  <p class="site-author-name" itemprop="name">Max</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Max</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">52 分钟</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

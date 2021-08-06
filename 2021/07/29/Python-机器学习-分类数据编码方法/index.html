@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16.png">
+  <link rel="mask-icon" href="/images/180.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Consolas:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分类数据编码方法">
+<meta property="og:url" content="http://example.com/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="阿乐·Blog">
+<meta property="og:description" content="在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg">
+<meta property="og:image" content="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png">
+<meta property="og:image" content="c:/Users/Max_1110/AppData/Roaming/Typora/typora-user-images/image-20210804100527770.png">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png">
+<meta property="og:image" content="c:/Users/Max_1110/AppData/Roaming/Typora/typora-user-images/image-20210804102023540.png">
+<meta property="article:published_time" content="2021-07-29T01:51:51.000Z">
+<meta property="article:modified_time" content="2021-08-04T09:48:38.992Z">
+<meta property="article:author" content="Max">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg">
+
+<link rel="canonical" href="http://example.com/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <title>分类数据编码方法 | 阿乐·Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿乐·Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>时光轴</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分类数据编码方法
+        </h1>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-29 09:51:51" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-04 17:48:38" itemprop="dateModified" datetime="2021-08-04T17:48:38+08:00">2021-08-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在做结构化数据训练时，类别特征是一个非常常见的变量类型。机器学习中有多种类别变量编码方式，各种编码方法都有各自的适用场景和特点，本文就对机器学习中常见的类别编码方式做一个简单的总结。</p>
+<a id="more"></a>
+
+<h3 id="Label-Encoding"><a href="#Label-Encoding" class="headerlink" title="Label Encoding"></a>Label Encoding</h3><p>针对有序变量可以使用label encoding，比如做运动的频次：”从不 (0)”&lt;”很少 (1)”&lt;”经常 (2)”&lt;”每天 (3)”。</p>
+<h4 id="Label-Encoding的两个问题："><a href="#Label-Encoding的两个问题：" class="headerlink" title="Label Encoding的两个问题："></a><strong>Label Encoding的两个问题：</strong></h4><ol>
+<li><p><strong>如果测试集中存在新的标签值（如”每天两次 (4)”），且该标签从未在训练集中出现过，该怎么做？</strong></p>
+<p>可以分别定义good_features及bad_features，good_features是在训练集和测试集中，所有不同取值都同时出现的features。bad_features是只在测试集中出现过的labels所对应的feature。</p>
+<ul>
+<li>文本型分类数据：从不、很少、经常 、每天</li>
+<li>数值型分类数据：0、1、2、3</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dataframe中文本型分类数据的类型为object</span></span><br><span class="line">all_features  = [col <span class="keyword">for</span> col <span class="keyword">in</span> X_train.columns() <span class="keyword">if</span> X_train[col].dtype == <span class="string">&#x27;object&#x27;</span>]</span><br><span class="line"><span class="comment"># 从all_features中选取good_features,判断标准是训练集和测试集中分类数据的值完全相同。</span></span><br><span class="line">good_features = [col <span class="keyword">for</span> col <span class="keyword">in</span> all_features <span class="keyword">if</span> <span class="built_in">set</span>(X_train[col]) == <span class="built_in">set</span>(X_test[col])]</span><br><span class="line"></span><br><span class="line">bad_features  = <span class="built_in">list</span>(<span class="built_in">set</span>(all_features) - <span class="built_in">set</span>(good_features)) <span class="comment">#只有set能相减求差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清洗掉bad_features</span></span><br><span class="line">X_train = X_train.drop(bad_features,axis = <span class="number">1</span>)</span><br><span class="line">X_test  = X_test.drop(bad_features, axis = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>label encoding通用手法是随机分配数值给不同的标签，如果我们可以为序数变量提供更好的信息标签，可以提升性能。</strong></p>
+<p>可以直接用字典进行替换。下面分别是通过label Encoding和自定义标签值的方式进行的分类数据编码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data = pd.DataFrame([[<span class="string">&quot;A&quot;</span>,<span class="string">&quot;从不&quot;</span>],[<span class="string">&quot;B&quot;</span>,<span class="string">&quot;偶尔&quot;</span>],[<span class="string">&quot;C&quot;</span>,<span class="string">&#x27;经常&#x27;</span>],[<span class="string">&quot;D&quot;</span>,<span class="string">&quot;每天&quot;</span>]], columns = [<span class="string">&#x27;姓名&#x27;</span>,<span class="string">&#x27;运动频率&#x27;</span>])</span><br><span class="line">data1 = data.copy()</span><br><span class="line">data1[<span class="string">&#x27;运动频率&#x27;</span>] = data[<span class="string">&#x27;运动频率&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;从不&quot;</span>:<span class="number">0</span>, <span class="string">&quot;偶尔&quot;</span>:<span class="number">1</span>, <span class="string">&quot;经常&quot;</span>:<span class="number">2</span>, <span class="string">&quot;每天&quot;</span>:<span class="number">3</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gt3p4d9ho2j31ck0o1ahu.jpg" alt="1"></p>
+<p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/supreme_1/article/details/104333969?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0.pc_relevant_baidujshouduan&amp;spm=1001.2101.3001.4242</a></p>
+<h3 id="Onehot-Encoding"><a href="#Onehot-Encoding" class="headerlink" title="Onehot Encoding"></a>Onehot Encoding</h3><h4 id="编码原理及实现。"><a href="#编码原理及实现。" class="headerlink" title="编码原理及实现。"></a>编码原理及实现。</h4><p>一个m行n列的数据，他会分别对第i个特征进行评估，看n个样本中的第i个特征有几个值。比如下面第3号特征有0、1、3值。</p>
+<p>然后分别对每一个特征进行onehot展开，最终变成2+3+3+3=11个特征值。</p>
+<p><img src="https://tva3.sinaimg.cn/large/0060e3lIly1gt3pto024vj317t0vbqcm.jpg" alt="1"></p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>onehot编码会产生线性信息，比如下方的onehot编码：</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106143504638-2121612119.png" alt="img" style="zoom:33%;" />
+
+<p>会产生5个新的特征，但这5个特征之间会存在X1+X2+X3+X4+X5 = 1的关系。</p>
+<p>假设我们现在获得了一个onehot编码后的模型：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3<br>$$</p>
+<p>$$<br>s.t. x1+x2+x3=1<br>$$</p>
+<p>如果用x1，x2去替代x3：<br>$$<br>y = β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}x3\<br>=β<em>{0}+β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=(β<em>{0}+β</em>{3})+(β<em>{1}-β</em>{3})x1+(β<em>{2}-β</em>{3})x2+0x3<br>$$<br>此时同一个模型可以被两套参数给表达，说明这个模型是不稳定的，<strong>换句话说一个模型的最优解可能有不止一个</strong>。解决这个问题的方法有以下三种：</p>
+<ol>
+<li><p>使用L2正则化，将参数的选择上加一个限制，就是选择参数元素值小的那个作为最终参数，这样我们得到的参数就唯一了，模型也就稳定了。</p>
+</li>
+<li><p>去掉intercept_，也可以解决同一个模型参数等价的问题。<br>$$<br>y = β<em>{1}x1+β</em>{2}x2+β<em>{3}x3\<br>=β</em>{1}x1+β<em>{2}x2+β</em>{3}(1-x1-x2)<br>\=β<em>{3}+(β</em>{1}-β<em>{3})x1+(β</em>{2}-β_{3})x2+0·x3<br>$$<br>可以发现一开始去掉intercept项，在变形后会重新得到intercept_，和原始模型完全不同，参数等价问题得到解决。</p>
+</li>
+<li><p>再加上bias项的前提下，使用哑变量编码代替one-hot编码，此时去除了x3，也就不存在之前一种特征可以用其他特征表示的问题了。</p>
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804100527770.png" alt="image-20210804100527770"></p>
+</li>
+</ol>
+<p><strong>总结：使用one-hot编码时，通常我们的模型不加bias项或者加上bias项然后使用L2正则化去约束参数；当我们使用哑变量编码时，通常我们的模型都会加bias项，因为不加bias项会导致固有属性的丢失</strong>。</p>
+<h3 id="Dummies"><a href="#Dummies" class="headerlink" title="Dummies"></a>Dummies</h3><p>哑变量编码直观的解释就是任意的将一个状态位去除。还是拿上面的例子来说，我们用4个状态位就足够反应上述5个类别的信息，也就是我们仅仅使用前四个状态位 [0,0,0,0] 就可以表达博士了。只是因为对于一个我们研究的样本，他已不是小学生、也不是中学生、也不是大学生、又不是研究生，那么我们就可以默认他是博士。</p>
+<img src="https://images2017.cnblogs.com/blog/1251096/201711/1251096-20171106151030778-484474659.png" alt="img" style="zoom:33%;" />
+
+<p><strong>实现方式及结果：</strong></p>
+<p>直接是pandas中的函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pd.get_dummies(df,drop_first=<span class="literal">True</span>) </span><br><span class="line"><span class="comment"># 如果不加drop_first参数，则与onehot效果一样。</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Max_1110\AppData\Roaming\Typora\typora-user-images\image-20210804102023540.png" alt="image-20210804102023540"></p>
+<p>参考链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/ningyanggege/article/details/88427398">https://blog.csdn.net/ningyanggege/article/details/88427398</a></p>
+<h3 id="Target-Encoding"><a href="#Target-Encoding" class="headerlink" title="Target Encoding"></a>Target Encoding</h3><h4 id="二分类及多分类的编码方式"><a href="#二分类及多分类的编码方式" class="headerlink" title="二分类及多分类的编码方式"></a>二分类及多分类的编码方式</h4><p>参见：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lryou/p/14627564.html">https://www.cnblogs.com/lryou/p/14627564.html</a></p>
+<h4 id="cross-validation解决数据泄露"><a href="#cross-validation解决数据泄露" class="headerlink" title="cross_validation解决数据泄露"></a>cross_validation解决数据泄露</h4><p>Cross-validation将训练数据分成k份，在计算某一份的target encoding时，我们不使用这一份中对应的目标值进行计算，而是使用剩余k-1份数据，进行对应标签的target encoding计算。<br>对于同一个属性值，这种方式产生的encoding一般是不一致的。在测试集中，对应的target encoding可以通过将训练集中这些属性的encoding取平均获得。[<a target="_blank" rel="noopener" href="https://datascience.stackexchange.com/questions/45881/target-encoding-with-cross-validation">9]</a></p>
+<p>参见：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_37737254/article/details/108786828">https://blog.csdn.net/weixin_37737254/article/details/108786828</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%BC%BA%E5%A4%B1%E5%80%BC%E5%AF%BB%E6%89%BE%E5%8F%8A%E5%A1%AB%E5%85%85/" rel="prev" title="缺失值寻找及填充">
+      <i class="fa fa-chevron-left"></i> 缺失值寻找及填充
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/29/Python-%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95-Map%E5%92%8CApply%E5%87%BD%E6%95%B0/" rel="next" title="Map和Apply函数">
+      Map和Apply函数 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Label-Encoding"><span class="nav-number">1.</span> <span class="nav-text">Label Encoding</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Label-Encoding%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">Label Encoding的两个问题：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Onehot-Encoding"><span class="nav-number">2.</span> <span class="nav-text">Onehot Encoding</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E3%80%82"><span class="nav-number">2.1.</span> <span class="nav-text">编码原理及实现。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dummies"><span class="nav-number">3.</span> <span class="nav-text">Dummies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Target-Encoding"><span class="nav-number">4.</span> <span class="nav-text">Target Encoding</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E5%88%86%E7%B1%BB%E5%8F%8A%E5%A4%9A%E5%88%86%E7%B1%BB%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">二分类及多分类的编码方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cross-validation%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E6%B3%84%E9%9C%B2"><span class="nav-number">4.2.</span> <span class="nav-text">cross_validation解决数据泄露</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Max"
+      src="/images/123.gif">
+  <p class="site-author-name" itemprop="name">Max</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Max</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">52 分钟</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
