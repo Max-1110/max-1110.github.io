@@ -27,13 +27,11 @@
 <meta property="og:site_name" content="阿乐·Blog">
 <meta property="og:description" content="在使用python检验数据集特征之间的相关性时，通常会用到data.corr()方法，而该方法可以基于3种计算方法，分别是Pearson, Spearman, Kendall，在此进行简要说明。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YjU3NmU3ZDM3OWMyM2IwZWY4OWRmM2EyNDI4NTc0YmVfSW5ad3lLZlA3NDJwSnhqdmFUWE5qY3NYenFxSjhLT0tfVG9rZW46Ym94Y256NEs0QjdFRHpUUXdoeWVpSE9xTE5mXzE2MjgyMTc5MTQ6MTYyODIyMTUxNF9WNA">
 <meta property="article:published_time" content="2021-07-29T01:51:51.000Z">
-<meta property="article:modified_time" content="2021-08-06T02:45:53.063Z">
+<meta property="article:modified_time" content="2021-08-11T02:50:35.535Z">
 <meta property="article:author" content="Max">
 <meta property="article:tag" content="统计学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YjU3NmU3ZDM3OWMyM2IwZWY4OWRmM2EyNDI4NTc0YmVfSW5ad3lLZlA3NDJwSnhqdmFUWE5qY3NYenFxSjhLT0tfVG9rZW46Ym94Y256NEs0QjdFRHpUUXdoeWVpSE9xTE5mXzE2MjgyMTc5MTQ6MTYyODIyMTUxNF9WNA">
 
 <link rel="canonical" href="http://example.com/2021/07/29/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">
 
@@ -228,7 +226,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-06 10:45:53" itemprop="dateModified" datetime="2021-08-06T10:45:53+08:00">2021-08-06</time>
+                <time title="修改时间：2021-08-11 10:50:35" itemprop="dateModified" datetime="2021-08-11T10:50:35+08:00">2021-08-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,7 +244,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>513</span>
+              <span>567</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -271,7 +269,7 @@
 <h3 id="Pearson"><a href="#Pearson" class="headerlink" title="Pearson"></a>Pearson</h3><p>用于判断两个<strong>定距变量</strong>之间是否存在<strong>线性关系</strong>。定距变量：指没有绝对零点的数值型变量，即一个变量的值为0，不代表没有意义，反而代表其值确实为0。（反例：身高）</p>
 <p>pearson是一个介于-1和1之间的值，当两个变量的线性关系增强时，相关系数趋于1或-1；当一个变量增大，另一个变量也增大时，表明它们之间是正相关的，相关系数大于0；如果一个变量增大，另一个变量却减小，表明它们之间是负相关的，相关系数小于0；如果相关系数等于0，表明它们之间不存在线性相关关系。</p>
 <p>计算公式：除以两个标准差的目的是消除量纲。</p>
-<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YjU3NmU3ZDM3OWMyM2IwZWY4OWRmM2EyNDI4NTc0YmVfSW5ad3lLZlA3NDJwSnhqdmFUWE5qY3NYenFxSjhLT0tfVG9rZW46Ym94Y256NEs0QjdFRHpUUXdoeWVpSE9xTE5mXzE2MjgyMTc5MTQ6MTYyODIyMTUxNF9WNA" alt="img"></p>
+<p>$$<br>\frac{\sum(x-x_{mean})(y-y_{mean})}{std(x)·std(y)}<br>$$</p>
 <h3 id="spearman"><a href="#spearman" class="headerlink" title="spearman"></a>spearman</h3><p>只要两个变量的值是定序变量<strong>（差，良，优）</strong>，或者是由连续变量转化得到的定序变量，就可以用spearman系数判断相关性。</p>
 <h3 id="Kendall"><a href="#Kendall" class="headerlink" title="Kendall"></a>Kendall</h3><p>Kendall相关系数是对于定类变量的统计，定类变量没有内在顺序，比如性别、国家之类的就是定类变量。</p>
 <h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>三种correlations的变量条件如果无法完全满足时，<strong>优先满足因变量的条件</strong>。</p>
@@ -294,12 +292,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/07/29/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/" rel="prev" title="假设检验">
-      <i class="fa fa-chevron-left"></i> 假设检验
+    <a href="/2021/01/08/%E5%85%B6%E4%BB%96-%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E5%90%88%E4%BD%9C%E5%95%86%E7%BB%A9%E6%95%88%E8%80%83%E6%A0%B8%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA/" rel="prev" title="基于时间的合作商绩效考核体系搭建">
+      <i class="fa fa-chevron-left"></i> 基于时间的合作商绩效考核体系搭建
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/07/29/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8A%A5%E9%94%99/" rel="next" title="Hive内存溢出报错">
-      Hive内存溢出报错 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/07/29/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/" rel="next" title="假设检验">
+      假设检验 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -375,7 +373,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -425,13 +423,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">57k</span>
+    <span title="站点总字数">66k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">52 分钟</span>
+    <span title="站点阅读时长">1:01</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
   </div>

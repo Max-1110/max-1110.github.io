@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16.png">
+  <link rel="mask-icon" href="/images/180.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Consolas:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文主要记录机器学习的分类问题中，类别不平衡问题的处理方法。主要包括过采样方法及数据清洗方法。如SMOTE，Borderline SMOTE，Tomek，ENN几种方法。先会简述原理，然后上package。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="类别不平衡问题的评估方法">
+<meta property="og:url" content="http://example.com/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%B1%BB%E5%88%AB%E4%B8%8D%E5%B9%B3%E8%A1%A1%E9%97%AE%E9%A2%98%E7%9A%84%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="阿乐·Blog">
+<meta property="og:description" content="本文主要记录机器学习的分类问题中，类别不平衡问题的处理方法。主要包括过采样方法及数据清洗方法。如SMOTE，Borderline SMOTE，Tomek，ENN几种方法。先会简述原理，然后上package。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva2.sinaimg.cn/large/0060e3lIly1gtbpbwgdeuj30lx0bqq59.jpg">
+<meta property="og:image" content="https://tvax1.sinaimg.cn/large/0060e3lIly1gtbpdcvercj30nj0badif.jpg">
+<meta property="og:image" content="https://tva2.sinaimg.cn/large/0060e3lIly1gtbpe92w4tj30o90bsq5a.jpg">
+<meta property="og:image" content="https://images2018.cnblogs.com/blog/1188231/201807/1188231-20180728173446127-879157250.png">
+<meta property="og:image" content="https://images2018.cnblogs.com/blog/1188231/201807/1188231-20180728190132892-1639377766.png">
+<meta property="article:published_time" content="2021-07-29T01:51:51.000Z">
+<meta property="article:modified_time" content="2021-08-10T07:42:48.705Z">
+<meta property="article:author" content="Max">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva2.sinaimg.cn/large/0060e3lIly1gtbpbwgdeuj30lx0bqq59.jpg">
+
+<link rel="canonical" href="http://example.com/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%B1%BB%E5%88%AB%E4%B8%8D%E5%B9%B3%E8%A1%A1%E9%97%AE%E9%A2%98%E7%9A%84%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <title>类别不平衡问题的评估方法 | 阿乐·Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿乐·Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>时光轴</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%B1%BB%E5%88%AB%E4%B8%8D%E5%B9%B3%E8%A1%A1%E9%97%AE%E9%A2%98%E7%9A%84%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          类别不平衡问题的评估方法
+        </h1>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-29 09:51:51" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-10 15:42:48" itemprop="dateModified" datetime="2021-08-10T15:42:48+08:00">2021-08-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要记录机器学习的分类问题中，类别不平衡问题的处理方法。主要包括过采样方法及数据清洗方法。如SMOTE，Borderline SMOTE，Tomek，ENN几种方法。先会简述原理，然后上package。</p>
+<a id="more"></a>
+
+<h3 id="SMOTE"><a href="#SMOTE" class="headerlink" title="SMOTE"></a>SMOTE</h3><p>SMOTE是一种过采样方法，其基本思想就是对少数类别样本进行分析和模拟，并将人工模拟的新样本添加到数据集中，进而使原始数据中的类别不再严重失衡。该算法的模拟过程采用了KNN技术，模拟生成新样本的步骤如下：</p>
+<ul>
+<li><p>采样最邻近算法，计算出每个少数类样本的K个近邻;</p>
+</li>
+<li><p>从K个近邻中随机挑选N个样本进行随机线性插值;</p>
+</li>
+<li><p>构造新的少数类样本;</p>
+</li>
+<li><p>将新样本与原数据合成，产生新的训练集;</p>
+</li>
+</ul>
+<p>Smote算法的思想其实很简单，先随机选定n个少类的样本，如下图：</p>
+<img src="https://tva2.sinaimg.cn/large/0060e3lIly1gtbpbwgdeuj30lx0bqq59.jpg" alt="1" style="zoom:50%;" />
+
+<p>再找出最靠近它的m个少类样本，如下图：</p>
+<img src="https://tvax1.sinaimg.cn/large/0060e3lIly1gtbpdcvercj30nj0badif.jpg" alt="1" style="zoom:50%;" />
+
+<p>再任选最临近的m个少类样本中的任意一点，</p>
+<img src="https://tva2.sinaimg.cn/large/0060e3lIly1gtbpe92w4tj30o90bsq5a.jpg" alt="1" style="zoom:50%;" />
+
+<p>在这两点上任选一点，这点就是新增的数据样本，其本质是在少数类样本中用KNN方法合成了新样本，而不同于ROS方法随机复制成新样本，所以更具有代表性。<br>$$<br>x_{new} = x + (x_{near}-x)*σ<br>\<br>X_{near}是x的临近点<br>$$<br>具体实现：</p>
+<p><strong>SMOTE.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.neighbors <span class="keyword">import</span> NearestNeighbors</span><br><span class="line"><span class="keyword">from</span> base_sampler <span class="keyword">import</span> * <span class="comment"># base_sampler主要用于实现np数组的切分和拼接功能</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># old_feature_data只包含少数样本，且不包含label列。</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_sample</span>(<span class="params">old_feature_data, diff</span>):</span> <span class="comment">#old features:300*10, diff=100</span></span><br><span class="line">    <span class="comment"># 获取每一个少数类样本点周围最近的n_neighbors-1个点的位置矩阵，从第1列开始取，避免取到自身。</span></span><br><span class="line">    nns = NearestNeighbors(n_neighbors=<span class="number">6</span>).fit(old_feature_data)</span><br><span class="line">    nns = nns.kneighbors(old_feature_data, return_distance=<span class="literal">False</span>)[:,<span class="number">1</span>:] <span class="comment">#nns: 300*5</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 随机产生diff个随机数，之后用这些行(一行代表一个点)及其临近值来构造新的点。</span></span><br><span class="line">    samples_indices = np.random.randint(low=<span class="number">0</span>, high=np.shape(old_feature_data)[<span class="number">0</span>], size=diff) <span class="comment">#(100,)</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 随机产生diff个随机数作为之后产生新样本的间距值</span></span><br><span class="line">    steps = np.random.uniform(size=diff)<span class="comment"># (100,) 01分布</span></span><br><span class="line">    cols = np.mod(samples_indices, nns.shape[<span class="number">1</span>]) <span class="comment">#(100,) cols的值都小于n_neighbours-1</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#构建新增数据矩阵，先以0值填充。100*10</span></span><br><span class="line">    reshaped_feature = np.zeros((diff, old_feature_data.shape[<span class="number">1</span>]))</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> i, (col, step) <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">zip</span>(cols, steps)): <span class="comment"># i从0开始</span></span><br><span class="line">        row = samples_indices[i] <span class="comment">#选出某行，用作构造</span></span><br><span class="line">        reshaped_feature[i] = old_feature_data[row] - step * (old_feature_data[row] - old_feature_data[nns[row, col]])</span><br><span class="line">        <span class="comment"># 一个row代表一个点，先找到原数据第row个点，再找到其任意一个临近点（通过nns[row,col]：代表离第row个点第col近的点），</span></span><br><span class="line">        <span class="comment"># 得到row点和其临近点的距离，再用第row个点减去该距离的某一个倍数(steps)即可。</span></span><br><span class="line">    <span class="comment"># 将原少数类样本点与新产生的少数类样本点整合</span></span><br><span class="line">    new_min_feature_data = np.vstack((reshaped_feature, old_feature_data))</span><br><span class="line">    <span class="keyword">return</span> new_min_feature_data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">SMOTE</span>(<span class="params">imbalanced_data_arr2</span>):</span></span><br><span class="line">    <span class="comment"># 将数据集分开为少数类数据和多数类数据</span></span><br><span class="line">    minor_data_arr2,major_data_arr2 = seperate_minor_and_major_data(imbalanced_data_arr2)</span><br><span class="line">    <span class="comment"># print(minor_data_arr2.shape)</span></span><br><span class="line">    <span class="comment"># 计算多数类数据和少数类数据之间的数量差,也是需要过采样的数量</span></span><br><span class="line">    diff = major_data_arr2.shape[<span class="number">0</span>] - minor_data_arr2.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment"># 原始少数样本的特征集</span></span><br><span class="line">    old_feature_data = minor_data_arr2[:, : <span class="number">-1</span>]</span><br><span class="line">    <span class="comment"># 原始少数样本的标签值，标签值都一致。</span></span><br><span class="line">    old_label_data = minor_data_arr2[<span class="number">0</span>][<span class="number">-1</span>]</span><br><span class="line">    <span class="comment"># 使用K近邻方法产生的新样本特征集</span></span><br><span class="line">    new_feature_data = make_sample(old_feature_data, diff)</span><br><span class="line">    <span class="comment"># 使用K近邻方法产生的新样本标签数组</span></span><br><span class="line">    new_labels_data = np.array([old_label_data] * np.shape(major_data_arr2)[<span class="number">0</span>])</span><br><span class="line">    <span class="comment"># 将类别标签数组合并到少数类样本特征集，构建出新的少数类样本数据集</span></span><br><span class="line">    new_minor_data_arr2 = np.column_stack((new_feature_data, new_labels_data))</span><br><span class="line">    <span class="comment"># print(new_minor_data_arr2[:,-1])</span></span><br><span class="line">    <span class="comment"># 将少数类数据集和多数据类数据集合并，并对样本数据进行打乱重排，</span></span><br><span class="line">    balanced_data_arr2 = concat_and_shuffle_data(new_minor_data_arr2, major_data_arr2)</span><br><span class="line">    <span class="keyword">return</span> balanced_data_arr2</span><br></pre></td></tr></table></figure>
+
+<p><strong>base_sampler.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">seperate_minor_and_major_data</span>(<span class="params">imbalanced_data_arr2</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    将训练数据分开为少数据类数据集和多数类数据集</span></span><br><span class="line"><span class="string">    :param imbalanced_data_arr2: 非平衡数集</span></span><br><span class="line"><span class="string">    :return: 少数据类数据集和多数类数据集</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 提取类别标签一维数组，并提取出两类类别标签标记，判断是不是二分类问题。真实问题中不会只研究二分类。</span></span><br><span class="line">    labels_arr1 = imbalanced_data_arr2[:, <span class="number">-1</span>]</span><br><span class="line">    unique_labels_arr1 = np.unique(labels_arr1)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(unique_labels_arr1) != <span class="number">2</span>:</span><br><span class="line">        print(<span class="string">&#x27;数据类别大于2，错误！&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 通过比较标签上数，找出少数类的类别标签</span></span><br><span class="line">    minor_label = unique_labels_arr1[<span class="number">0</span>] <span class="keyword">if</span> np.<span class="built_in">sum</span>(labels_arr1 == unique_labels_arr1[<span class="number">0</span>]) \</span><br><span class="line">                                           &lt; np.<span class="built_in">sum</span>(labels_arr1 == unique_labels_arr1[<span class="number">1</span>]) <span class="keyword">else</span> unique_labels_arr1[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    [rows, cols] = imbalanced_data_arr2.shape  <span class="comment"># 获取数据二维数组形状</span></span><br><span class="line">    minor_data_arr2 = np.empty((<span class="number">0</span>, cols))  <span class="comment"># 建立一个空的少数类数据二维数组</span></span><br><span class="line">    major_data_arr2 = np.empty((<span class="number">0</span>, cols))  <span class="comment"># 建立一个空的多数类数据二维数组</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历每个样本数据，分开少数类数据和多数类数据</span></span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> <span class="built_in">range</span>(rows):</span><br><span class="line">        data_arr1 = imbalanced_data_arr2[row, :]</span><br><span class="line">        <span class="keyword">if</span> data_arr1[<span class="number">-1</span>] == minor_label:</span><br><span class="line">            <span class="comment"># 如果类别标签为少数类类别标签，则将数据加入少数类二维数组中</span></span><br><span class="line">            minor_data_arr2 = np.row_stack((minor_data_arr2, data_arr1))</span><br><span class="line">        <span class="keyword">else</span>:  <span class="comment"># 否则，将数据加入多数类二维数组中</span></span><br><span class="line">            major_data_arr2 = np.row_stack((major_data_arr2, data_arr1))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> minor_data_arr2, major_data_arr2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">concat_and_shuffle_data</span>(<span class="params">data1_arr2, data2_arr2</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    对两个numpy二维数组进行0轴连接，并对行向量进行打乱重排，</span></span><br><span class="line"><span class="string">    :param data1_arr2: numpy二维数组</span></span><br><span class="line"><span class="string">    :param data2_arr2: numpy二维数组</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    data_arr2 = np.concatenate((data1_arr2, data2_arr2), axis=<span class="number">0</span>)  <span class="comment"># 数组0轴连接</span></span><br><span class="line">    np.random.shuffle(data_arr2)  <span class="comment"># 行向量shuffle</span></span><br><span class="line">    <span class="keyword">return</span> data_arr2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    imbalanced_train_data_path = <span class="string">&#x27;../../data/clean_data/imbalanced_train_data_arr2.npy&#x27;</span></span><br><span class="line">    imbalanced_train_data_arr2 = np.load(imbalanced_train_data_path)</span><br><span class="line">    minor_data_arr2, major_data_arr2 = seperate_minor_and_major_data(imbalanced_train_data_arr2)</span><br><span class="line">    print(minor_data_arr2.shape)</span><br><span class="line">    print(major_data_arr2.shape)</span><br></pre></td></tr></table></figure>
+
+<h3 id="SMOTE缺点"><a href="#SMOTE缺点" class="headerlink" title="SMOTE缺点"></a>SMOTE缺点</h3><p>SMOTE会随机选取少数类样本用以合成新样本，而不考虑周边样本的情况，这样容易带来两个问题：</p>
+<ol>
+<li>如果选取的少数类样本周围也都是少数类样本，则新合成的样本不会提供太多有用信息。这就像支持向量机中远离margin的点对决策边界影响不大。</li>
+<li>如果选取的少数类样本周围都是多数类样本，这类的样本可能是噪音，则新合成的样本会与周围的多数类样本产生大部分重叠，致使分类困难。</li>
+</ol>
+<p>总的来说我们希望新合成的少数类样本能处于两个类别的边界附近，这样往往能提供足够的信息用以分类。而这就是下面的 <code>Border-line SMOTE</code> 算法要做的事情。</p>
+<h3 id="Borderline-SMOTE"><a href="#Borderline-SMOTE" class="headerlink" title="Borderline SMOTE"></a>Borderline SMOTE</h3><p>这个算法会先将所有的少数类样本分成三类，如下图所示：</p>
+<ul>
+<li><strong>“noise”</strong> ： 所有的k近邻个样本都属于<strong>多数类</strong></li>
+<li><strong>“danger”</strong> ： 超过一半的k近邻样本属于<strong>多数类</strong></li>
+<li><strong>“safe”**： 超过一半的k近邻样本属于</strong>少数类**</li>
+</ul>
+<p><img src="https://images2018.cnblogs.com/blog/1188231/201807/1188231-20180728173446127-879157250.png" alt="img"></p>
+<p><code>Border-line SMOTE</code>算法只会从处于<strong>”danger“</strong>状态的样本中随机选择，然后用SMOTE算法产生新的样本。处于”<strong>danger</strong>“状态的样本代表靠近”边界“附近的少数类样本，而处于边界附近的样本往往更容易被误分类。因而 <code>Border-line SMOTE</code> 只对那些靠近”边界“的少数类样本进行人工合成样本，而 <code>SMOTE</code> 则对所有少数类样本一视同仁。</p>
+<p><code>Border-line SMOTE</code> 分为两种: <code>Borderline-1 SMOTE</code> 和 <code>Borderline-2 SMOTE</code>。 <code>Borderline-1 SMOTE</code> 在合成样本时<code>x_near</code>是一个少数类样本，而 <code>Borderline-2 SMOTE</code> 中的<code>x_near</code>则是k近邻中的任意一个样本。</p>
+<h3 id="Tomek"><a href="#Tomek" class="headerlink" title="Tomek"></a>Tomek</h3><p><strong>Tomek Link</strong>：Tomek Link表示不同类别之间距离最近的一对样本，即这两个样本互为最近邻且分属不同类别。这样如果两个样本形成了一个Tomek Link，则要么其中一个是噪音，要么两个样本都在边界附近。这样通过移除一对Tomek Link就能“清洗掉”类间重叠样本，使得互为最近邻的样本皆属于同一类别，从而能更好地进行分类。</p>
+<p>下图左上为原始数据，右上为SMOTE后的数据，左下虚线标识出Tomek Link，右下为移除Tomek Link后的数据集，可以看到不同类别之间样本重叠减少了很多。</p>
+<p><img src="https://images2018.cnblogs.com/blog/1188231/201807/1188231-20180728190132892-1639377766.png" alt="img"></p>
+<h3 id="ENN"><a href="#ENN" class="headerlink" title="ENN"></a>ENN</h3><p>**Edited Nearest Neighbours(ENN)**：对于属于多数类的一个样本，如果其K个近邻点有超过一半都不属于多数类，则这个样本会被剔除。这个方法的另一个变种是所有的K个近邻点都不属于多数类，则这个样本会被剔除。</p>
+<p>工业中常会用SMOTE+ENN或SMOTE+Tomek结合使用，在通过过拟合增加样本的同时利用ENN剔除重叠数据。</p>
+<h3 id="掉包侠"><a href="#掉包侠" class="headerlink" title="掉包侠"></a>掉包侠</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_classification <span class="comment">#Generate a random n-class classification problem.</span></span><br><span class="line">X, y = make_classification(n_samples=<span class="number">5000</span>, n_features=<span class="number">2</span>, </span><br><span class="line">                           n_informative=<span class="number">2</span>, <span class="comment"># numof_valuable featuers</span></span><br><span class="line"><span class="meta">... </span>                       n_redundant=<span class="number">0</span>, n_repeated=<span class="number">0</span>, n_classes=<span class="number">3</span>,</span><br><span class="line"><span class="meta">... </span>                       n_clusters_per_class=<span class="number">1</span>,</span><br><span class="line"><span class="meta">... </span>                       weights=[<span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.94</span>],</span><br><span class="line"><span class="meta">... </span>                       class_sep=<span class="number">0.8</span>, <span class="comment">#越大越好分类</span></span><br><span class="line">                           random_state=<span class="number">0</span>)</span><br><span class="line">print(<span class="built_in">sorted</span>(Counter(y).items()))</span><br><span class="line">[(<span class="number">0</span>, <span class="number">64</span>), (<span class="number">1</span>, <span class="number">262</span>), (<span class="number">2</span>, <span class="number">4674</span>)]</span><br><span class="line"><span class="keyword">from</span> imblearn.combine <span class="keyword">import</span> SMOTEENN</span><br><span class="line">smote_enn = SMOTEENN(random_state=<span class="number">0</span>)</span><br><span class="line">X_resampled, y_resampled = smote_enn.fit_resample(X, y)</span><br><span class="line">print(<span class="built_in">sorted</span>(Counter(y_resampled).items()))</span><br><span class="line">[(<span class="number">0</span>, <span class="number">4060</span>), (<span class="number">1</span>, <span class="number">4381</span>), (<span class="number">2</span>, <span class="number">3502</span>)]</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> imblearn.combine <span class="keyword">import</span> SMOTETomek</span><br><span class="line">smote_tomek = SMOTETomek(random_state=<span class="number">0</span>)</span><br><span class="line">X_resampled, y_resampled = smote_tomek.fit_resample(X, y)</span><br><span class="line">print(<span class="built_in">sorted</span>(Counter(y_resampled).items()))</span><br><span class="line">[(<span class="number">0</span>, <span class="number">4499</span>), (<span class="number">1</span>, <span class="number">4566</span>), (<span class="number">2</span>, <span class="number">4413</span>)]</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/44055312">https://zhuanlan.zhihu.com/p/44055312</a> –SMOTE实现</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/massquantity/p/9382710.html">https://www.cnblogs.com/massquantity/p/9382710.html</a> – 类别不平衡问题处理方法</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/scikit-learn-contrib/imbalanced-learn">https://github.com/scikit-learn-contrib/imbalanced-learn</a> – Imbanlanced Learning官方文档</li>
+<li><a target="_blank" rel="noopener" href="https://imbalanced-learn.org/stable/combine.html">https://imbalanced-learn.org/stable/combine.html</a>  – Imbanlanced Learning官方文档</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u010654299/article/details/103980964">https://blog.csdn.net/u010654299/article/details/103980964</a> – 类别不平衡问题处理方法（补充）</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%BC%BA%E5%A4%B1%E5%80%BC%E5%AF%BB%E6%89%BE%E5%8F%8A%E5%A1%AB%E5%85%85/" rel="prev" title="缺失值寻找及填充">
+      <i class="fa fa-chevron-left"></i> 缺失值寻找及填充
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/29/Python-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95/" rel="next" title="分类数据编码方法">
+      分类数据编码方法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#SMOTE"><span class="nav-number">1.</span> <span class="nav-text">SMOTE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SMOTE%E7%BC%BA%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">SMOTE缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Borderline-SMOTE"><span class="nav-number">3.</span> <span class="nav-text">Borderline SMOTE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomek"><span class="nav-number">4.</span> <span class="nav-text">Tomek</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ENN"><span class="nav-number">5.</span> <span class="nav-text">ENN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%89%E5%8C%85%E4%BE%A0"><span class="nav-number">6.</span> <span class="nav-text">掉包侠</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Max"
+      src="/images/123.gif">
+  <p class="site-author-name" itemprop="name">Max</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Max</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">66k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:01</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
