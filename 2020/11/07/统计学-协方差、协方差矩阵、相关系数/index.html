@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="本文主要是分别记录协方差、协方差矩阵的计算方式及python实现。再通过协方差引出相关系数ρ，并进一步得到相关系数与相关性分析中pearson计算方式的联系。 1. 方差-&gt;协方差-&gt;协方差矩阵-&gt;相关系数对一维变量，方差表明样本距离均值的偏离程度，即”数据的离散程度”。 对二维变量，协方差可以表现两个特征在变化时是同向的还是反向的，程度如何。 对高维变量，协方差矩阵可以直观描述">
+  <meta name="description" content="本文主要是分别记录协方差、协方差矩阵的计算方式及python实现。再通过协方差引出相关系数ρ，并进一步得到相关系数与相关性分析中pearson计算方式的联系。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="协方差、协方差矩阵、相关系数">
 <meta property="og:url" content="http://example.com/2020/11/07/%E7%BB%9F%E8%AE%A1%E5%AD%A6-%E5%8D%8F%E6%96%B9%E5%B7%AE%E3%80%81%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%E3%80%81%E7%9B%B8%E5%85%B3%E7%B3%BB%E6%95%B0/index.html">
 <meta property="og:site_name" content="阿乐·Blog">
-<meta property="og:description" content="本文主要是分别记录协方差、协方差矩阵的计算方式及python实现。再通过协方差引出相关系数ρ，并进一步得到相关系数与相关性分析中pearson计算方式的联系。 1. 方差-&gt;协方差-&gt;协方差矩阵-&gt;相关系数对一维变量，方差表明样本距离均值的偏离程度，即”数据的离散程度”。 对二维变量，协方差可以表现两个特征在变化时是同向的还是反向的，程度如何。 对高维变量，协方差矩阵可以直观描述">
+<meta property="og:description" content="本文主要是分别记录协方差、协方差矩阵的计算方式及python实现。再通过协方差引出相关系数ρ，并进一步得到相关系数与相关性分析中pearson计算方式的联系。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://tvax1.sinaimg.cn/large/0060e3lIly1gtexnwwmjwj315o0vydn5.jpg">
 <meta property="article:published_time" content="2020-11-07T00:41:33.000Z">
-<meta property="article:modified_time" content="2021-08-13T02:15:30.994Z">
+<meta property="article:modified_time" content="2021-08-19T07:11:19.152Z">
 <meta property="article:author" content="Max">
 <meta property="article:tag" content="统计学">
 <meta name="twitter:card" content="summary">
@@ -228,7 +228,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-13 10:15:30" itemprop="dateModified" datetime="2021-08-13T10:15:30+08:00">2021-08-13</time>
+                <time title="修改时间：2021-08-19 15:11:19" itemprop="dateModified" datetime="2021-08-19T15:11:19+08:00">2021-08-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -266,6 +266,8 @@
 
       
         <p>本文主要是分别记录协方差、协方差矩阵的计算方式及python实现。再通过协方差引出相关系数ρ，并进一步得到相关系数与相关性分析中pearson计算方式的联系。</p>
+<a id="more"></a>
+
 <h3 id="1-方差-gt-协方差-gt-协方差矩阵-gt-相关系数"><a href="#1-方差-gt-协方差-gt-协方差矩阵-gt-相关系数" class="headerlink" title="1. 方差-&gt;协方差-&gt;协方差矩阵-&gt;相关系数"></a>1. 方差-&gt;协方差-&gt;协方差矩阵-&gt;相关系数</h3><p>对一维变量，方差表明样本距离均值的偏离程度，即”数据的离散程度”。</p>
 <p>对二维变量，协方差可以表现两个<strong>特征</strong>在变化时是同向的还是反向的，程度如何。</p>
 <p>对高维变量，协方差矩阵可以直观描述任意2个特征之间的变化趋势。</p>
@@ -283,8 +285,6 @@
 <ul>
 <li><h4 id="2-3-矩阵维度计算协方差矩阵"><a href="#2-3-矩阵维度计算协方差矩阵" class="headerlink" title="2.3 矩阵维度计算协方差矩阵"></a>2.3 矩阵维度计算协方差矩阵</h4><p>首先得到去均值化矩阵A_，然后<br>$$<br>cov(A) = \frac{A_{-}^{T}·A_{-}}{n-1}<br>$$</p>
 </li>
-</ul>
-<ul>
 <li><h4 id="2-4-Python实现"><a href="#2-4-Python实现" class="headerlink" title="2.4 Python实现"></a>2.4 Python实现</h4><ul>
 <li><strong>注意：利用<code>numpy.cov()</code>时需将原矩阵转置后再传参。</strong></li>
 <li>A.T*A与cov(A.T)结果一致，只不过存在1/n-1的倍数关系，且特征值也存在n-1倍数的关系。</li>
@@ -323,7 +323,7 @@
       <i class="fa fa-chevron-left"></i> 总体方差和样本方差
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/11/07/%E7%BB%9F%E8%AE%A1%E5%AD%A6-fclassif%E5%92%8Cf_regression/" rel="next" title="特征选择中的f_classif和f_regression">
+    <a href="/2020/11/07/%DF%A1f-fclassif%EF%BF%BDf_regression(0%25)/" rel="next" title="特征选择中的f_classif和f_regression">
       特征选择中的f_classif和f_regression <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -400,14 +400,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -450,13 +450,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">66k</span>
+    <span title="站点总字数">69k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:01</span>
+    <span title="站点阅读时长">1:03</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
   </div>

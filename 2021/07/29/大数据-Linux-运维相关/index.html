@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16.png">
+  <link rel="mask-icon" href="/images/180.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noto Serif SC:300,300italic,400,400italic,700,700italic|Consolas:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文主要记录了一些Linux系统运维的常见问题，其中bash script涉及较少，在其他文章中会逐渐补充进来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux系统运维知识">
+<meta property="og:url" content="http://example.com/2021/07/29/%E5%A4%A7%E6%95%B0%E6%8D%AE-Linux-%E8%BF%90%E7%BB%B4%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="阿乐·Blog">
+<meta property="og:description" content="本文主要记录了一些Linux系统运维的常见问题，其中bash script涉及较少，在其他文章中会逐渐补充进来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NmIyOTZiZDk0YmZlMmIxZGI1MmZiYTBmMzAyM2VhMjRfdUh1czdjSjNFRHZmTUdWWGRGdnhtRjZSQ3hyQnozNzZfVG9rZW46Ym94Y25wSlBqMnlhRUpKbFdnRW9uRWhadVRnXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MzlkZjExMjY4NmRmNzJjYzVjNDE4Zjg5Yjg0N2YxY2ZfMDdMQTRRZ0FWMUNkeWJGcURzaVpLU0x0ZGhFNGNSY1lfVG9rZW46Ym94Y25qdFpxZ0ZYSVlnQU9oVENGQWJWbThlXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NTZhZjFlNDcyNDRlMmMxZTZhYjcyMTk5MzVlYmJjYjNfaWNEOEllVTBOQ2d0bVBLbXlqOGp2ZE92S1lvVEJuZWdfVG9rZW46Ym94Y25FQ29PMWZTajFiSUpYZXNsNEFQMUdmXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWNjZmE2NjBkYTNjZGExNTQ0YzA4MDI0MzQ2OGZkYjlfNXdZT1dHamNIOXIwRHlqaTZ4Rk1EaXNpb2I3Q2tlQkdfVG9rZW46Ym94Y25IS253dmFYMWZZa0E4ODFyRU5rb0xlXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NmQzNDI2YTUyN2E3MWIyZmI3YTViZmY4NTJiMjBjODZfWTh6ekRMOWNKWm9NWDhXVlh2dUxBZUNMVHp4RUtKckRfVG9rZW46Ym94Y25pd0h2cGo1YlRWc1NzdllBZzY3R2pjXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=OWY3MjgxMTRmMzA4ZTJjNWY5NWNmM2UyNjA2MGE1NzZfUTljMUh4Y3plV3RnQUNCTWxCZDFOdm9YZWVtWDZDMVZfVG9rZW46Ym94Y25EQlFueTdGRXh1a1lvNXZhbTZHcG1jXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YTUxMTIzYTcwNGJkNzYxN2UyNjVkMTc4YzI0ODBiYjBfMnQ2aTRuZFhkVm05Qkl6eGdIbmpyYkFURmtQSVZnNEZfVG9rZW46Ym94Y25ZNXRxYkxzVDBvOUtRZlBzajk0T0hiXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MmQ5MWMwOGU3NTQwMDk4ZDMwYTAxNGIyZmI1MjEyM2RfdmljdHhEeWIxNnJGcUdVZklJOHNmSFhWZVFHMkp2TU5fVG9rZW46Ym94Y253WnFUc1F4WWFhUjV3a01nSUJmdXZoXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YzRhZmJiMDE0ODU0MWI5MjdiMTM0MTJmZTc0Mzk3ODJfb1hvY2JzUm9tTXNQRUg4N0dMdkF1YzB2Qk1xQUl4cDVfVG9rZW46Ym94Y252cUdUd0t6bW1XNTJCVjF2OGtrYm9jXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NGQyYzIwNzAwYWQzNDY0ZGZhNjg5NTJkMmEzODMxMThfcWhGaUd3eFlyQjg0MFdmOGdCeFRtT2dyRjA3bnhWOEtfVG9rZW46Ym94Y253MU9heVpOZEFaVndRWjN5alBMc3RqXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="og:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YjBjNDgyZmJjZmY5NjhmMWI0MjE3NzUzNDlmOTAzNDNfdG9EaHE2T25GR1hiekdGTjZENVZsTkUxQUFqTTJ2TEFfVG9rZW46Ym94Y25kdmczTkpRU2l5WUZnQTZIanZTMXZoXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+<meta property="article:published_time" content="2021-07-29T01:51:51.000Z">
+<meta property="article:modified_time" content="2021-08-19T07:28:58.386Z">
+<meta property="article:author" content="Max">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NmIyOTZiZDk0YmZlMmIxZGI1MmZiYTBmMzAyM2VhMjRfdUh1czdjSjNFRHZmTUdWWGRGdnhtRjZSQ3hyQnozNzZfVG9rZW46Ym94Y25wSlBqMnlhRUpKbFdnRW9uRWhadVRnXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA">
+
+<link rel="canonical" href="http://example.com/2021/07/29/%E5%A4%A7%E6%95%B0%E6%8D%AE-Linux-%E8%BF%90%E7%BB%B4%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <title>Linux系统运维知识 | 阿乐·Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿乐·Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>时光轴</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/29/%E5%A4%A7%E6%95%B0%E6%8D%AE-Linux-%E8%BF%90%E7%BB%B4%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/123.gif">
+      <meta itemprop="name" content="Max">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿乐·Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux系统运维知识
+        </h1>
+
+        <div class="post-meta">
+          
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-29 09:51:51" itemprop="dateCreated datePublished" datetime="2021-07-29T09:51:51+08:00">2021-07-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-19 15:28:58" itemprop="dateModified" datetime="2021-08-19T15:28:58+08:00">2021-08-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要记录了一些Linux系统运维的常见问题，其中bash script涉及较少，在其他文章中会逐渐补充进来。</p>
+<a id="more"></a>
+
+<h3 id="1-ISO和OSI"><a href="#1-ISO和OSI" class="headerlink" title="1. ISO和OSI"></a>1. ISO和OSI</h3><p>ISO：国际标准化组织</p>
+<p>OSI：开放系统互连</p>
+<p><strong>第七层：应用层</strong>，提供给用户的操作界面</p>
+<p><strong>第六层：表示层</strong>，<strong>数据提供表示</strong>，数据翻译成二进制；<strong>数据加密和压缩</strong></p>
+<p><strong>第五层：会话层</strong>，进行分流，是否要进行网络传递？</p>
+<p><strong>第四层：传输层</strong></p>
+<ul>
+<li><p>对报文进行分组（send）或组装（receive），IPV4协议中规定：每个数据包小于2^16字节</p>
+</li>
+<li><p>传输协议的选择（TCP传输控制协议/UDP用户数据报协议），理解为数据包的包头。TCP和UDP各有优点，</p>
+</li>
+</ul>
+<p>TCP：<strong>可靠的，面向连接的传输协议。</strong>（对数据稳定性有保障）<strong>（3次握手）</strong></p>
+<p>UDP：<strong>不可靠的，面向无连接的传输协议。</strong>（访问快，丢1，2个包无所谓。）</p>
+<ul>
+<li><p>端口封装（确定源端口和目标端口）</p>
+</li>
+<li><p>差错校验</p>
+</li>
+</ul>
+<p><strong>第三层：网络层</strong></p>
+<ul>
+<li><p>IP地址，写入源IP和目标IP</p>
+</li>
+<li><p>路由选择</p>
+<ul>
+<li>静态路由：手动指定，对路由器消耗少，但适合路由器小的情况。</li>
+</ul>
+</li>
+<li><p>动态路由：路由器根据不同路由协议，由路由器自己判断。</p>
+</li>
+</ul>
+<p><strong>第二层：数据链路层</strong>（典型设备是交换机）</p>
+<ul>
+<li><p>mac地址编址（mac是局域网内部地址）</p>
+</li>
+<li><p>mac地址寻址</p>
+</li>
+<li><p>差错校验</p>
+</li>
+</ul>
+<p><strong>第一层：物理层</strong>（典型设备是网线）</p>
+<ul>
+<li><p>数据实际传输</p>
+</li>
+<li><p>电气特性定义</p>
+</li>
+</ul>
+<h3 id="2-TCP的3次握手"><a href="#2-TCP的3次握手" class="headerlink" title="2. TCP的3次握手"></a>2. TCP的3次握手</h3><p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NmIyOTZiZDk0YmZlMmIxZGI1MmZiYTBmMzAyM2VhMjRfdUh1czdjSjNFRHZmTUdWWGRGdnhtRjZSQ3hyQnozNzZfVG9rZW46Ym94Y25wSlBqMnlhRUpKbFdnRW9uRWhadVRnXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<p>第一次握手：client将标志位syn设置为1，随机生成一个seq序号J，将该数据包发送给server，client进入syn-sent状态，等待server确认。</p>
+<p>第二次握手：server收到，将syn和ack都设为1（ack表示反馈，syn表示自发），ack序号设为J+1，随机产生一个seq序号K，发送给client。自身进入syn_rcvd</p>
+<p>第三次握手：client收到确认，检查ack序号是不是J+1，ack标志是不是1，如果正确则ACK设为1，ack序号为K+1发送给server。server检查ack序号和ACK标志，正确则建立连接，互相为established。</p>
+<p><strong>SYN标志：发起一个新连接</strong></p>
+<h3 id="3-TCP的4次挥手"><a href="#3-TCP的4次挥手" class="headerlink" title="3. TCP的4次挥手"></a>3. TCP的4次挥手</h3><p>第一次挥手：client发送标志位Fin，seq序号=m的数据包给server，client进入fin_wait_1。</p>
+<p>第二次挥手：server收到，发送一个ACK标志，ack序号=m+1给client表示收到，server进入close_wait。</p>
+<p>第三次挥手：server发送FIN和ACK标志，seq=n，ack序列号=m+1给client，表示他不但收到了挥手请求，他也的确要挥手了，server进入last_ACK。</p>
+<p>第四次挥手：client收到FIN，client进入Time_wait2状态，发一个ACK标志及ack=n+1给server。server进入closed状态。</p>
+<h3 id="4-IP地址计算"><a href="#4-IP地址计算" class="headerlink" title="4. IP地址计算"></a>4. IP地址计算</h3><p>网络地址：把IP地址和子网掩码的二进制，按位进行<strong>逻辑与</strong>运算（起始）</p>
+<p>广播地址：<strong>有效子网掩码中</strong>，有几个0,就把IP地址的后几位换位1（结束）</p>
+<p>子网个数：有效子网掩码中，有几个1,子网数就是2的几次方</p>
+<p>主机个数：有效子网掩码中，有几个0,主机数就是2的几次方减2</p>
+<p><strong>有效子网掩码：1和0抢位置的区域</strong></p>
+<h3 id="5-Linux系统的权限优化"><a href="#5-Linux系统的权限优化" class="headerlink" title="5. Linux系统的权限优化"></a>5. Linux系统的权限优化</h3><ul>
+<li><strong>文件基本权限：文件身份，权限结构(文件类型+u+g+o)，文件权限含义，目录权限含义（r:ls, w:touch mv cp rm, x:cd)</strong></li>
+<li><strong>默认权限：umask查看，指新建文件时给定的默认权限，一般不需要手动修改。</strong></li>
+<li><strong>特殊权限：SUID针对可执行文件，SGID针对可执行文件及目录，SBID只针对目录。</strong></li>
+<li><strong>ACL权限：针对用户对文件身份不足时使用（既不是owner也不是group也不是other？？）</strong></li>
+<li><strong>sudo权限：授予某个用户root权限</strong></li>
+<li><strong>文件系统属性权限：chattr相当于给文件加锁，不允许删除、改名、及变更数据。</strong></li>
+</ul>
+<p>解题：</p>
+<ol>
+<li>权限分离</li>
+<li>在满足使用情况下，权限最小</li>
+<li>减少使用root，尽量普通用户+sudo提权</li>
+<li>重要系统文件/etc/passwd，/etc/sudoers用chattr锁定</li>
+<li>开启ssh密钥登陆，修改ssh服务端口。</li>
+</ol>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MzlkZjExMjY4NmRmNzJjYzVjNDE4Zjg5Yjg0N2YxY2ZfMDdMQTRRZ0FWMUNkeWJGcURzaVpLU0x0ZGhFNGNSY1lfVG9rZW46Ym94Y25qdFpxZ0ZYSVlnQU9oVENGQWJWbThlXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<h3 id="6-Linux的备份策略"><a href="#6-Linux的备份策略" class="headerlink" title="6. Linux的备份策略"></a>6. Linux的备份策略</h3><p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NTZhZjFlNDcyNDRlMmMxZTZhYjcyMTk5MzVlYmJjYjNfaWNEOEllVTBOQ2d0bVBLbXlqOGp2ZE92S1lvVEJuZWdfVG9rZW46Ym94Y25FQ29PMWZTajFiSUpYZXNsNEFQMUdmXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<p>增量备份：每次备份和前一次不同的数据（不易恢复）</p>
+<p>差异备份：每次备份和第一次不同的数据</p>
+<p>工具：dump(centos6)和xfsdump(centos7)</p>
+<h3 id="7-日志的备份"><a href="#7-日志的备份" class="headerlink" title="7. 日志的备份"></a>7. 日志的备份</h3><p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWNjZmE2NjBkYTNjZGExNTQ0YzA4MDI0MzQ2OGZkYjlfNXdZT1dHamNIOXIwRHlqaTZ4Rk1EaXNpb2I3Q2tlQkdfVG9rZW46Ym94Y25IS253dmFYMWZZa0E4ODFyRU5rb0xlXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<h3 id="8-Linux的Raid"><a href="#8-Linux的Raid" class="headerlink" title="8. Linux的Raid"></a>8. Linux的Raid</h3><ul>
+<li>Raid0：2块及以上硬盘，大小必须一致，读写最快，数据损坏率最高（没有容错）</li>
+<li>Raid1：2块及以上硬盘，大小必须一致，磁盘使用率50%，读写最慢，有磁盘容错功能</li>
+<li>Raid5：3块及以上硬盘，大小必须一致，n-1块磁盘被使用，利用奇偶校验恢复数据，但最多支持一块硬盘损坏。</li>
+<li>Raid6：4+硬盘，n-2磁盘被占用，最多支持2块损坏。</li>
+<li>Raid10：4+硬盘，先Raid1，再Raid0。</li>
+</ul>
+<h3 id="9-Linux的资源查看"><a href="#9-Linux的资源查看" class="headerlink" title="9. Linux的资源查看"></a>9. Linux的资源查看</h3><ul>
+<li><strong>cpu：</strong>top，负载情况：uptime，内存、IO、CPU总览：vmstat</li>
+<li><strong>内存：top，vmstat，free，/proc/meminfo</strong></li>
+<li>网络类：ifconfig，netstat -tunlp</li>
+</ul>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NmQzNDI2YTUyN2E3MWIyZmI3YTViZmY4NTJiMjBjODZfWTh6ekRMOWNKWm9NWDhXVlh2dUxBZUNMVHp4RUtKckRfVG9rZW46Ym94Y25pd0h2cGo1YlRWc1NzdllBZzY3R2pjXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<ul>
+<li>硬盘类：df -h，lsof罗列出打开的进程和文件，lsof -i:8080列出打开8080端口的文件</li>
+<li>进程类：ps -ef或ps aux查看所有打开的进程</li>
+</ul>
+<h3 id="10-Linux的启动流程"><a href="#10-Linux的启动流程" class="headerlink" title="10. Linux的启动流程"></a>10. Linux的启动流程</h3><p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=OWY3MjgxMTRmMzA4ZTJjNWY5NWNmM2UyNjA2MGE1NzZfUTljMUh4Y3plV3RnQUNCTWxCZDFOdm9YZWVtWDZDMVZfVG9rZW46Ym94Y25EQlFueTdGRXh1a1lvNXZhbTZHcG1jXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<p><strong>centos6系统默认的运行级别表示：gui节面还是文字节面，文字节面是3，就会执行rc3.d中的脚本，sbin/init之后的启动流程是线性的。</strong></p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YTUxMTIzYTcwNGJkNzYxN2UyNjVkMTc4YzI0ODBiYjBfMnQ2aTRuZFhkVm05Qkl6eGdIbmpyYkFURmtQSVZnNEZfVG9rZW46Ym94Y25ZNXRxYkxzVDBvOUtRZlBzajk0T0hiXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<p>systemd之后的瀑布流是并发的瀑布流。</p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=MmQ5MWMwOGU3NTQwMDk4ZDMwYTAxNGIyZmI1MjEyM2RfdmljdHhEeWIxNnJGcUdVZklJOHNmSFhWZVFHMkp2TU5fVG9rZW46Ym94Y253WnFUc1F4WWFhUjV3a01nSUJmdXZoXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<h3 id="11-Linux的系统优化"><a href="#11-Linux的系统优化" class="headerlink" title="11. Linux的系统优化"></a>11. Linux的系统优化</h3><p>禁用不需要的服务（ntsysv命令）</p>
+<p>sudo提权</p>
+<p>chattr锁定</p>
+<p>国内yum源</p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YzRhZmJiMDE0ODU0MWI5MjdiMTM0MTJmZTc0Mzk3ODJfb1hvY2JzUm9tTXNQRUg4N0dMdkF1YzB2Qk1xQUl4cDVfVG9rZW46Ym94Y252cUdUd0t6bW1XNTJCVjF2OGtrYm9jXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=NGQyYzIwNzAwYWQzNDY0ZGZhNjg5NTJkMmEzODMxMThfcWhGaUd3eFlyQjg0MFdmOGdCeFRtT2dyRjA3bnhWOEtfVG9rZW46Ym94Y253MU9heVpOZEFaVndRWjN5alBMc3RqXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+<p>更改ssh服务的默认端口，配置SSH秘钥对登录</p>
+<p>配置合理的 Iptables防火墙规则</p>
+<p>配置合理的 SELINUX安全上下文</p>
+<p>制定合理的监控策略</p>
+<p>定时备份系统重要文件</p>
+<h3 id="12-shell-文本截取"><a href="#12-shell-文本截取" class="headerlink" title="12. shell-文本截取"></a>12. shell-文本截取</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed&#96;和&#96;awk</span><br></pre></td></tr></table></figure>
+
+<h3 id="13-shell-随机字符串"><a href="#13-shell-随机字符串" class="headerlink" title="13. shell-随机字符串"></a>13. shell-随机字符串</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo $RANDOM | md5sum | tr [0-9] [a-j] | cut -b 2-11</span><br></pre></td></tr></table></figure>
+
+<h3 id="14-shell-网站检测"><a href="#14-shell-网站检测" class="headerlink" title="14. shell-网站检测"></a>14. shell-网站检测</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -o &#x2F;dev&#x2F;null -s -w %&#123;http_code&#125; www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="15-Linux服务-SSH优化"><a href="#15-Linux服务-SSH优化" class="headerlink" title="15. Linux服务-SSH优化"></a>15. Linux服务-SSH优化</h3><ul>
+<li>登录验证模式修改为密钥登录</li>
+<li>登录端口修改为非22端口以及指定监听IP /etc/ssh/sshd_config</li>
+<li>禁止root用户远程登录 /etc/ssh/sshd_config</li>
+<li>设置无操作时自动断开连接 export TMOUT=300</li>
+<li>设置登录失败后登录尝试次数为6次 /etc/ssh/sshd_config</li>
+<li>编写防火墙规则，使用白名单机制放行ssh服务的监听端口</li>
+</ul>
+<h3 id="16-Linux服务-DHCP和FTP"><a href="#16-Linux服务-DHCP和FTP" class="headerlink" title="16. Linux服务-DHCP和FTP"></a>16. Linux服务-DHCP和FTP</h3><p>请描述通过DHCP服务器获取IP地址的过程</p>
+<p>客户机请求IP(客户机发 DHCP DISCOVER广播包)</p>
+<p>服务器响应(服务器发 DHCP OFFER广播包)</p>
+<p>客户机选择IP(客户机发 DHCP REQUEST广播包)</p>
+<p>服务器确定租约(服务器发 DHCP ACK/ DHCPNAK广~播包)</p>
+<h3 id="17-Linux服务-DNS解析"><a href="#17-Linux服务-DNS解析" class="headerlink" title="17. Linux服务-DNS解析"></a>17. Linux服务-DNS解析</h3><p>DNS解析过程</p>
+<p>1.客户机首先查看本地 hosts文件是否有解析记录，有则直接用来访问 web server</p>
+<p>2.没有则向网卡中记录的首选DS(本地DNS)发起查询请求</p>
+<p>3.本地DNS若有记录则返回给客户端，客户端接收到后直接访问 web server</p>
+<p>4.若没有，则本地DNS向<strong>根域服务器</strong>发起请求，请求解析对应顶级域的IP地址</p>
+<p>5.本地DNS得到顶级域服务器IP后，再向<strong>顶级域</strong>服务器发起请求，请求解析<strong>权威DNS</strong></p>
+<p>服务器的IP地址</p>
+<p>6.本地DNS服务器获取到权威DNS服务器IP地址后，再向其査询具体的完整域名的对</p>
+<p>应解析记录</p>
+<p>7.最终本地DNS将査询到的对应域名的解析记录发送给客户端，并在本地记录一份</p>
+<h3 id="18-drop导致数据库内数据被误删怎么办"><a href="#18-drop导致数据库内数据被误删怎么办" class="headerlink" title="18. drop导致数据库内数据被误删怎么办"></a>18. drop导致数据库内数据被误删怎么办</h3><ul>
+<li>手动切割binlog日志，找到最新一天，假设为009，备份。</li>
+<li>找到上一次全备数据的，假设为005</li>
+<li>用mysqladmin将005-008binlog文件中sql语句分离，找到drop库的语句删除。</li>
+<li>全备+005~008+009即可</li>
+</ul>
+<p><img src="https://njumj6v84z.feishu.cn/space/api/box/stream/download/asynccode/?code=YjBjNDgyZmJjZmY5NjhmMWI0MjE3NzUzNDlmOTAzNDNfdG9EaHE2T25GR1hiekdGTjZENVZsTkUxQUFqTTJ2TEFfVG9rZW46Ym94Y25kdmczTkpRU2l5WUZnQTZIanZTMXZoXzE2MjkzNTc5MzY6MTYyOTM2MTUzNl9WNA" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Hive/" rel="tag"><i class="fa fa-tag"></i> Hive</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/29/%DF%A1f-G%EF%BF%BD%EF%BF%BD%EF%BF%BD(0%25)/" rel="prev" title="假设检验">
+      <i class="fa fa-chevron-left"></i> 假设检验
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/29/%E5%A4%A7%E6%95%B0%E6%8D%AE-Hive-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8A%A5%E9%94%99/" rel="next" title="Hive内存溢出报错">
+      Hive内存溢出报错 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ISO%E5%92%8COSI"><span class="nav-number">1.</span> <span class="nav-text">1. ISO和OSI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TCP%E7%9A%843%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">2.</span> <span class="nav-text">2. TCP的3次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-TCP%E7%9A%844%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">3.</span> <span class="nav-text">3. TCP的4次挥手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-IP%E5%9C%B0%E5%9D%80%E8%AE%A1%E7%AE%97"><span class="nav-number">4.</span> <span class="nav-text">4. IP地址计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Linux%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%9D%83%E9%99%90%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">5. Linux系统的权限优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Linux%E7%9A%84%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="nav-number">6.</span> <span class="nav-text">6. Linux的备份策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E6%97%A5%E5%BF%97%E7%9A%84%E5%A4%87%E4%BB%BD"><span class="nav-number">7.</span> <span class="nav-text">7. 日志的备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-Linux%E7%9A%84Raid"><span class="nav-number">8.</span> <span class="nav-text">8. Linux的Raid</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-Linux%E7%9A%84%E8%B5%84%E6%BA%90%E6%9F%A5%E7%9C%8B"><span class="nav-number">9.</span> <span class="nav-text">9. Linux的资源查看</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-Linux%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">10.</span> <span class="nav-text">10. Linux的启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-Linux%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96"><span class="nav-number">11.</span> <span class="nav-text">11. Linux的系统优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-shell-%E6%96%87%E6%9C%AC%E6%88%AA%E5%8F%96"><span class="nav-number">12.</span> <span class="nav-text">12. shell-文本截取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-shell-%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">13.</span> <span class="nav-text">13. shell-随机字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-shell-%E7%BD%91%E7%AB%99%E6%A3%80%E6%B5%8B"><span class="nav-number">14.</span> <span class="nav-text">14. shell-网站检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#15-Linux%E6%9C%8D%E5%8A%A1-SSH%E4%BC%98%E5%8C%96"><span class="nav-number">15.</span> <span class="nav-text">15. Linux服务-SSH优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16-Linux%E6%9C%8D%E5%8A%A1-DHCP%E5%92%8CFTP"><span class="nav-number">16.</span> <span class="nav-text">16. Linux服务-DHCP和FTP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#17-Linux%E6%9C%8D%E5%8A%A1-DNS%E8%A7%A3%E6%9E%90"><span class="nav-number">17.</span> <span class="nav-text">17. Linux服务-DNS解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#18-drop%E5%AF%BC%E8%87%B4%E6%95%B0%E6%8D%AE%E5%BA%93%E5%86%85%E6%95%B0%E6%8D%AE%E8%A2%AB%E8%AF%AF%E5%88%A0%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="nav-number">18.</span> <span class="nav-text">18. drop导致数据库内数据被误删怎么办</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Max"
+      src="/images/123.gif">
+  <p class="site-author-name" itemprop="name">Max</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Max</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">69k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:03</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

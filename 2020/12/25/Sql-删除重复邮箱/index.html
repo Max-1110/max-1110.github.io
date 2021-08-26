@@ -248,7 +248,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>878</span>
+              <span>881</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -271,9 +271,9 @@
 <p>这里需要注意的点是：<strong>mySQL中不允许在同一个表里同时进行查找和更新操作，否则会报错：You can’t specify target table ‘PERSON’ for update in FROM clause</strong></p>
 <a id="more"></a>
 
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#x6f;&#x68;&#110;&#x40;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#101;&#46;&#x63;&#111;&#x6d;">&#x6a;&#x6f;&#x68;&#110;&#x40;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#101;&#46;&#x63;&#111;&#x6d;</a> |<br>| 2  | <a href="mailto:&#x62;&#x6f;&#x62;&#x40;&#x65;&#x78;&#x61;&#109;&#x70;&#108;&#101;&#x2e;&#99;&#111;&#109;">&#x62;&#x6f;&#x62;&#x40;&#x65;&#x78;&#x61;&#109;&#x70;&#108;&#101;&#x2e;&#99;&#111;&#109;</a>  |<br>| 3  | <a href="mailto:&#106;&#x6f;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#x6d;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#109;">&#106;&#x6f;&#104;&#x6e;&#64;&#101;&#120;&#x61;&#x6d;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#109;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#x6f;&#x68;&#110;&#64;&#101;&#120;&#x61;&#x6d;&#112;&#x6c;&#x65;&#x2e;&#99;&#x6f;&#109;">&#x6a;&#x6f;&#x68;&#110;&#64;&#101;&#120;&#x61;&#x6d;&#112;&#x6c;&#x65;&#x2e;&#99;&#x6f;&#109;</a> |<br>| 2  | <a href="mailto:&#98;&#x6f;&#98;&#x40;&#x65;&#x78;&#x61;&#x6d;&#112;&#108;&#x65;&#46;&#99;&#x6f;&#x6d;">&#98;&#x6f;&#98;&#x40;&#x65;&#x78;&#x61;&#x6d;&#112;&#108;&#x65;&#46;&#99;&#x6f;&#x6d;</a>  |<br>| 3  | <a href="mailto:&#x6a;&#x6f;&#x68;&#x6e;&#x40;&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#99;&#111;&#109;">&#x6a;&#x6f;&#x68;&#x6e;&#x40;&#x65;&#120;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#99;&#111;&#109;</a> |<br>+—-+——————+<br>Id 是这个表的主键。</p>
 <p>例如，在运行你的查询语句之后，上面的 <code>Person</code> 表应返回以下几行:</p>
-<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#x6a;&#111;&#104;&#110;&#64;&#101;&#x78;&#x61;&#109;&#x70;&#108;&#x65;&#46;&#x63;&#x6f;&#109;">&#x6a;&#111;&#104;&#110;&#64;&#101;&#x78;&#x61;&#109;&#x70;&#108;&#x65;&#46;&#x63;&#x6f;&#109;</a> |<br>| 2  | <a href="mailto:&#98;&#x6f;&#x62;&#x40;&#101;&#x78;&#97;&#x6d;&#x70;&#108;&#x65;&#46;&#99;&#111;&#x6d;">&#98;&#x6f;&#x62;&#x40;&#101;&#x78;&#97;&#x6d;&#x70;&#108;&#x65;&#46;&#99;&#111;&#x6d;</a>  |<br>+—-+——————+</p>
+<p>+—-+——————+<br>| Id | Email            |<br>+—-+——————+<br>| 1  | <a href="mailto:&#106;&#111;&#104;&#110;&#x40;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#x2e;&#x63;&#111;&#x6d;">&#106;&#111;&#104;&#110;&#x40;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#101;&#x2e;&#x63;&#111;&#x6d;</a> |<br>| 2  | <a href="mailto:&#98;&#x6f;&#x62;&#x40;&#101;&#x78;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#x6d;">&#98;&#x6f;&#x62;&#x40;&#101;&#x78;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#x6d;</a>  |<br>+—-+——————+</p>
 <p><strong>解法：</strong></p>
 <p>把查找出来的东西先放在另一个表里（这里是t）过渡一下。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> PERSON</span><br><span class="line"><span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">not</span> <span class="keyword">in</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">SELECT</span> t.m_id</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> <span class="keyword">MIN</span>(<span class="keyword">id</span>) m_id</span><br><span class="line"><span class="keyword">FROM</span> person <span class="keyword">GROUP</span> <span class="keyword">BY</span> email) t</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
@@ -377,14 +377,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -427,13 +427,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">66k</span>
+    <span title="站点总字数">69k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:01</span>
+    <span title="站点阅读时长">1:03</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 
   </div>
